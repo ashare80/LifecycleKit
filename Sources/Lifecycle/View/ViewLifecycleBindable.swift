@@ -35,7 +35,7 @@ extension ViewLifecycleBindable {
             assertionFailure("Binding to \(viewLifecycleManager) that has already been binded to. \(viewLifecycleManager.binded)")
         }
         viewLifecycleManager.binded.insert(self)
-        
+
         viewLifecycleManager
             .lifecyclePublisher
             .first(where: { $0 == .initialized })

@@ -23,38 +23,45 @@ public protocol RootLifecycleManager {
     var root: Root { get }
 }
 
-#if os(macOS)
-
-extension NSApplicationDelegate where Self: RootLifecycleManager {
-    func activateRoot() {
-        root.scopeLifecycleManager.activate()
-    }
-
-    func deactivateRoot() {
-        root.scopeLifecycleManager.deactivate()
+extension RootLifecycleManager {
+    /// Monitoring publisher to view `LifecycleManageable` hierarchy for tests and debugging tools.
+    public var childrenChangedPublisher: RelayPublisher<Void> {
+        return root.scopeLifecycleManager.childrenChangedPublisher
     }
 }
+
+#if os(macOS)
+
+    extension NSApplicationDelegate where Self: RootLifecycleManager {
+        public func activateRoot() {
+            root.scopeLifecycleManager.activate()
+        }
+
+        public func deactivateRoot() {
+            root.scopeLifecycleManager.deactivate()
+        }
+    }
 
 #else
 
-extension UIApplicationDelegate where Self: RootLifecycleManager {
-    func activateRoot() {
-        root.scopeLifecycleManager.activate()
+    extension UIApplicationDelegate where Self: RootLifecycleManager {
+        public func activateRoot() {
+            root.scopeLifecycleManager.activate()
+        }
+
+        public func deactivateRoot() {
+            root.scopeLifecycleManager.deactivate()
+        }
     }
 
-    func deactivateRoot() {
-        root.scopeLifecycleManager.deactivate()
-    }
-}
+    extension UISceneDelegate where Self: RootLifecycleManager {
+        public func activateRoot() {
+            root.scopeLifecycleManager.activate()
+        }
 
-extension UISceneDelegate where Self: RootLifecycleManager {
-    func activateRoot() {
-        root.scopeLifecycleManager.activate()
+        public func deactivateRoot() {
+            root.scopeLifecycleManager.deactivate()
+        }
     }
-
-    func deactivateRoot() {
-        root.scopeLifecycleManager.deactivate()
-    }
-}
 
 #endif

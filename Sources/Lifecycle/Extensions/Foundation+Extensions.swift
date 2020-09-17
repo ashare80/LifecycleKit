@@ -42,7 +42,7 @@ public struct WeakSet<Element> {
     public var asArray: [Element] {
         storage.dictionaryRepresentation().values.compactMap { $0 as? Element }
     }
-    
+
     public var isEmpty: Bool {
         return count == 0
     }
@@ -69,7 +69,7 @@ public struct WeakSet<Element> {
         let object = element as AnyObject
         self.storage.setObject(object, forKey: NSNumber(value: ObjectIdentifier(object).hashValue))
     }
-    
+
     public mutating func removeAll() {
         objc_sync_enter(storage); defer { objc_sync_exit(storage) }
         storage = .strongToWeakObjects()

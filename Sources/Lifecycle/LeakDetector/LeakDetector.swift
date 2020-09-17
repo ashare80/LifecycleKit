@@ -61,7 +61,7 @@ public class LeakDetector {
     }()
 
     private init() {}
-    
+
     /// Sets up an expectation for the given objects to be deallocated within the given time.
     ///
     /// - parameter objects: The weak set of objects to track for deallocation.
@@ -69,7 +69,7 @@ public class LeakDetector {
     /// - returns: `Publishers.First` that outputs after delay.
     public func expectDeallocate<Element>(objects: WeakSet<Element>, inTime time: TimeInterval = .deallocationExpectation) -> RelayPublisher<Void> {
         guard objects.isEmpty else { return Empty().eraseToAnyPublisher() }
-        
+
         expectationCount += 1
         var decrement: (() -> Void)? = {
             self.expectationCount -= 1

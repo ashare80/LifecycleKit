@@ -41,7 +41,7 @@ public final class ScopeLifecycleManager: LifecycleProvider {
         }
 
         _lifecycleState = .deinitialized
-        
+
         LeakDetector.instance.expectDeallocate(objects: binded, inTime: .viewDisappearExpectation).retained.sink()
     }
 

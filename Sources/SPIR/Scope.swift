@@ -33,12 +33,13 @@ public protocol LifecycleManagedScopeComponent: LifecycleManagedScope {
     ///
     /// - parameter factory: The closure to construct the dependency object.
     /// - returns: The dependency object instance.
-    func shared<T>(_ factory: () -> T) -> T
+    func shared<T>(__function: String, _ factory: () -> T) -> T
 }
 
 extension LifecycleManagedScopeComponent {
+    /// Provided shared `ScopeLifecycleManager` for the component's scope.
     public var scopeLifecycleManager: ScopeLifecycleManager {
-        return shared {
+        return shared(__function: #function) {
             return ScopeLifecycleManager()
         }
     }

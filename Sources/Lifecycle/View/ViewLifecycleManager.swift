@@ -74,7 +74,7 @@ public final class ViewLifecycleManager: LifecycleProvider {
     }
 
     @Published private var _lifecycleState: LifecycleState = .initialized
-    
+
     public internal(set) var binded = WeakSet<ViewLifecycleBindable>()
 }
 
