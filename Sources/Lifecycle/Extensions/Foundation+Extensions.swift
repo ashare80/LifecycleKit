@@ -88,6 +88,18 @@ public struct WeakSet<Element> {
     }
 }
 
+public protocol ObjectIdentifiable: AnyObject, Hashable {}
+
+extension ObjectIdentifiable {
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
+    }
+
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs === rhs
+    }
+}
+
 #if DEBUG
     func assertionFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
         assertionFailureClosure(message(), file, line)

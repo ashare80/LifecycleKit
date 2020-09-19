@@ -40,7 +40,7 @@ extension ViewLifecycleManageable {
     }
 }
 
-public final class ViewLifecycleManager: LifecycleProvider {
+public final class ViewLifecycleManager: LifecycleProvider, ObjectIdentifiable {
     public var lifecycleState: LifecycleState {
         _lifecycleState
     }

@@ -38,9 +38,9 @@ public protocol LifecycleBindable: AnyObject {
 }
 
 extension LifecycleBindable {
-    public func didBecomeActive(_: LifecycleProvider) {}
+    public func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {}
     public func didBecomeInactive() {}
-    public func didLoad(_: LifecycleProvider) {}
+    public func didLoad(_ lifecycleProvider: LifecycleProvider) {}
 }
 
 extension LifecycleBindable {

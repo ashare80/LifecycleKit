@@ -60,7 +60,7 @@ extension LifecycleManageable {
     }
 }
 
-open class LifecycleManaged: LifecycleManageable, LifecycleBindable {
+open class LifecycleManaged: ObjectIdentifiable, LifecycleManageable, LifecycleBindable {
     public let scopeLifecycleManager: ScopeLifecycleManager
 
     /// Initializer.

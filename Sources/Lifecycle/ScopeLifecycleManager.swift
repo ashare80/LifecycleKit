@@ -18,7 +18,7 @@ import Combine
 import Foundation
 
 /// Internalizes lifecycle management.
-public final class ScopeLifecycleManager: LifecycleProvider {
+public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable {
     public var lifecycleState: LifecycleState {
         return _lifecycleState
     }

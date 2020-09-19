@@ -19,7 +19,9 @@ let package = Package(
             targets: ["Lifecycle"]
         ),
     ],
-    dependencies: [],
+    dependencies: [
+        .package(name: "NeedleFoundation", url: "https://github.com/uber/needle.git", .branch("master")),
+    ],
     targets: [
         .target(name: "Lifecycle",
                 dependencies: []),
@@ -28,6 +30,7 @@ let package = Package(
         .target(name: "SPIR",
                 dependencies: ["Lifecycle"]),
         .testTarget(name: "SPIRTests",
-                    dependencies: ["SPIR"]),
+                    dependencies: ["SPIR",
+                                   "NeedleFoundation"]),
     ]
 )

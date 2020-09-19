@@ -14,9 +14,17 @@
 //  limitations under the License.
 //
 
+import Foundation
+@testable import Lifecycle
 @testable import SPIR
 import XCTest
 
-final class SPIRTests: XCTestCase {
-    func testExample() {}
+final class BuilderTests: XCTestCase {
+    func testAnyBuilder() {
+        XCTAssertEqual(AnyBuilder { "test" }.build() , "test")
+    }
+    
+    func testAnyDynamicBuilder() {
+        XCTAssertEqual(AnyDynamicBuilder { test in test }.build("test") , "test")
+    }
 }

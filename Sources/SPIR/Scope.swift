@@ -18,8 +18,11 @@ import Foundation
 import Lifecycle
 
 public protocol LifecycleManagedScope {
-    /// Lifecycle manager to provide to managed and bindable instances at current scope.
+    /// Provided shared `ScopeLifecycleManager` for the component's scope.
     var scopeLifecycleManager: ScopeLifecycleManager { get }
+    
+    /// Provided shared `ViewLifecycleManager` for the component's scope.
+    var viewLifecycleManager: ViewLifecycleManager { get }
 }
 
 /// Type for dependency frameworks such as Needle to conform to and provide a shared lifecycle instance.
@@ -43,4 +46,25 @@ extension LifecycleManagedScopeComponent {
             return ScopeLifecycleManager()
         }
     }
+
+    /// Provided shared `ViewLifecycleManager` for the component's scope.
+    public var viewLifecycleManager: ViewLifecycleManager {
+        return shared(__function: #function) {
+            return ViewLifecycleManager()
+        }
+    }
 }
+
+#if canImport(NeedleFoundation)
+
+import NeedleFoundation
+
+public typealias EmptyDependency = NeedleFoundation.EmptyDependency
+public typealias BootstrapComponent = NeedleFoundation.BootstrapComponent
+public typealias Dependency = NeedleFoundation.Dependency
+public typealias Component = NeedleFoundation.Component
+public typealias Scope = NeedleFoundation.Scope
+
+extension NeedleFoundation.Component: LifecycleManagedScopeComponent { }
+
+#endif

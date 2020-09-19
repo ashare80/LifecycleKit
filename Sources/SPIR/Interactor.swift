@@ -33,7 +33,7 @@ open class Interactor: LifecycleManaged, Interactable {}
 /// Interactor subclass that  `Router`
 open class RoutingInteractor<RouterType>: Interactor {
     public let router: RouterType
-
+    
     public init(scopeLifecycleManager: ScopeLifecycleManager,
                 router: RouterType)
     {
@@ -42,9 +42,30 @@ open class RoutingInteractor<RouterType>: Interactor {
     }
 }
 
+extension RoutingInteractor {
+    /// Testable convenience init.
+    convenience init(router: RouterType) {
+        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
+                  router: router)
+    }
+}
+
+/// `Interactor` that provides a `View`
+public protocol PresentableInteractable: Interactable, Presentable {}
+
 /// Base class of an `Interactor` that has a separate associated `Presenter` and `View`.
-open class PresentableInteractor<PresenterType>: Interactor, ViewLifecycleBindable {
+open class PresentableInteractor<PresenterType>: Interactor, PresentableInteractable, ViewLifecycleBindable {
     public let presenter: PresenterType
+
+    private let presentable: Presentable
+
+    public var viewable: Viewable {
+        return presentable.viewable
+    }
+
+    public var viewLifecycleManager: ViewLifecycleManager {
+        return presentable.viewLifecycleManager
+    }
 
     /// Initializer.
     ///
@@ -56,6 +77,10 @@ open class PresentableInteractor<PresenterType>: Interactor, ViewLifecycleBindab
                 viewLifecycleManager: ViewLifecycleManager)
     {
         self.presenter = presenter
+        guard let presentable = presenter as? Presentable else {
+            fatalError("\(presenter)")
+        }
+        self.presentable = presentable
         super.init(scopeLifecycleManager: scopeLifecycleManager)
         bindViewAppearance(to: viewLifecycleManager)
     }
@@ -65,7 +90,15 @@ open class PresentableInteractor<PresenterType>: Interactor, ViewLifecycleBindab
     }
 }
 
-public protocol PresentableInteractable: Interactable, Presentable {}
+extension PresentableInteractor {
+    /// Testable convenience init.
+    convenience init(presenter: PresenterType,
+                     viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager()) {
+        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
+                  presenter: presenter,
+                  viewLifecycleManager: viewLifecycleManager)
+    }
+}
 
 extension PresentableInteractable where Self: Presentable {
     public var presentable: Presentable {
@@ -73,23 +106,9 @@ extension PresentableInteractable where Self: Presentable {
     }
 }
 
-extension PresentableInteractor: PresentableInteractable, Presentable, ViewLifecycleManageable where PresenterType: Presentable {
-    public var presentable: Presentable {
-        return presenter
-    }
-
-    public var viewable: Viewable {
-        return presentable.viewable
-    }
-
-    public var viewLifecycleManager: ViewLifecycleManager {
-        return presentable.viewLifecycleManager
-    }
-}
-
 open class PresentableRoutingInteractor<PresenterType, RouterType>: PresentableInteractor<PresenterType> {
     public let router: RouterType
-
+    
     public init(scopeLifecycleManager: ScopeLifecycleManager,
                 presenter: PresenterType,
                 router: RouterType,
@@ -103,5 +122,17 @@ open class PresentableRoutingInteractor<PresenterType, RouterType>: PresentableI
 
     deinit {
         expectDeallocate(ownedObject: router as AnyObject)
+    }
+}
+
+extension PresentableRoutingInteractor {
+    /// Testable convenience init.
+    convenience init(presenter: PresenterType,
+                     router: RouterType,
+                     viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager()) {
+        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
+                  presenter: presenter,
+                  router: router,
+                  viewLifecycleManager: viewLifecycleManager)
     }
 }

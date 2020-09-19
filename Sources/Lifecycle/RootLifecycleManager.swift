@@ -19,14 +19,13 @@ import SwiftUI
 
 /// The root `LifecycleManager` of an application.
 public protocol RootLifecycleManager {
-    associatedtype Root: LifecycleManageable
-    var root: Root { get }
+    var rootLifecycleManageable: LifecycleManageable { get }
 }
 
 extension RootLifecycleManager {
     /// Monitoring publisher to view `LifecycleManageable` hierarchy for tests and debugging tools.
     public var childrenChangedPublisher: RelayPublisher<Void> {
-        return root.scopeLifecycleManager.childrenChangedPublisher
+        return rootLifecycleManageable.scopeLifecycleManager.childrenChangedPublisher
     }
 }
 
@@ -34,11 +33,11 @@ extension RootLifecycleManager {
 
     extension NSApplicationDelegate where Self: RootLifecycleManager {
         public func activateRoot() {
-            root.scopeLifecycleManager.activate()
+            rootLifecycleManageable.scopeLifecycleManager.activate()
         }
 
         public func deactivateRoot() {
-            root.scopeLifecycleManager.deactivate()
+            rootLifecycleManageable.scopeLifecycleManager.deactivate()
         }
     }
 
@@ -46,21 +45,21 @@ extension RootLifecycleManager {
 
     extension UIApplicationDelegate where Self: RootLifecycleManager {
         public func activateRoot() {
-            root.scopeLifecycleManager.activate()
+            rootLifecycleManageable.scopeLifecycleManager.activate()
         }
 
         public func deactivateRoot() {
-            root.scopeLifecycleManager.deactivate()
+            rootLifecycleManageable.scopeLifecycleManager.deactivate()
         }
     }
 
     extension UISceneDelegate where Self: RootLifecycleManager {
         public func activateRoot() {
-            root.scopeLifecycleManager.activate()
+            rootLifecycleManageable.scopeLifecycleManager.activate()
         }
 
         public func deactivateRoot() {
-            root.scopeLifecycleManager.deactivate()
+            rootLifecycleManageable.scopeLifecycleManager.deactivate()
         }
     }
 

@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import Lifecycle
 
 /// Type that builds with no added dependencies..
 public protocol Buildable: AnyObject {
@@ -26,7 +27,7 @@ public protocol Buildable: AnyObject {
 }
 
 /// Type erased
-public final class AnyBuilder<R>: Buildable {
+public final class AnyBuilder<R>: ObjectIdentifiable, Buildable {
     private let builder: () -> R
 
     /// Initializer.
@@ -70,7 +71,7 @@ public protocol DynamicBuildable: AnyObject {
 }
 
 /// Type erased
-public final class AnyDynamicBuilder<DynamicDependency, R>: DynamicBuildable {
+public final class AnyDynamicBuilder<DynamicDependency, R>: ObjectIdentifiable, DynamicBuildable {
     private let builder: (DynamicDependency) -> R
 
     /// Initializer.

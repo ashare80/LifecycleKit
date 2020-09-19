@@ -21,9 +21,16 @@ import Lifecycle
 /// The base protocol for all routers.
 public protocol Routing: AnyObject {}
 
-open class Router: LifecycleBindable, Routing {
+open class Router: ObjectIdentifiable, LifecycleBindable, Routing {
     public init(scopeLifecycleManager: ScopeLifecycleManager) {
         bindActiveState(to: scopeLifecycleManager)
+    }
+}
+
+extension Router {
+    /// Testable convenience init.
+    convenience init() {
+        self.init(scopeLifecycleManager: ScopeLifecycleManager())
     }
 }
 
@@ -43,5 +50,15 @@ open class PresentableRouter<PresenterType>: Router, ViewLifecycleBindable {
         self.presenter = presenter
         super.init(scopeLifecycleManager: scopeLifecycleManager)
         bindViewAppearance(to: viewLifecycleManager)
+    }
+}
+
+extension PresentableRouter {
+    /// Testable convenience init.
+    convenience init(presenter: PresenterType,
+                     viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager()) {
+        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
+                  presenter: presenter,
+                  viewLifecycleManager: viewLifecycleManager)
     }
 }

@@ -19,20 +19,23 @@ import Foundation
 import Lifecycle
 import SwiftUI
 
-/// The base protocol for all `Presenter`s.
+/// Type erased `Presenter`.
 public protocol Presentable: ViewLifecycleManageable {
     /// Type erased view for public use.
     var viewable: Viewable { get }
 }
 
+/// The base protocol for all `Presenter`s.
+public protocol Presenting: LifecycleBindable, ViewLifecycleManageable, ViewLifecycleBindable { }
+
 /// The base class of all `Presenter`s. A `Presenter` translates business models into values the corresponding
 /// `View` can consume and display. It also maps UI events to business logic method, invoked to
 /// its listener.
-open class Presenter<View>: LifecycleBindable, ViewLifecycleManageable, ViewLifecycleBindable {
+open class Presenter<View>: ObjectIdentifiable, Presenting {
     public typealias ViewType = View
 
     public let viewLifecycleManager: ViewLifecycleManager
-
+    
     public init(scopeLifecycleManager: ScopeLifecycleManager,
                 viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager())
     {
@@ -40,6 +43,14 @@ open class Presenter<View>: LifecycleBindable, ViewLifecycleManageable, ViewLife
         bindActiveState(to: scopeLifecycleManager)
         bindViewAppearance(to: viewLifecycleManager)
         scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
+    }
+}
+
+extension Presenter {
+    /// Testable convenience init.
+    convenience init() {
+        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
+                  viewLifecycleManager: ViewLifecycleManager())
     }
 }
 
