@@ -44,6 +44,7 @@ extension LifecycleBindable {
 }
 
 extension LifecycleBindable where Self: LifecycleManageable {
+    /// Binds to lifecycle events receiving on main thread and sets the receiver as the owner of the `ScopeLifecycleManager`.
     public func bind(to scopeLifecycleManager: ScopeLifecycleManager) {
         scopeLifecycleManager.owner = self
         bindActiveState(to: scopeLifecycleManager)

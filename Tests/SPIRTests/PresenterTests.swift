@@ -29,7 +29,7 @@ final class PresenterTests: XCTestCase {
         testPresenterBinding(presenter: TestPresenter(viewLifecycleManager: viewLifecycleManager))
     }
 
-    func InteractablePresenter() {
+    func testInteractablePresenter() {
         testPresenterBinding(presenter: TestInteractablePresenter(viewLifecycleManager: viewLifecycleManager))
     }
 

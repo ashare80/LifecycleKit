@@ -42,7 +42,7 @@ open class Presenter<View>: ObjectIdentifiable, Presenting {
     }
 }
 
-open class InteractablePresenter<View>: Presenter<View>, Interactable {
+open class InteractablePresenter<View>: Presenter<View>, Interactable, LifecycleBindable {
     public let scopeLifecycleManager: ScopeLifecycleManager
 
     /// Initializer.
@@ -51,6 +51,7 @@ open class InteractablePresenter<View>: Presenter<View>, Interactable {
     {
         self.scopeLifecycleManager = scopeLifecycleManager
         super.init(viewLifecycleManager: viewLifecycleManager)
+        bind(to: scopeLifecycleManager)
         scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
     }
 }
