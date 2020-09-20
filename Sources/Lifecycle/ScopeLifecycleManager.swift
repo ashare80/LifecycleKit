@@ -30,6 +30,13 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
     }
 
     weak var parent: ScopeLifecycleManager?
+    weak var owner: LifecycleManageable? {
+        didSet {
+            if let owner = owner, let oldValue = oldValue, owner !== oldValue {
+                assertionFailure("Already an owner for this manager: \(oldValue). \(ScopeLifecycleManager.self)s should only bind to a single \(LifecycleManageable.self). New value: \(owner)")
+            }
+        }
+    }
 
     public init() {}
 

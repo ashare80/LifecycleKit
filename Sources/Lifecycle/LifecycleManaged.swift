@@ -46,7 +46,7 @@ open class LifecycleManaged: ObjectIdentifiable, LifecycleManageable, LifecycleB
     /// Initializer.
     public init(scopeLifecycleManager: ScopeLifecycleManager = ScopeLifecycleManager()) {
         self.scopeLifecycleManager = scopeLifecycleManager
-        bindActiveState(to: scopeLifecycleManager)
+        bind(to: scopeLifecycleManager)
     }
 }
 
@@ -79,6 +79,6 @@ open class WeakLifecycleManaged: ObjectIdentifiable, WeakLifecycleManageable, Li
     /// Initializer.
     public init(scopeLifecycleManager: ScopeLifecycleManager) {
         self.scopeLifecycleManager = scopeLifecycleManager
-        bindActiveState(to: scopeLifecycleManager)
+        bind(to: scopeLifecycleManager)
     }
 }

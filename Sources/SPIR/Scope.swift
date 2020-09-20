@@ -20,9 +20,6 @@ import Lifecycle
 public protocol LifecycleManagedScope {
     /// Provided shared `ScopeLifecycleManager` for the component's scope.
     var scopeLifecycleManager: ScopeLifecycleManager { get }
-
-    /// Provided shared `ViewLifecycleManager` for the component's scope.
-    var viewLifecycleManager: ViewLifecycleManager { get }
 }
 
 /// Type for dependency frameworks such as Needle to conform to and provide a shared lifecycle instance.
@@ -44,13 +41,6 @@ extension LifecycleManagedScopeComponent {
     public var scopeLifecycleManager: ScopeLifecycleManager {
         return shared(__function: #function) {
             return ScopeLifecycleManager()
-        }
-    }
-
-    /// Provided shared `ViewLifecycleManager` for the component's scope.
-    public var viewLifecycleManager: ViewLifecycleManager {
-        return shared(__function: #function) {
-            return ViewLifecycleManager()
         }
     }
 }

@@ -30,7 +30,7 @@ extension ViewLifecycleBindable {
 }
 
 extension ViewLifecycleBindable {
-    public func bindViewAppearance(to viewLifecycleManager: ViewLifecycleManager) {
+    public func bind(to viewLifecycleManager: ViewLifecycleManager) {
         if viewLifecycleManager.binded.contains(self) {
             assertionFailure("Binding to \(viewLifecycleManager) that has already been binded to. \(viewLifecycleManager.binded)")
         }

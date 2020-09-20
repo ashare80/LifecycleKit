@@ -91,11 +91,11 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
         super.init(scopeLifecycleManager: scopeLifecycleManager)
 
         if let lifecycleBindable = presenter as? LifecycleBindable {
-            lifecycleBindable.bindActiveState(to: scopeLifecycleManager)
+            lifecycleBindable.bind(to: scopeLifecycleManager)
         }
 
         if let viewLifecycleBindable = self as? ViewLifecycleBindable {
-            viewLifecycleBindable.bindViewAppearance(to: viewLifecycleManager)
+            viewLifecycleBindable.bind(to: viewLifecycleManager)
         }
 
         scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
@@ -124,6 +124,8 @@ open class PresentableRoutingInteractor<PresenterType, RouterType>: PresentableI
                    presenter: presenter)
     }
 
+    /// Convenience init for a `RouterType` that is provided at the local scope with a shared `ScopeLifecycleManager`.
+    /// - warning: Initalizing with a `Router` that is not at the local scope risks error of trying to attach a parent scope as a child.
     public init(presenter: PresenterType,
                 router: RouterType)
     {

@@ -38,7 +38,7 @@ open class Presenter<View>: ObjectIdentifiable, Presenting {
 
     public init(viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager()) {
         self.viewLifecycleManager = viewLifecycleManager
-        bindViewAppearance(to: viewLifecycleManager)
+        bind(to: viewLifecycleManager)
     }
 }
 

@@ -40,7 +40,7 @@ open class PresentableRouter<PresenterType>: Router {
 
         if let viewLifecycleBindable = self as? ViewLifecycleBindable,
             let viewLifecycleManageable = presenter as? ViewLifecycleManageable {
-            viewLifecycleBindable.bindViewAppearance(to: viewLifecycleManageable.viewLifecycleManager)
+            viewLifecycleBindable.bind(to: viewLifecycleManageable.viewLifecycleManager)
         }
     }
 }

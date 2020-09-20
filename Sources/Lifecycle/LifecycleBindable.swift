@@ -43,12 +43,25 @@ extension LifecycleBindable {
     public func didLoad(_ lifecycleProvider: LifecycleProvider) {}
 }
 
+extension LifecycleBindable where Self: LifecycleManageable {
+    public func bind(to scopeLifecycleManager: ScopeLifecycleManager) {
+        scopeLifecycleManager.owner = self
+        bindActiveState(to: scopeLifecycleManager)
+    }
+}
+
 extension LifecycleBindable {
     /// Binds to lifecycle states receiving on main thread.
-    public func bindActiveState(to scopeLifecycleManager: ScopeLifecycleManager) {
+    public func bind(to scopeLifecycleManager: ScopeLifecycleManager) {
+        bindActiveState(to: scopeLifecycleManager)
+    }
+
+    /// Binds to lifecycle states receiving on main thread.
+    fileprivate func bindActiveState(to scopeLifecycleManager: ScopeLifecycleManager) {
         if scopeLifecycleManager.binded.contains(self) {
             assertionFailure("Binding to \(scopeLifecycleManager) that has already been binded to. \(scopeLifecycleManager.binded)")
         }
+
         scopeLifecycleManager.binded.insert(self)
 
         scopeLifecycleManager
