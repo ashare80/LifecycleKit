@@ -79,7 +79,7 @@ extension DynamicBuildable {
     /// - parameter dynamicDependency: The dynamic dependency that could not be injected.
     /// - returns: Wrapped builder of type `AnyBuilder<R>`.
     public func asAnyBuilder(_ dynamicDependency: DynamicDependency) -> AnyBuilder<R> {
-        return AnyBuilder { build(dynamicDependency) }
+        return AnyBuilder { self.build(dynamicDependency) }
     }
 }
 

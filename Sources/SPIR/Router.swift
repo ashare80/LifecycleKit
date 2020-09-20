@@ -21,7 +21,7 @@ import Lifecycle
 /// The base protocol for all routers.
 public protocol Routing: WeakLifecycleManageable {}
 
-open class Router: WeakLifecycleManaged, LifecycleManageableRouting, Routing {}
+open class Router: WeakLifecycleManaged, Routing {}
 
 /// Base class of an `Interactor` that has a separate associated `Presenter` and `View`.
 open class PresentableRouter<PresenterType>: Router {

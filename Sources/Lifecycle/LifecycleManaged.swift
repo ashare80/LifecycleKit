@@ -40,7 +40,7 @@ extension LifecycleManageable {
     }
 }
 
-open class LifecycleManaged: ObjectIdentifiable, LifecycleManageable, LifecycleBindable {
+open class LifecycleManaged: ObjectIdentifiable, LifecycleManageable, LifecycleManageableRouting, LifecycleBindable {
     public let scopeLifecycleManager: ScopeLifecycleManager
 
     /// Initializer.
@@ -73,7 +73,7 @@ extension WeakLifecycleManageable {
     }
 }
 
-open class WeakLifecycleManaged: ObjectIdentifiable, WeakLifecycleManageable, LifecycleBindable {
+open class WeakLifecycleManaged: ObjectIdentifiable, WeakLifecycleManageable, LifecycleManageableRouting, LifecycleBindable {
     public weak var scopeLifecycleManager: ScopeLifecycleManager?
 
     /// Initializer.
