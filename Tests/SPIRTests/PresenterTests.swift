@@ -26,23 +26,20 @@ final class PresenterTests: XCTestCase {
     private let scopeLifecycleManager = ScopeLifecycleManager()
     
     func testPresenter() {
-        testPresenterBinding(presenter: TestPresenter(scopeLifecycleManager: scopeLifecycleManager,
-                                                      viewLifecycleManager: viewLifecycleManager))
+        testPresenterBinding(presenter: TestPresenter(viewLifecycleManager: viewLifecycleManager))
     }
     
     func InteractablePresenter() {
-        testPresenterBinding(presenter: TestInteractablePresenter(scopeLifecycleManager: scopeLifecycleManager,
-                                                                  viewLifecycleManager: viewLifecycleManager))
+        testPresenterBinding(presenter: TestInteractablePresenter(viewLifecycleManager: viewLifecycleManager))
     }
     
     private func testPresenterBinding<PresenterType: Presenting & ViewPresentable>(presenter: PresenterType) {
         XCTAssertEqual(presenter.viewLifecycleManager, viewLifecycleManager)
-        XCTAssertTrue(scopeLifecycleManager.binded.contains(presenter))
         XCTAssertTrue(viewLifecycleManager.binded.contains(presenter))
         XCTAssertTrue(viewLifecycleManager.binded.contains(presenter))
         XCTAssertTrue(presenter.viewable is AnyView)
     }
 }
 
-final class TestPresenter: Presenter<TestView<TestPresenter>>, ViewPresentable {}
+final class TestPresenter: Presenter<TestView<TestPresenter>>, ViewPresentable, LifecycleBindable {}
 final class TestInteractablePresenter: InteractablePresenter<TestView<TestInteractablePresenter>>, ViewPresentable, PresentableInteractable {}

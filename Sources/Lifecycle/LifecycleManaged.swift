@@ -31,32 +31,12 @@ extension LifecycleManageable {
         return scopeLifecycleManager.lifecyclePublisher
     }
 
-    public var children: [LifecycleManageable] {
-        return scopeLifecycleManager.children
-    }
-
-    /// Attaches the given `LifecycleManageable` as a child.
-    ///
-    /// - parameter child: The child `LifecycleManageable` to attach.
-    public func attachChild(_ child: LifecycleManageable) {
-        scopeLifecycleManager.attachChild(child)
-    }
-
-    /// Detaches the given `LifecycleManageable` from the tree.
-    ///
-    /// - parameter child: The child `LifecycleManageable` to detach.
-    public func detachChild(_ child: LifecycleManageable) {
-        scopeLifecycleManager.detachChild(child)
-    }
-
-    public func expectDeallocate(ownedObject: AnyObject, inTime time: TimeInterval = .deallocationExpectation) {
-        if let lifecycleManagedRouter = ownedObject as? LifecycleManageable {
-            if lifecycleManagedRouter.scopeLifecycleManager === scopeLifecycleManager {
-                LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
-            }
-        } else {
-            LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
+    public func expectDeallocateIfOwns(_ ownedObject: AnyObject, inTime time: TimeInterval = .deallocationExpectation) {
+        if let lifecycleManaged = ownedObject as? LifecycleManageable {
+            guard lifecycleManaged.scopeLifecycleManager === scopeLifecycleManager else { return }
         }
+        
+        LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
     }
 }
 
@@ -65,6 +45,39 @@ open class LifecycleManaged: ObjectIdentifiable, LifecycleManageable, LifecycleB
 
     /// Initializer.
     public init(scopeLifecycleManager: ScopeLifecycleManager = ScopeLifecycleManager()) {
+        self.scopeLifecycleManager = scopeLifecycleManager
+        bindActiveState(to: scopeLifecycleManager)
+    }
+}
+
+public protocol WeakLifecycleManageable: LifecycleProvider {
+    /// Internal manager of lifecycle events.
+    var scopeLifecycleManager: ScopeLifecycleManager? { get }
+}
+
+extension WeakLifecycleManageable {
+    public var lifecycleState: LifecycleState {
+        return scopeLifecycleManager?.lifecycleState ?? .deinitialized
+    }
+
+    public var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
+        return scopeLifecycleManager?.lifecyclePublisher ?? Just<LifecycleState>(.deinitialized).eraseToAnyPublisher().removeDuplicates()
+    }
+
+    public func expectDeallocateIfOwns(_ ownedObject: AnyObject, inTime time: TimeInterval = .deallocationExpectation) {
+        if let lifecycleManaged = ownedObject as? LifecycleManageable {
+            guard lifecycleManaged.scopeLifecycleManager === scopeLifecycleManager else { return }
+        }
+        
+        LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
+    }
+}
+
+open class WeakLifecycleManaged: ObjectIdentifiable, WeakLifecycleManageable, LifecycleBindable {
+    public weak var scopeLifecycleManager: ScopeLifecycleManager?
+
+    /// Initializer.
+    public init(scopeLifecycleManager: ScopeLifecycleManager) {
         self.scopeLifecycleManager = scopeLifecycleManager
         bindActiveState(to: scopeLifecycleManager)
     }

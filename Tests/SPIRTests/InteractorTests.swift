@@ -20,7 +20,7 @@ import Foundation
 import XCTest
 
 final class InteractorTests: XCTestCase {
-    private let viewLifecycleManager = ViewLifecycleManager()
+    private let presenter = TestPresenter()
     private let scopeLifecycleManager = ScopeLifecycleManager()
     
     func testInteractor() {
@@ -29,36 +29,36 @@ final class InteractorTests: XCTestCase {
     }
     
     func testRoutingInteractor() {
-        let router = Router()
-        let interactor = RoutingInteractor(scopeLifecycleManager: scopeLifecycleManager,
-                                           router: router)
+        let router = Router(scopeLifecycleManager: scopeLifecycleManager)
+        let interactor = RoutingInteractor(router: router)
         XCTAssertEqual(interactor.scopeLifecycleManager, scopeLifecycleManager)
         XCTAssertEqual(interactor.router, router)
         XCTAssertTrue(scopeLifecycleManager.binded.contains(interactor))
     }
     
     func testPresentableInteractor() {
-        let presenter = TestPresenter()
-        let interactor = PresentableInteractor(scopeLifecycleManager: scopeLifecycleManager,
-                                               presenter: presenter,
-                                               viewLifecycleManager: viewLifecycleManager)
+        let interactor = TestPresentableInteractor(scopeLifecycleManager: scopeLifecycleManager,
+                                               presenter: presenter)
         XCTAssertEqual(interactor.scopeLifecycleManager, scopeLifecycleManager)
         XCTAssertEqual(interactor.presenter, presenter)
         XCTAssertTrue(scopeLifecycleManager.binded.contains(interactor))
-        XCTAssertTrue(viewLifecycleManager.binded.contains(interactor))
+        XCTAssertTrue(presenter.viewLifecycleManager.binded.contains(interactor))
+        XCTAssertTrue(scopeLifecycleManager.binded.contains(presenter))
     }
     
     func testPresentableRoutingInteractor() {
         let presenter = TestPresenter()
-        let router = Router()
-        let interactor = PresentableRoutingInteractor(scopeLifecycleManager: scopeLifecycleManager,
-                                                      presenter: presenter,
-                                                      router: router,
-                                                      viewLifecycleManager: viewLifecycleManager)
+        let router = Router(scopeLifecycleManager: scopeLifecycleManager)
+        let interactor = TestPresentableRoutingInteractor(presenter: presenter,
+                                                          router: router)
         XCTAssertEqual(interactor.scopeLifecycleManager, scopeLifecycleManager)
         XCTAssertEqual(interactor.presenter, presenter)
         XCTAssertEqual(interactor.router, router)
         XCTAssertTrue(scopeLifecycleManager.binded.contains(interactor))
-        XCTAssertTrue(viewLifecycleManager.binded.contains(interactor))
+        XCTAssertTrue(presenter.viewLifecycleManager.binded.contains(interactor))
+        XCTAssertTrue(scopeLifecycleManager.binded.contains(presenter))
     }
 }
+
+final class TestPresentableInteractor: PresentableInteractor<TestPresenter>, ViewLifecycleBindable {}
+final class TestPresentableRoutingInteractor: PresentableRoutingInteractor<TestPresenter, Router>, ViewLifecycleBindable {}

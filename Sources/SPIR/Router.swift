@@ -19,23 +19,12 @@ import Foundation
 import Lifecycle
 
 /// The base protocol for all routers.
-public protocol Routing: AnyObject {}
+public protocol Routing: WeakLifecycleManageable {}
 
-open class Router: ObjectIdentifiable, LifecycleBindable, Routing {
-    public init(scopeLifecycleManager: ScopeLifecycleManager) {
-        bindActiveState(to: scopeLifecycleManager)
-    }
-}
-
-extension Router {
-    /// Testable convenience init.
-    convenience init() {
-        self.init(scopeLifecycleManager: ScopeLifecycleManager())
-    }
-}
+open class Router: WeakLifecycleManaged, LifecycleManageableRouting, Routing { }
 
 /// Base class of an `Interactor` that has a separate associated `Presenter` and `View`.
-open class PresentableRouter<PresenterType>: Router, ViewLifecycleBindable {
+open class PresentableRouter<PresenterType>: Router {
     public let presenter: PresenterType
 
     /// Initializer.
@@ -44,21 +33,14 @@ open class PresentableRouter<PresenterType>: Router, ViewLifecycleBindable {
     ///
     /// - parameter presenter: The presenter associated with this `Interactor`.
     public init(scopeLifecycleManager: ScopeLifecycleManager,
-                presenter: PresenterType,
-                viewLifecycleManager: ViewLifecycleManager)
+                presenter: PresenterType)
     {
         self.presenter = presenter
         super.init(scopeLifecycleManager: scopeLifecycleManager)
-        bindViewAppearance(to: viewLifecycleManager)
-    }
-}
-
-extension PresentableRouter {
-    /// Testable convenience init.
-    convenience init(presenter: PresenterType,
-                     viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager()) {
-        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
-                  presenter: presenter,
-                  viewLifecycleManager: viewLifecycleManager)
+        
+        if let viewLifecycleBindable = self as? ViewLifecycleBindable,
+            let viewLifecycleManageable = presenter as? ViewLifecycleManageable {
+            viewLifecycleBindable.bindViewAppearance(to: viewLifecycleManageable.viewLifecycleManager)
+        }
     }
 }

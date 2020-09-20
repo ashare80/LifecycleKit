@@ -28,6 +28,8 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
             .eraseToAnyPublisher()
             .removeDuplicates()
     }
+    
+    weak var parent: ScopeLifecycleManager?
 
     public init() {}
 
@@ -73,9 +75,15 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
     ///
     /// - parameter child: The child `LifecycleManageable` to attach.
     func attachChild(_ child: LifecycleManageable) {
-        assert(!(children.contains { $0 === child }), "Attempt to attach child: \(child), which is already attached to \(self).")
+        guard child.scopeLifecycleManager.parent != self else {
+            return
+        }
+        
+        assert(child.scopeLifecycleManager != self, "Attempt to attach child: \(child), that is already managed at the local scope by \(self).")
+        assert(child.scopeLifecycleManager.parent != nil, "Attempt to attach child: \(child), which is already attached as a child to \(String(describing: child.scopeLifecycleManager.parent)).")
 
         children.append(child)
+        child.scopeLifecycleManager.parent = self
 
         if lifecycleState == .active {
             child.scopeLifecycleManager.activate()
@@ -86,6 +94,9 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
     ///
     /// - parameter child: The child `LifecycleManageable` to detach.
     func detachChild(_ child: LifecycleManageable) {
+        guard child.scopeLifecycleManager.parent == self else { return }
+        child.scopeLifecycleManager.parent = nil
+        
         let removed = children.removeAllByReference(child)
         if removed, child.isActive {
             child.scopeLifecycleManager.deactivate()

@@ -26,7 +26,7 @@ public protocol Presentable: ViewLifecycleManageable {
 }
 
 /// The base protocol for all `Presenter`s.
-public protocol Presenting: LifecycleBindable, ViewLifecycleManageable, ViewLifecycleBindable { }
+public protocol Presenting: ViewLifecycleManageable, ViewLifecycleBindable { }
 
 /// The base class of all `Presenter`s. A `Presenter` translates business models into values the corresponding
 /// `View` can consume and display. It also maps UI events to business logic method, invoked to
@@ -36,21 +36,10 @@ open class Presenter<View>: ObjectIdentifiable, Presenting {
 
     public let viewLifecycleManager: ViewLifecycleManager
     
-    public init(scopeLifecycleManager: ScopeLifecycleManager,
-                viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager())
+    public init(viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager())
     {
         self.viewLifecycleManager = viewLifecycleManager
-        bindActiveState(to: scopeLifecycleManager)
         bindViewAppearance(to: viewLifecycleManager)
-        scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
-    }
-}
-
-extension Presenter {
-    /// Testable convenience init.
-    convenience init() {
-        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
-                  viewLifecycleManager: ViewLifecycleManager())
     }
 }
 
@@ -58,12 +47,12 @@ open class InteractablePresenter<View>: Presenter<View>, Interactable {
     public let scopeLifecycleManager: ScopeLifecycleManager
 
     /// Initializer.
-    override public init(scopeLifecycleManager: ScopeLifecycleManager = ScopeLifecycleManager(),
+    public init(scopeLifecycleManager: ScopeLifecycleManager = ScopeLifecycleManager(),
                          viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager())
     {
         self.scopeLifecycleManager = scopeLifecycleManager
-        super.init(scopeLifecycleManager: scopeLifecycleManager,
-                   viewLifecycleManager: viewLifecycleManager)
+        super.init(viewLifecycleManager: viewLifecycleManager)
+        scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
     }
 }
 

@@ -34,19 +34,26 @@ open class Interactor: LifecycleManaged, Interactable {}
 open class RoutingInteractor<RouterType>: Interactor {
     public let router: RouterType
     
+    /// Creates an `Interactor` with a `Router` from a local or parent scope.
     public init(scopeLifecycleManager: ScopeLifecycleManager,
-                router: RouterType)
-    {
+                router: RouterType)  {
         self.router = router
         super.init(scopeLifecycleManager: scopeLifecycleManager)
     }
-}
-
-extension RoutingInteractor {
-    /// Testable convenience init.
-    convenience init(router: RouterType) {
-        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
-                  router: router)
+    
+    /// Convenience init for a `RouterType` that is provided at the local scope with a shared `ScopeLifecycleManager`.
+    /// - warning: Initalizing with a `Router` that is not at the local scope risks error of trying to attach a parent scope as a child.
+    public init(router: RouterType) {
+        guard let routing = router as? Routing else {
+            fatalError("\(router) does not conform to \(Routing.self)")
+        }
+        
+        guard let scopeLifecycleManager = routing.scopeLifecycleManager else {
+            fatalError("\(router).scopeLifecycleManager is nil")
+        }
+        
+        self.router = router
+        super.init(scopeLifecycleManager: scopeLifecycleManager)
     }
 }
 
@@ -54,7 +61,7 @@ extension RoutingInteractor {
 public protocol PresentableInteractable: Interactable, Presentable {}
 
 /// Base class of an `Interactor` that has a separate associated `Presenter` and `View`.
-open class PresentableInteractor<PresenterType>: Interactor, PresentableInteractable, ViewLifecycleBindable {
+open class PresentableInteractor<PresenterType>: Interactor, PresentableInteractable {
     public let presenter: PresenterType
 
     private let presentable: Presentable
@@ -72,31 +79,30 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
     /// - note: This holds a strong reference to the given `Presenter`.
     ///
     /// - parameter presenter: The presenter associated with this `Interactor`.
-    public init(scopeLifecycleManager: ScopeLifecycleManager,
-                presenter: PresenterType,
-                viewLifecycleManager: ViewLifecycleManager)
+    public init(scopeLifecycleManager: ScopeLifecycleManager = ScopeLifecycleManager(),
+                presenter: PresenterType)
     {
         self.presenter = presenter
         guard let presentable = presenter as? Presentable else {
-            fatalError("\(presenter)")
+            fatalError("\(presenter) must conform to \(Presentable.self)")
         }
+        
         self.presentable = presentable
         super.init(scopeLifecycleManager: scopeLifecycleManager)
-        bindViewAppearance(to: viewLifecycleManager)
+        
+        if let lifecycleBindable = presenter as? LifecycleBindable {
+            lifecycleBindable.bindActiveState(to: scopeLifecycleManager)
+        }
+        
+        if let viewLifecycleBindable = self as? ViewLifecycleBindable {
+            viewLifecycleBindable.bindViewAppearance(to: viewLifecycleManager)
+        }
+        
+        scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
     }
 
     deinit {
-        expectDeallocate(ownedObject: presenter as AnyObject, inTime: .viewDisappearExpectation)
-    }
-}
-
-extension PresentableInteractor {
-    /// Testable convenience init.
-    convenience init(presenter: PresenterType,
-                     viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager()) {
-        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
-                  presenter: presenter,
-                  viewLifecycleManager: viewLifecycleManager)
+        expectDeallocateIfOwns(presenter as AnyObject, inTime: .viewDisappearExpectation)
     }
 }
 
@@ -111,28 +117,30 @@ open class PresentableRoutingInteractor<PresenterType, RouterType>: PresentableI
     
     public init(scopeLifecycleManager: ScopeLifecycleManager,
                 presenter: PresenterType,
-                router: RouterType,
-                viewLifecycleManager: ViewLifecycleManager)
+                router: RouterType)
     {
         self.router = router
         super.init(scopeLifecycleManager: scopeLifecycleManager,
-                   presenter: presenter,
-                   viewLifecycleManager: viewLifecycleManager)
+                   presenter: presenter)
+    }
+    
+    public init(presenter: PresenterType,
+                router: RouterType)
+    {
+        guard let routing = router as? Routing else {
+            fatalError("\(router) does not conform to \(Routing.self)")
+        }
+        
+        guard let scopeLifecycleManager = routing.scopeLifecycleManager else {
+            fatalError("\(router).scopeLifecycleManager is nil")
+        }
+        
+        self.router = router
+        super.init(scopeLifecycleManager: scopeLifecycleManager,
+                   presenter: presenter)
     }
 
     deinit {
-        expectDeallocate(ownedObject: router as AnyObject)
-    }
-}
-
-extension PresentableRoutingInteractor {
-    /// Testable convenience init.
-    convenience init(presenter: PresenterType,
-                     router: RouterType,
-                     viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager()) {
-        self.init(scopeLifecycleManager: ScopeLifecycleManager(),
-                  presenter: presenter,
-                  router: router,
-                  viewLifecycleManager: viewLifecycleManager)
+        expectDeallocateIfOwns(router as AnyObject)
     }
 }
