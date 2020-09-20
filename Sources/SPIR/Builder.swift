@@ -26,7 +26,7 @@ public protocol Buildable: AnyObject {
     func build() -> R
 }
 
-/// Type erased
+/// Type erased builder of new `R` instances.
 public final class AnyBuilder<R>: ObjectIdentifiable, Buildable {
     private let builder: () -> R
 
@@ -43,13 +43,15 @@ public final class AnyBuilder<R>: ObjectIdentifiable, Buildable {
     }
 }
 
-/// The base builder protocol that all builders should conform to.
+/// Builds a new `Interactable` instance.
 public protocol InteractableBuildable: AnyObject {
+    /// Builds a new `Interactable` instance.
     func build() -> Interactable
 }
 
-/// The base builder protocol that all builders should conform to.
+/// Builds a new `PresentableInteractable` instance.
 public protocol PresentableInteractableBuildable: AnyObject {
+    /// Builds a new `PresentableInteractable` instance.
     func build() -> PresentableInteractable
 }
 
@@ -67,10 +69,21 @@ public protocol DynamicBuildable: AnyObject {
     /// Builds a new instance of `R`.
     ///
     /// - parameter dynamicDependency: The dynamic dependency that could not be injected.
+    /// - returns: New instance of `R`.
     func build(_ dynamicDependency: DynamicDependency) -> R
 }
 
-/// Type erased
+extension DynamicBuildable {
+    /// Wraps with dynamic dependancy to`AnyBuilder<R>` for deferred building.
+    ///
+    /// - parameter dynamicDependency: The dynamic dependency that could not be injected.
+    /// - returns: Wrapped builder of type `AnyBuilder<R>`.
+    public func asAnyBuilder(_ dynamicDependency: DynamicDependency) -> AnyBuilder<R> {
+        return AnyBuilder { build(dynamicDependency) }
+    }
+}
+
+/// Type erased builder of new `R` instances with a dynamic build time dependency.
 public final class AnyDynamicBuilder<DynamicDependency, R>: ObjectIdentifiable, DynamicBuildable {
     private let builder: (DynamicDependency) -> R
 
@@ -84,6 +97,7 @@ public final class AnyDynamicBuilder<DynamicDependency, R>: ObjectIdentifiable, 
     /// Builds a new instance of `R`.
     ///
     /// - parameter dynamicDependency: The dynamic dependency that could not be injected.
+    /// - returns: New instance of `R`.
     public func build(_ dynamicDependency: DynamicDependency) -> R {
         return builder(dynamicDependency)
     }
