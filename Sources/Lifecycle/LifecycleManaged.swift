@@ -35,7 +35,7 @@ extension LifecycleManageable {
         if let lifecycleManaged = ownedObject as? LifecycleManageable {
             guard lifecycleManaged.scopeLifecycleManager === scopeLifecycleManager else { return }
         }
-        
+
         LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
     }
 }
@@ -68,7 +68,7 @@ extension WeakLifecycleManageable {
         if let lifecycleManaged = ownedObject as? LifecycleManageable {
             guard lifecycleManaged.scopeLifecycleManager === scopeLifecycleManager else { return }
         }
-        
+
         LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
     }
 }

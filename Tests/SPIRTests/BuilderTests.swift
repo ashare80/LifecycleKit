@@ -21,10 +21,10 @@ import XCTest
 
 final class BuilderTests: XCTestCase {
     func testAnyBuilder() {
-        XCTAssertEqual(AnyBuilder { "test" }.build() , "test")
+        XCTAssertEqual(AnyBuilder { "test" }.build(), "test")
     }
-    
+
     func testAnyDynamicBuilder() {
-        XCTAssertEqual(AnyDynamicBuilder { test in test }.build("test") , "test")
+        XCTAssertEqual(AnyDynamicBuilder { test in test }.build("test"), "test")
     }
 }

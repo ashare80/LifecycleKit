@@ -24,15 +24,15 @@ import XCTest
 final class PresenterTests: XCTestCase {
     private let viewLifecycleManager = ViewLifecycleManager()
     private let scopeLifecycleManager = ScopeLifecycleManager()
-    
+
     func testPresenter() {
         testPresenterBinding(presenter: TestPresenter(viewLifecycleManager: viewLifecycleManager))
     }
-    
+
     func InteractablePresenter() {
         testPresenterBinding(presenter: TestInteractablePresenter(viewLifecycleManager: viewLifecycleManager))
     }
-    
+
     private func testPresenterBinding<PresenterType: Presenting & ViewPresentable>(presenter: PresenterType) {
         XCTAssertEqual(presenter.viewLifecycleManager, viewLifecycleManager)
         XCTAssertTrue(viewLifecycleManager.binded.contains(presenter))

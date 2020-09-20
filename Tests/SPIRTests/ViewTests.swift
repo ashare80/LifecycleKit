@@ -27,9 +27,9 @@ final class ViewTests: XCTestCase {
 }
 
 struct TestView<Presenter: ObservableObject>: View, PresenterView {
-    
+
     @ObservedObject var presenter: Presenter
-    
+
     var body: some View {
         EmptyView()
     }

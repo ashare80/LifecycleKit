@@ -21,15 +21,15 @@ import Foundation
 import XCTest
 
 final class RouterTests: XCTestCase {
-    
+
     let scopeLifecycleManager = ScopeLifecycleManager()
     let presenter = TestPresenter()
-    
+
     func testRouterBinding() {
         let router = Router(scopeLifecycleManager: scopeLifecycleManager)
         XCTAssertTrue(scopeLifecycleManager.binded.contains(router))
     }
-    
+
     func testPresentableRouterBinding() {
         let router = TestPresentableRouter(scopeLifecycleManager: scopeLifecycleManager,
                                            presenter: presenter)

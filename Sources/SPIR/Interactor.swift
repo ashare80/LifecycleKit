@@ -33,25 +33,25 @@ open class Interactor: LifecycleManaged, Interactable {}
 /// Interactor subclass that  `Router`
 open class RoutingInteractor<RouterType>: Interactor {
     public let router: RouterType
-    
+
     /// Creates an `Interactor` with a `Router` from a local or parent scope.
     public init(scopeLifecycleManager: ScopeLifecycleManager,
                 router: RouterType)  {
         self.router = router
         super.init(scopeLifecycleManager: scopeLifecycleManager)
     }
-    
+
     /// Convenience init for a `RouterType` that is provided at the local scope with a shared `ScopeLifecycleManager`.
     /// - warning: Initalizing with a `Router` that is not at the local scope risks error of trying to attach a parent scope as a child.
     public init(router: RouterType) {
         guard let routing = router as? Routing else {
             fatalError("\(router) does not conform to \(Routing.self)")
         }
-        
+
         guard let scopeLifecycleManager = routing.scopeLifecycleManager else {
             fatalError("\(router).scopeLifecycleManager is nil")
         }
-        
+
         self.router = router
         super.init(scopeLifecycleManager: scopeLifecycleManager)
     }
@@ -86,18 +86,18 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
         guard let presentable = presenter as? Presentable else {
             fatalError("\(presenter) must conform to \(Presentable.self)")
         }
-        
+
         self.presentable = presentable
         super.init(scopeLifecycleManager: scopeLifecycleManager)
-        
+
         if let lifecycleBindable = presenter as? LifecycleBindable {
             lifecycleBindable.bindActiveState(to: scopeLifecycleManager)
         }
-        
+
         if let viewLifecycleBindable = self as? ViewLifecycleBindable {
             viewLifecycleBindable.bindViewAppearance(to: viewLifecycleManager)
         }
-        
+
         scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
     }
 
@@ -114,7 +114,7 @@ extension PresentableInteractable where Self: Presentable {
 
 open class PresentableRoutingInteractor<PresenterType, RouterType>: PresentableInteractor<PresenterType> {
     public let router: RouterType
-    
+
     public init(scopeLifecycleManager: ScopeLifecycleManager,
                 presenter: PresenterType,
                 router: RouterType)
@@ -123,18 +123,18 @@ open class PresentableRoutingInteractor<PresenterType, RouterType>: PresentableI
         super.init(scopeLifecycleManager: scopeLifecycleManager,
                    presenter: presenter)
     }
-    
+
     public init(presenter: PresenterType,
                 router: RouterType)
     {
         guard let routing = router as? Routing else {
             fatalError("\(router) does not conform to \(Routing.self)")
         }
-        
+
         guard let scopeLifecycleManager = routing.scopeLifecycleManager else {
             fatalError("\(router).scopeLifecycleManager is nil")
         }
-        
+
         self.router = router
         super.init(scopeLifecycleManager: scopeLifecycleManager,
                    presenter: presenter)

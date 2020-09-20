@@ -20,7 +20,7 @@ import Lifecycle
 public protocol LifecycleManagedScope {
     /// Provided shared `ScopeLifecycleManager` for the component's scope.
     var scopeLifecycleManager: ScopeLifecycleManager { get }
-    
+
     /// Provided shared `ViewLifecycleManager` for the component's scope.
     var viewLifecycleManager: ViewLifecycleManager { get }
 }
@@ -57,14 +57,14 @@ extension LifecycleManagedScopeComponent {
 
 #if canImport(NeedleFoundation)
 
-import NeedleFoundation
+    import NeedleFoundation
 
-public typealias EmptyDependency = NeedleFoundation.EmptyDependency
-public typealias BootstrapComponent = NeedleFoundation.BootstrapComponent
-public typealias Dependency = NeedleFoundation.Dependency
-public typealias Component = NeedleFoundation.Component
-public typealias Scope = NeedleFoundation.Scope
+    public typealias EmptyDependency = NeedleFoundation.EmptyDependency
+    public typealias BootstrapComponent = NeedleFoundation.BootstrapComponent
+    public typealias Dependency = NeedleFoundation.Dependency
+    public typealias Component = NeedleFoundation.Component
+    public typealias Scope = NeedleFoundation.Scope
 
-extension NeedleFoundation.Component: LifecycleManagedScopeComponent { }
+    extension NeedleFoundation.Component: LifecycleManagedScopeComponent {}
 
 #endif

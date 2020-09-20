@@ -16,16 +16,16 @@
 
 import Foundation
 @testable import Lifecycle
+import NeedleFoundation
 @testable import SPIR
 import XCTest
-import NeedleFoundation
 
 final class ScopeTests: XCTestCase {
     func testNeedleSharedScope() {
         __DependencyProviderRegistry.instance.registerDependencyProviderFactory(for: "^->BootstrapComponent") { component in
             return EmptyDependencyProvider(component: component)
         }
-        
+
         let component = BootstrapComponent()
         XCTAssertEqual(component.scopeLifecycleManager, component.scopeLifecycleManager)
         XCTAssertEqual(component.viewLifecycleManager, component.viewLifecycleManager)
