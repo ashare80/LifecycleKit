@@ -18,14 +18,22 @@ import Foundation
 
 #if DEBUG
     func assert(_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String = String(), file: StaticString = #file, line: UInt = #line) {
-        assertClosure(condition(), message(), file, line)
+        guard !assertClosures.isEmpty else {
+            Swift.assert(condition(), message(), file: file, line: line)
+            return
+        }
+        assertClosures.removeFirst()(condition(), message(), file, line)
     }
 
-    var assertClosure: (_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String, _ file: StaticString, _ line: UInt) -> Void = Swift.assert
+    var assertClosures: [(_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String, _ file: StaticString, _ line: UInt) -> Void] = []
 
     func assertionFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
-        assertionFailureClosure(message(), file, line)
+        guard !assertionFailureClosures.isEmpty else {
+            Swift.assertionFailure(message(), file: file, line: line)
+            return
+        }
+        assertionFailureClosures.removeFirst()(message(), file, line)
     }
 
-    var assertionFailureClosure: (@autoclosure () -> String, StaticString, UInt) -> Void = Swift.assertionFailure
+    var assertionFailureClosures: [(@autoclosure () -> String, StaticString, UInt) -> Void] = []
 #endif
