@@ -31,6 +31,21 @@ extension XCTestCase {
 
         waitForExpectations(timeout: 0.0, handler: nil)
 
-        assertionFailureClosure = defaultAssertionFailureClosure
+        assertionFailureClosure = Swift.assertionFailure
+    }
+
+    public func expectAssert(_ execute: () -> Void) {
+        let expect = expectation(description: "Did not assert")
+
+        assertClosure = {
+            _, _, _, _ in
+            expect.fulfill()
+        }
+
+        execute()
+
+        waitForExpectations(timeout: 0.0, handler: nil)
+
+        assertClosure = Swift.assert
     }
 }

@@ -16,27 +16,29 @@
 
 import Foundation
 
-public protocol QueueContextEquatable {
+public protocol DispatchQueueContext {
     var isCurrentExecutionContext: Bool { get }
 }
 
-public struct QueueContext<Value: Equatable>: QueueContextEquatable {
-    public let key: DispatchSpecificKey<Value>
-    public let value: Value
+extension DispatchQueue {
+    public struct Context<Value: Equatable>: DispatchQueueContext {
+        public let key: DispatchSpecificKey<Value>
+        public let value: Value
 
-    public init(key: DispatchSpecificKey<Value>, value: Value) {
-        self.key = key
-        self.value = value
+        public init(key: DispatchSpecificKey<Value>, value: Value) {
+            self.key = key
+            self.value = value
+        }
+
+        public var isCurrentExecutionContext: Bool {
+            Foundation.DispatchQueue.getSpecific(key: key) == value
+        }
     }
 
-    public var isCurrentExecutionContext: Bool {
-        Foundation.DispatchQueue.getSpecific(key: key) == value
-    }
+    public typealias DefaultContext = Context<UInt8>
 }
 
-public typealias DefaultQueueContext = QueueContext<UInt8>
-
-extension DefaultQueueContext {
+extension DispatchQueue.DefaultContext {
     public init() {
         self.init(key: DispatchSpecificKey<UInt8>(), value: 0)
     }

@@ -17,7 +17,7 @@
 import Combine
 import Foundation
 
-public struct DispatchQueue: QueueContextEquatable, Scheduler {
+public struct DispatchQueue: DispatchQueueContext, Scheduler {
     /// `DispatchQueue.main` underlying queue.
     public static let main = DispatchQueue(backingQueue: Foundation.DispatchQueue.main)
 
@@ -58,20 +58,20 @@ public struct DispatchQueue: QueueContextEquatable, Scheduler {
     }
 
     public var isCurrentExecutionContext: Bool {
-        return queueContextEquatable.isCurrentExecutionContext
+        return context.isCurrentExecutionContext
     }
 
     private let backingQueue: Foundation.DispatchQueue
-    private let queueContextEquatable: QueueContextEquatable
+    private let context: DispatchQueueContext
 
     /// A new `DispatchQueue` from a `Foundation.DispatchQueue` instance.
     /// - warning: The `context` instance must be retained for the life of the `backingQueue` for unique pointer comparison.
     /// - parameter backingQueue: The underlying queue this instance dispatches to.
     /// - parameter context: The `QueueContext` that will `setSpecitif(key:value:)` to the `backingQueue`.
     public init<ContextValue: Equatable>(backingQueue: Foundation.DispatchQueue,
-                                         context: QueueContext<ContextValue>) {
+                                         context: Context<ContextValue>) {
         self.backingQueue = backingQueue
-        self.queueContextEquatable = context
+        self.context = context
         backingQueue.setSpecific(key: context.key, value: context.value)
     }
 
@@ -80,7 +80,7 @@ public struct DispatchQueue: QueueContextEquatable, Scheduler {
     /// - warning: The `DefaultQueueContext` instance interanlly set must be retained for the life of the `backingQueue` for unique pointer comparison.
     public init(backingQueue: Foundation.DispatchQueue) {
         self.init(backingQueue: backingQueue,
-                  context: DefaultQueueContext())
+                  context: DefaultContext())
     }
 
     /// A new `DispatchQueue`.
@@ -92,12 +92,12 @@ public struct DispatchQueue: QueueContextEquatable, Scheduler {
     public init<ContextValue: Equatable>(label: String,
                                          qualityOfService: QualityOfService,
                                          concurrent: Bool = false,
-                                         context: QueueContext<ContextValue>)
+                                         context: Context<ContextValue>)
     {
         self.backingQueue = Foundation.DispatchQueue(label: label,
                                                      qos: qualityOfService.asDispatchQoS,
                                                      attributes: concurrent ? .concurrent : [])
-        self.queueContextEquatable = context
+        self.context = context
         backingQueue.setSpecific(key: context.key, value: context.value)
     }
 
@@ -112,7 +112,7 @@ public struct DispatchQueue: QueueContextEquatable, Scheduler {
         self.init(label: label,
                   qualityOfService: qualityOfService,
                   concurrent: concurrent,
-                  context: DefaultQueueContext())
+                  context: DefaultContext())
     }
 
     public func async(delay: TimeInterval = 0, execute work: @escaping () -> Void) {

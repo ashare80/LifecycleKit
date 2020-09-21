@@ -17,10 +17,15 @@
 import Foundation
 
 #if DEBUG
+    func assert(_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String = String(), file: StaticString = #file, line: UInt = #line) {
+        assertClosure(condition(), message(), file, line)
+    }
+
+    var assertClosure: (_ condition: @autoclosure () -> Bool, _ message: @autoclosure () -> String, _ file: StaticString, _ line: UInt) -> Void = Swift.assert
+
     func assertionFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
         assertionFailureClosure(message(), file, line)
     }
 
-    var assertionFailureClosure: (String, StaticString, UInt) -> Void = defaultAssertionFailureClosure
-    let defaultAssertionFailureClosure = { Swift.assertionFailure($0, file: $1, line: $2) }
+    var assertionFailureClosure: (@autoclosure () -> String, StaticString, UInt) -> Void = Swift.assertionFailure
 #endif
