@@ -60,5 +60,15 @@ final class InteractorTests: XCTestCase {
     }
 }
 
-final class TestPresentableInteractor: PresentableInteractor<TestPresenter>, ViewLifecycleBindable {}
-final class TestPresentableRoutingInteractor: PresentableRoutingInteractor<TestPresenter, Router>, ViewLifecycleBindable {}
+final class TestInteractor: Interactor {}
+final class TestPresentableInteractor: PresentableInteractor<TestPresenter>, ViewLifecycleBindable {
+    func viewDidLoad() {}
+    func viewDidAppear() {}
+    func viewDidDisappear() {}
+}
+
+final class TestPresentableRoutingInteractor: PresentableRoutingInteractor<TestPresenter, Router>, ViewLifecycleBindable {
+    func viewDidLoad() {}
+    func viewDidAppear() {}
+    func viewDidDisappear() {}
+}

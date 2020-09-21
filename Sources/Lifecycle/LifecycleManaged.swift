@@ -15,6 +15,7 @@
 //
 
 import Combine
+import CombineExtensions
 import Foundation
 
 public protocol LifecycleManageable: LifecycleProvider {
@@ -48,6 +49,12 @@ open class LifecycleManaged: ObjectIdentifiable, LifecycleManageable, LifecycleM
         self.scopeLifecycleManager = scopeLifecycleManager
         bind(to: scopeLifecycleManager)
     }
+
+    open func didLoad(_ lifecycleProvider: LifecycleProvider) {}
+
+    open func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {}
+
+    open func didBecomeInactive() {}
 }
 
 public protocol WeakLifecycleManageable: LifecycleProvider {
@@ -81,4 +88,10 @@ open class WeakLifecycleManaged: ObjectIdentifiable, WeakLifecycleManageable, Li
         self.scopeLifecycleManager = scopeLifecycleManager
         bind(to: scopeLifecycleManager)
     }
+
+    open func didLoad(_ lifecycleProvider: LifecycleProvider) {}
+
+    open func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {}
+
+    open func didBecomeInactive() {}
 }

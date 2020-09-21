@@ -16,25 +16,6 @@
 
 import Foundation
 
-/// Array extensions.
-public extension Array {
-    /// Remove the given element from this array, by comparing pointer references.
-    ///
-    /// - parameter element: The element to remove.
-    @discardableResult
-    mutating func removeAllByReference(_ element: Element) -> Bool {
-        var removed: Bool = false
-        removeAll { member -> Bool in
-            let willRemove = (member as AnyObject === element as AnyObject)
-            if willRemove {
-                removed = true
-            }
-            return willRemove
-        }
-        return removed
-    }
-}
-
 /// Set of weakly referenced objects.
 /// - warning: Element must conform to `AnyObject`.
 public struct WeakSet<Element> {
@@ -87,24 +68,3 @@ public struct WeakSet<Element> {
         storage.copy() as? NSMapTable<NSNumber, AnyObject> ?? .strongToWeakObjects()
     }
 }
-
-public protocol ObjectIdentifiable: AnyObject, Hashable {}
-
-extension ObjectIdentifiable {
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(ObjectIdentifier(self))
-    }
-
-    public static func == (lhs: Self, rhs: Self) -> Bool {
-        lhs === rhs
-    }
-}
-
-#if DEBUG
-    func assertionFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
-        assertionFailureClosure(message(), file, line)
-    }
-
-    var assertionFailureClosure: (String, StaticString, UInt) -> Void = defaultAssertionFailureClosure
-    let defaultAssertionFailureClosure = { Swift.assertionFailure($0, file: $1, line: $2) }
-#endif

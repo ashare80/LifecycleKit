@@ -15,18 +15,13 @@
 //
 
 import Combine
+import CombineExtensions
 import Foundation
 
 public protocol ViewLifecycleBindable: AnyObject {
     func viewDidLoad()
     func viewDidAppear()
     func viewDidDisappear()
-}
-
-extension ViewLifecycleBindable {
-    public func viewDidLoad() {}
-    public func viewDidAppear() {}
-    public func viewDidDisappear() {}
 }
 
 extension ViewLifecycleBindable {
@@ -39,9 +34,9 @@ extension ViewLifecycleBindable {
         viewLifecycleManager
             .lifecyclePublisher
             .first(where: { $0 == .initialized })
-            .receive(on: RunLoop.main)
+            .receive(on: Schedulers.main)
             .autoCancel(viewLifecycleManager, when: .deinitialized)
-            // Weak to ensure binding to self does not cause retain cycle.
+            // Weak to ensure binding from owner does not cause retain cycle.
             .sink(receiveValue: { [weak self] _ in
                 guard let self = self else { return }
                 self.viewDidLoad()
@@ -49,9 +44,10 @@ extension ViewLifecycleBindable {
 
         viewLifecycleManager
             .isActivePublisher
-            .receive(on: RunLoop.main)
+            .drop(while: { !$0 })
+            .receive(on: Schedulers.main)
             .autoCancel(viewLifecycleManager, when: .deinitialized)
-            // Weak to ensure binding to self does not cause retain cycle.
+            // Weak to ensure binding from owner does not cause retain cycle.
             .sink(receiveValue: { [weak self] isActive in
                 guard let self = self else { return }
                 if isActive {

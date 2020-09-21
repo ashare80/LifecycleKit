@@ -14,30 +14,9 @@
 //  limitations under the License.
 //
 
+import Foundation
 @testable import Lifecycle
 import XCTest
-
-final class FoundationExtensionsTests: XCTestCase {
-    // MARK: - Tests
-
-    func test_removeAllByReference() {
-        let object1 = NSObject()
-        let object2 = NSObject()
-        let object3 = NSObject()
-
-        var array = [object1, object2]
-        XCTAssert(array.count == 2)
-
-        array.removeAllByReference(object1)
-        XCTAssert(array.count == 1)
-
-        array.removeAllByReference(object3)
-        XCTAssert(array.count == 1)
-
-        array.removeAllByReference(object2)
-        XCTAssert(array.isEmpty)
-    }
-}
 
 extension XCTestCase {
     public func expectAssertionFailure(_ execute: () -> Void) {

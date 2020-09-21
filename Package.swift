@@ -11,20 +11,28 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "SPIR",
-            targets: ["SPIR"]
+            name: "CombineExtensions",
+            targets: ["CombineExtensions"]
         ),
         .library(
             name: "Lifecycle",
             targets: ["Lifecycle"]
+        ),
+        .library(
+            name: "SPIR",
+            targets: ["SPIR"]
         ),
     ],
     dependencies: [
         .package(name: "NeedleFoundation", url: "https://github.com/uber/needle.git", .branch("master")),
     ],
     targets: [
-        .target(name: "Lifecycle",
+        .target(name: "CombineExtensions",
                 dependencies: []),
+        .testTarget(name: "CombineExtensionsTests",
+                    dependencies: ["CombineExtensions"]),
+        .target(name: "Lifecycle",
+                dependencies: ["CombineExtensions"]),
         .testTarget(name: "LifecycleTests",
                     dependencies: ["Lifecycle"]),
         .target(name: "SPIR",

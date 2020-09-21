@@ -40,6 +40,10 @@ open class Presenter<View>: ObjectIdentifiable, Presenting {
         self.viewLifecycleManager = viewLifecycleManager
         bind(to: viewLifecycleManager)
     }
+
+    open func viewDidLoad() {}
+    open func viewDidAppear() {}
+    open func viewDidDisappear() {}
 }
 
 open class InteractablePresenter<View>: Presenter<View>, Interactable, LifecycleBindable {
@@ -54,6 +58,12 @@ open class InteractablePresenter<View>: Presenter<View>, Interactable, Lifecycle
         bind(to: scopeLifecycleManager)
         scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
     }
+
+    open func didLoad(_ lifecycleProvider: LifecycleProvider) {}
+
+    open func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {}
+
+    open func didBecomeInactive() {}
 }
 
 /// Conformance by `Presenter` subclasses to provide a `ViewType` and be an `ObservableObject`.

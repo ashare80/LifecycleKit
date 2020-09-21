@@ -15,6 +15,7 @@
 //
 
 import Combine
+import CombineExtensions
 import Foundation
 
 public protocol LifecycleBindable: AnyObject {
@@ -35,12 +36,6 @@ public protocol LifecycleBindable: AnyObject {
     /// This method is driven by the detachment of this lifecycle's owner  Subclasses should override this
     /// method to cleanup any resources and states of the `LifecycleBindable`. The default implementation does nothing.
     func didBecomeInactive()
-}
-
-extension LifecycleBindable {
-    public func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {}
-    public func didBecomeInactive() {}
-    public func didLoad(_ lifecycleProvider: LifecycleProvider) {}
 }
 
 extension LifecycleBindable where Self: LifecycleManageable {
@@ -67,9 +62,9 @@ extension LifecycleBindable {
 
         scopeLifecycleManager
             .firstActive
-            .receive(on: RunLoop.main)
+            .receive(on: Schedulers.main)
             .autoCancel(scopeLifecycleManager, when: .deinitialized)
-            // Weak to ensure binding to self does not cause retain cycle.
+            // Weak to ensure binding from owner does not cause retain cycle.
             .sink(receiveValue: { [weak self, weak scopeLifecycleManager] _ in
                 guard let self = self, let scopeLifecycleManager = scopeLifecycleManager else { return }
                 self.didLoad(scopeLifecycleManager)
@@ -77,9 +72,10 @@ extension LifecycleBindable {
 
         scopeLifecycleManager
             .isActivePublisher
-            .receive(on: RunLoop.main)
+            .drop(while: { !$0 })
+            .receive(on: Schedulers.main)
             .autoCancel(scopeLifecycleManager, when: .deinitialized)
-            // Weak to ensure binding to self does not cause retain cycle.
+            // Weak to ensure binding from owner does not cause retain cycle.
             .sink(receiveValue: { [weak self, weak scopeLifecycleManager] isActive in
                 guard let self = self, let scopeLifecycleManager = scopeLifecycleManager else { return }
                 if isActive {

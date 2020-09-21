@@ -15,6 +15,7 @@
 //
 
 import Combine
+import CombineExtensions
 import Foundation
 
 extension Publisher {

@@ -38,4 +38,8 @@ final class RouterTests: XCTestCase {
     }
 }
 
-final class TestPresentableRouter: PresentableRouter<TestPresenter>, ViewLifecycleBindable {}
+final class TestPresentableRouter: PresentableRouter<TestPresenter>, ViewLifecycleBindable {
+    func viewDidLoad() {}
+    func viewDidAppear() {}
+    func viewDidDisappear() {}
+}

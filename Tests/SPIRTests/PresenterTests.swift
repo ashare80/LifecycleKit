@@ -41,5 +41,12 @@ final class PresenterTests: XCTestCase {
     }
 }
 
-final class TestPresenter: Presenter<TestView<TestPresenter>>, ViewPresentable, LifecycleBindable {}
+final class TestPresenter: Presenter<TestView<TestPresenter>>, ViewPresentable, LifecycleBindable {
+    func didLoad(_ lifecycleProvider: LifecycleProvider) {}
+
+    func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {}
+
+    func didBecomeInactive() {}
+}
+
 final class TestInteractablePresenter: InteractablePresenter<TestView<TestInteractablePresenter>>, ViewPresentable, PresentableInteractable {}

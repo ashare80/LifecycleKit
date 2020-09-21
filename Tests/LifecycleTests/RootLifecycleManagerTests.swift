@@ -35,10 +35,6 @@ final class RootLifecycleManagerTests: XCTestCase {
     }
 }
 
-protocol TestLifecycleManageable: LifecycleManageable {}
-
-final class TestLifecycleManageableMock: LifecycleManaged, TestLifecycleManageable {}
-
 #if os(macOS)
 
     final class Delegate: NSObject, NSApplicationDelegate, RootLifecycleManager {
