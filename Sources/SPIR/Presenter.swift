@@ -31,19 +31,8 @@ public protocol Presenting: ViewLifecycleManageable, ViewLifecycleBindable {}
 /// The base class of all `Presenter`s. A `Presenter` translates business models into values the corresponding
 /// `View` can consume and display. It also maps UI events to business logic method, invoked to
 /// its listener.
-open class Presenter<View>: ObjectIdentifiable, Presenting {
+open class Presenter<View>: ViewLifecycleManaged, Presenting {
     public typealias ViewType = View
-
-    public let viewLifecycleManager: ViewLifecycleManager
-
-    public init(viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager()) {
-        self.viewLifecycleManager = viewLifecycleManager
-        bind(to: viewLifecycleManager)
-    }
-
-    open func viewDidLoad() {}
-    open func viewDidAppear() {}
-    open func viewDidDisappear() {}
 }
 
 open class InteractablePresenter<View>: Presenter<View>, Interactable, LifecycleBindable {

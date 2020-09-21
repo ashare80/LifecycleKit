@@ -18,29 +18,7 @@ import Combine
 import CombineExtensions
 import Foundation
 
-public protocol LifecycleManageable: LifecycleProvider {
-    /// Internal manager of lifecycle events.
-    var scopeLifecycleManager: ScopeLifecycleManager { get }
-}
-
-extension LifecycleManageable {
-    public var lifecycleState: LifecycleState {
-        return scopeLifecycleManager.lifecycleState
-    }
-
-    public var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
-        return scopeLifecycleManager.lifecyclePublisher
-    }
-
-    public func expectDeallocateIfOwns(_ ownedObject: AnyObject, inTime time: TimeInterval = .deallocationExpectation) {
-        if let lifecycleManaged = ownedObject as? LifecycleManageable {
-            guard lifecycleManaged.scopeLifecycleManager === scopeLifecycleManager else { return }
-        }
-
-        LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
-    }
-}
-
+/// Base class to conform to `LifecycleManageable` binding as the owner of a `ScopeLifecycleManager`.
 open class LifecycleManaged: ObjectIdentifiable, LifecycleManageable, LifecycleManageableRouting, LifecycleBindable {
     public let scopeLifecycleManager: ScopeLifecycleManager
 
@@ -57,29 +35,7 @@ open class LifecycleManaged: ObjectIdentifiable, LifecycleManageable, LifecycleM
     open func didBecomeInactive() {}
 }
 
-public protocol WeakLifecycleManageable: LifecycleProvider {
-    /// Internal manager of lifecycle events.
-    var scopeLifecycleManager: ScopeLifecycleManager? { get }
-}
-
-extension WeakLifecycleManageable {
-    public var lifecycleState: LifecycleState {
-        return scopeLifecycleManager?.lifecycleState ?? .deinitialized
-    }
-
-    public var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
-        return scopeLifecycleManager?.lifecyclePublisher ?? Just<LifecycleState>(.deinitialized).eraseToAnyPublisher().removeDuplicates()
-    }
-
-    public func expectDeallocateIfOwns(_ ownedObject: AnyObject, inTime time: TimeInterval = .deallocationExpectation) {
-        if let lifecycleManaged = ownedObject as? LifecycleManageable {
-            guard lifecycleManaged.scopeLifecycleManager === scopeLifecycleManager else { return }
-        }
-
-        LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
-    }
-}
-
+/// Base class to conform to `WeakLifecycleManageable` binding with a weak reference to a `ScopeLifecycleManager`.
 open class WeakLifecycleManaged: ObjectIdentifiable, WeakLifecycleManageable, LifecycleManageableRouting, LifecycleBindable {
     public weak var scopeLifecycleManager: ScopeLifecycleManager?
 

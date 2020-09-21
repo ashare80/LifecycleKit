@@ -49,13 +49,9 @@ public final class ViewLifecycleManager: LifecycleProvider, ObjectIdentifiable {
     public var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         let statePublisher = $_lifecycleState
         return $viewDidLoad
-            .map { (viewDidLoad) -> RelayPublisher<LifecycleState> in
-                if viewDidLoad {
-                    return statePublisher.eraseToAnyPublisher()
-                } else {
-                    return statePublisher.filter { state in state == .initialized }.eraseToAnyPublisher()
-                }
-            }
+            .drop(while: { didLoad in !didLoad })
+            .first()
+            .map { _ in statePublisher }
             .switchToLatest()
             .eraseToAnyPublisher()
             .removeDuplicates()
