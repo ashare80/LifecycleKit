@@ -102,3 +102,111 @@ public final class AnyDynamicBuilder<DynamicDependency, R>: ObjectIdentifiable, 
         return builder(dynamicDependency)
     }
 }
+
+/// Type that builds with no added dependencies..
+public protocol CachedBuildable: AnyObject {
+    /// Return type from build function.
+    associatedtype R
+
+    /// Builds a new instance of `R`.
+    func getOrCreate() -> R
+}
+
+public protocol WeakCachedBuildable: CachedBuildable {
+    var instance: R? { get }
+}
+
+/// Type erased builder of new `R` instances.
+public final class WeakCachedBuilder<R: AnyObject>: ObjectIdentifiable, WeakCachedBuildable {
+    
+    public weak var instance: R?
+    
+    private let builder: () -> R
+    private let lock: NSRecursiveLock = NSRecursiveLock()
+
+    /// Initializer.
+    ///
+    /// - parameter builder: The building closure that creates a new instance of `R` on each call to build.
+    public init(_ builder: @escaping () -> R) {
+        self.builder = builder
+    }
+
+    /// Builds a new instance of `R`.
+    public func getOrCreate() -> R {
+        lock.lock(); defer { lock.unlock() }
+        
+        if let instance = instance {
+            return instance
+        } else {
+            let newInstance = builder()
+            instance = newInstance
+            return newInstance
+        }
+    }
+}
+
+extension WeakCachedBuilder: InteractableBuildable where R: Interactable {
+    public func build() -> Interactable {
+        return getOrCreate()
+    }
+}
+
+extension WeakCachedBuilder: PresentableInteractableBuildable where R: PresentableInteractable {
+    public func build() -> PresentableInteractable {
+        return getOrCreate()
+    }
+}
+
+public protocol LazyValue: CachedBuildable {
+    var value: R { get }
+}
+
+extension LazyValue {
+    public var value: R {
+        return getOrCreate()
+    }
+}
+
+/// Type erased builder of new `R` instances.
+public final class CachedBuilder<R>: ObjectIdentifiable, CachedBuildable {
+    
+    public var value: R {
+        return getOrCreate()
+    }
+    
+    private let builder: () -> R
+    private var instance: R?
+    private let lock: NSRecursiveLock = NSRecursiveLock()
+
+    /// Initializer.
+    ///
+    /// - parameter builder: The building closure that creates a new instance of `R` on each call to build.
+    public init(_ builder: @escaping () -> R) {
+        self.builder = builder
+    }
+
+    /// Builds a new instance of `R`.
+    public func getOrCreate() -> R {
+        lock.lock(); defer { lock.unlock() }
+        
+        if let instance = instance {
+            return instance
+        } else {
+            let newInstance = builder()
+            instance = newInstance
+            return newInstance
+        }
+    }
+}
+
+extension CachedBuilder: InteractableBuildable where R == Interactable {
+    public func build() -> Interactable {
+        return getOrCreate()
+    }
+}
+
+extension CachedBuilder: PresentableInteractableBuildable where R == PresentableInteractable {
+    public func build() -> PresentableInteractable {
+        return getOrCreate()
+    }
+}
