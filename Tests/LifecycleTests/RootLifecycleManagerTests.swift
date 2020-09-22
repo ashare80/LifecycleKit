@@ -38,13 +38,13 @@ final class RootLifecycleManagerTests: XCTestCase {
 #if os(macOS)
 
     final class Delegate: NSObject, NSApplicationDelegate, RootLifecycleManager {
-        var rootLifecycleManageable: LifecycleManageable = TestLifecycleManageableMock()
+        var rootLifecycleManageable: LifecycleManageable = TestLifecycleManaged()
     }
 
 #else
 
     final class Delegate: NSObject, UISceneDelegate, RootLifecycleManager {
-        var rootLifecycleManageable: LifecycleManageable = TestLifecycleManageableMock()
+        var rootLifecycleManageable: LifecycleManageable = TestLifecycleManaged()
     }
 
 #endif

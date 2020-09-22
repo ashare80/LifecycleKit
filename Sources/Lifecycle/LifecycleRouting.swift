@@ -22,8 +22,14 @@ public protocol LifecycleManageableRouting: AnyObject {
 
     /// Attaches the given `LifecycleManageable` as a child.
     ///
+    /// The child will activate if the receiver is active.
+    /// Child activation may run logic that synchornously results in a call to detach before `attachChild` returns.
+    /// Best practice is to ensure the return value is`true` before performing additional routing logic such as presenting views.
+    ///
     /// - parameter child: The child `LifecycleManageable` to attach.
-    func attachChild(_ child: LifecycleManageable)
+    /// - returns: Is `true` if child was successfully attached.
+    @discardableResult
+    func attachChild(_ child: LifecycleManageable) -> Bool
 
     /// Detaches the given `LifecycleManageable` from the tree.
     ///
@@ -38,9 +44,15 @@ extension LifecycleManageableRouting where Self: LifecycleManageable {
 
     /// Attaches the given `LifecycleManageable` as a child.
     ///
+    /// The child will activate if the receiver is active.
+    /// Child activation may run logic that synchornously results in a call to detach before `attachChild` returns.
+    /// Best practice is to ensure the return value is`true` before performing additional routing logic such as presenting views.
+    ///
     /// - parameter child: The child `LifecycleManageable` to attach.
-    public func attachChild(_ child: LifecycleManageable) {
-        scopeLifecycleManager.attachChild(child)
+    /// - returns: Is `true` if child was successfully attached.
+    @discardableResult
+    public func attachChild(_ child: LifecycleManageable) -> Bool {
+        return scopeLifecycleManager.attachChild(child)
     }
 
     /// Detaches the given `LifecycleManageable` from the tree.
@@ -58,9 +70,15 @@ extension LifecycleManageableRouting where Self: WeakLifecycleManageable {
 
     /// Attaches the given `LifecycleManageable` as a child.
     ///
+    /// The child will activate if the receiver is active.
+    /// Child activation may run logic that synchornously results in a call to detach before `attachChild` returns.
+    /// Best practice is to ensure the return value is`true` before performing additional routing logic such as presenting views.
+    ///
     /// - parameter child: The child `LifecycleManageable` to attach.
-    public func attachChild(_ child: LifecycleManageable) {
-        scopeLifecycleManager?.attachChild(child)
+    /// - returns: Is `true` if child was successfully attached.
+    @discardableResult
+    public func attachChild(_ child: LifecycleManageable) -> Bool {
+        return scopeLifecycleManager?.attachChild(child) ?? false
     }
 
     /// Detaches the given `LifecycleManageable` from the tree.

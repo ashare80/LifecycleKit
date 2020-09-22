@@ -81,10 +81,16 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
 
     /// Attaches the given `LifecycleManageable` as a child.
     ///
+    /// The child will activate if the receiver is active.
+    /// Child activation may run logic that synchornously results in a call to detach before `attachChild` returns.
+    /// Best practice is to ensure the return value is`true` before performing additional routing logic such as presenting views.
+    ///
     /// - parameter child: The child `LifecycleManageable` to attach.
-    func attachChild(_ child: LifecycleManageable) {
+    /// - returns: Is `true` if child was successfully attached.
+    @discardableResult
+    func attachChild(_ child: LifecycleManageable) -> Bool {
         guard child.scopeLifecycleManager.parent != self else {
-            return
+            return false
         }
 
         assert(child.scopeLifecycleManager != self, "Attempt to attach child: \(child), that is already managed at the local scope by \(self).")
@@ -96,6 +102,9 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
         if lifecycleState == .active {
             child.scopeLifecycleManager.activate()
         }
+
+        // Activate could run logic that removes the child before return.
+        return child.scopeLifecycleManager.parent == self
     }
 
     /// Detaches the given `LifecycleManageable` from the tree.
