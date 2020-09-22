@@ -22,9 +22,9 @@ extension XCTestCase {
     public func expectAssertionFailure(_ execute: () -> Void) {
         let expect = expectation(description: "Did not assert")
 
-        assertionFailureClosures.append({_, _, _ in
+        assertionFailureClosures.append { _, _, _ in
             expect.fulfill()
-        })
+        }
 
         execute()
 
@@ -34,9 +34,9 @@ extension XCTestCase {
     public func expectAssert(_ execute: () -> Void) {
         let expect = expectation(description: "Did not assert")
 
-        assertClosures.append({_, _, _, _ in
+        assertClosures.append { _, _, _, _ in
             expect.fulfill()
-        })
+        }
 
         execute()
 
