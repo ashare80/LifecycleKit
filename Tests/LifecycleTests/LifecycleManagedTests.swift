@@ -104,8 +104,10 @@ final class LifecycleManagerTests: XCTestCase {
 
         let parent2 = TestLifecycleManageableMock()
 
-        expectAssert {
-            parent2.attachChild(parent)
+        expectAssert(passes: true) {
+            expectAssert {
+                parent2.attachChild(child)
+            }
         }
     }
 

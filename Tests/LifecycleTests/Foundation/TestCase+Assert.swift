@@ -20,7 +20,7 @@ import XCTest
 
 extension XCTestCase {
     public func expectAssertionFailure(_ execute: () -> Void) {
-        let expect = expectation(description: "Did not assert")
+        let expect = expectation(description: "Assertion failure not called.")
 
         assertionFailureClosures.append { _, _, _ in
             expect.fulfill()
@@ -28,18 +28,22 @@ extension XCTestCase {
 
         execute()
 
-        waitForExpectations(timeout: 0.0, handler: nil)
+        wait(for: [expect], timeout: 0.0)
     }
 
-    public func expectAssert(_ execute: () -> Void) {
-        let expect = expectation(description: "Did not assert")
+    public func expectAssert(passes: Bool = false, _ execute: () -> Void) {
+        let expect = expectation(description: "Assert was not called.")
 
-        assertClosures.append { _, _, _, _ in
-            expect.fulfill()
+        assertClosures.append { condition, _, _, _ in
+            if condition() == passes {
+                expect.fulfill()
+            } else {
+                XCTFail("Asssert condition was not \(passes).")
+            }
         }
 
         execute()
 
-        waitForExpectations(timeout: 0.0, handler: nil)
+        wait(for: [expect], timeout: 0.0)
     }
 }
