@@ -19,6 +19,7 @@ import Lifecycle
 
 public typealias LifecycleBindable = Lifecycle.LifecycleBindable
 public typealias LifecycleManageable = Lifecycle.LifecycleManageable
+public typealias LifecycleManageableRouting = Lifecycle.LifecycleManageableRouting
 public typealias LifecycleProvider = Lifecycle.LifecycleProvider
 public typealias LifecycleState = Lifecycle.LifecycleState
 public typealias LifecycleStateOptions = Lifecycle.LifecycleStateOptions

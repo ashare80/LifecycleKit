@@ -107,14 +107,6 @@ extension Publisher {
             return prefix(untilOutputFrom: publisher).eraseToAnyPublisher()
         }
 
-        return prefix(untilOutputFrom: publisher
-            .events
-            .filter(options.contains)
-            .handleEvents(receiveOutput: { output in
-                Swift.print(String(describing: output))
-            }, receiveCompletion: { complete in
-                Swift.print(String(describing: complete))
-            })
-        ).eraseToAnyPublisher()
+        return prefix(untilOutputFrom: publisher.events.filter(options.contains)).eraseToAnyPublisher()
     }
 }

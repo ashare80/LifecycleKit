@@ -35,7 +35,7 @@ open class Presenter<View>: ViewLifecycleManaged, Presenting {
     public typealias ViewType = View
 }
 
-open class InteractablePresenter<View>: Presenter<View>, Interactable, LifecycleBindable {
+open class InteractablePresenter<View>: Presenter<View>, Interactable, LifecycleBindable, LifecycleManageableRouting {
     public let scopeLifecycleManager: ScopeLifecycleManager
 
     /// Initializer.

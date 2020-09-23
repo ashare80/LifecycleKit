@@ -93,7 +93,6 @@ public struct RetainedCancellablePublisher<P: Publisher> {
             compositeCancellable.insert(storedCancellable)
             return compositeCancellable
         } else {
-            print("Subscription immediately completed.")
             return storedCancellable
         }
     }
