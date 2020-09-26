@@ -24,8 +24,22 @@ public protocol ViewLifecycleBindable: AnyObject {
     func viewDidDisappear()
 }
 
-extension ViewLifecycleBindable {
+extension ViewLifecycleBindable where Self: ViewLifecycleManageable {
+    /// Binds to lifecycle events receiving on main thread and sets the receiver as the owner of the `ViewLifecycleManager`.
     public func bind(to viewLifecycleManager: ViewLifecycleManager) {
+        viewLifecycleManager.owner = self
+        bindActiveState(to: viewLifecycleManager)
+    }
+}
+
+extension ViewLifecycleBindable {
+    /// Binds to lifecycle states receiving on main thread.
+    public func bind(to viewLifecycleManager: ViewLifecycleManager) {
+        bindActiveState(to: viewLifecycleManager)
+    }
+
+    /// Binds to lifecycle states receiving on main thread.
+    fileprivate func bindActiveState(to viewLifecycleManager: ViewLifecycleManager) {
         if viewLifecycleManager.binded.contains(self) {
             assertionFailure("Binding to \(viewLifecycleManager) that has already been binded to. \(viewLifecycleManager.binded)")
         }

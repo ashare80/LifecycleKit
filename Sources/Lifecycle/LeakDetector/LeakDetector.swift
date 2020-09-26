@@ -46,7 +46,14 @@ public class LeakDetector {
     /// The singleton instance.
     public static let instance = LeakDetector()
 
-    @Published public private(set) var expectationCount: Int = 0
+    @Published public private(set) var expectationCount: Int = 0 {
+        didSet {
+            if expectationCount == 0 {
+                // Clear strong key references.
+                trackingObjects.removeAll()
+            }
+        }
+    }
 
     private(set) var trackingObjects = WeakSet<AnyObject>()
 
@@ -69,18 +76,20 @@ public class LeakDetector {
     /// - parameter inTime: The time the given object is expected to be deallocated within.
     /// - returns: `Publishers.First` that outputs after delay.
     public func expectDeallocate<Element>(objects: WeakSet<Element>, inTime time: TimeInterval = .deallocationExpectation) -> RelayPublisher<Void> {
-        guard objects.isEmpty else { return Empty().eraseToAnyPublisher() }
+        guard !objects.isEmpty else { return Empty().eraseToAnyPublisher() }
 
         expectationCount += 1
         var decrement: (() -> Void)? = {
             self.expectationCount -= 1
         }
 
+        trackingObjects.formUnion(objects)
+
         return Timer
             .execute(withDelay: time)
             .handleEvents(receiveOutput: {
                 if !objects.isEmpty {
-                    let message = "Objects have leaked. Objects are expected to be deallocated at this time: \(objects)"
+                    let message = "\(objects) have leaked. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
                     if self.disableLeakDetector {
                         print("Leak detection is disabled. This should only be used for debugging purposes.")
                         print(message)
@@ -108,11 +117,13 @@ public class LeakDetector {
             self.expectationCount -= 1
         }
 
+        trackingObjects.insert(object)
+
         return Timer
             .execute(withDelay: time)
             .handleEvents(receiveOutput: { [weak object] in
                 if let object = object {
-                    let message = "<\(String(describing: object)): \(object)> has leaked. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
+                    let message = "<\(object): \(fromattedMemoryString(for: object))> has leaked. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
                     if self.disableLeakDetector {
                         print("Leak detection is disabled. This should only be used for debugging purposes.")
                         print(message)
@@ -150,8 +161,8 @@ public class LeakDetector {
         return Timer
             .execute(withDelay: time)
             .handleEvents(receiveOutput: { [weak tracker] in
-                if let tracker = tracker {
-                    let message = "\(tracker) appearance has leaked. Either its parent lifecycle who does not own a view was detached, but failed to dismiss the leaked view; or the view is reused and re-added to window, yet the lifcycle was not re-activated but re-created. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
+                if let tracker = tracker, let owner = tracker.owner {
+                    let message = "\(owner) appearance has leaked. Either its parent lifecycle who does not own a view was detached, but failed to dismiss the leaked view; or the view is reused and re-added to window, yet the lifcycle was not re-activated but re-created. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
 
                     if self.disableLeakDetector {
                         if tracker.isDisplayed {

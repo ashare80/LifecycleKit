@@ -87,3 +87,28 @@ extension Publisher {
         }
     }
 }
+
+public protocol OptionalType {
+    associatedtype Wrapped
+    var value: Wrapped? { get }
+}
+
+extension Optional: OptionalType {
+    public var value: Wrapped? {
+        return self
+    }
+}
+
+extension Publisher where Output: OptionalType {
+    public func filterNil() -> AnyPublisher<Output.Wrapped, Failure> {
+        return map { (output) -> AnyPublisher<Output.Wrapped, Failure> in
+            if let output = output.value {
+                return Just(output).mapError().eraseToAnyPublisher()
+            } else {
+                return Empty().eraseToAnyPublisher()
+            }
+        }
+        .switchToLatest()
+        .eraseToAnyPublisher()
+    }
+}

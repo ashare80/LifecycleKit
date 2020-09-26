@@ -94,7 +94,7 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
         }
 
         assert(child.scopeLifecycleManager != self, "Attempt to attach child: \(child), that is already managed at the local scope by \(self).")
-        assert(child.scopeLifecycleManager.parent == nil, "Attempt to attach child: \(child), which is already attached as a child to \(String(describing: child.scopeLifecycleManager.parent)).")
+        assert(child.scopeLifecycleManager.parent == nil, "Attempt to attach child: \(child), which is already attached as a child to \(child.scopeLifecycleManager.parent!).")
 
         children.append(child)
         child.scopeLifecycleManager.parent = self

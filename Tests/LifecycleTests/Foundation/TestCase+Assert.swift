@@ -19,7 +19,7 @@ import Foundation
 import XCTest
 
 extension XCTestCase {
-    public func expectAssertionFailure(_ execute: () -> Void) {
+    public func expectAssertionFailure(timeout: TimeInterval = 0.0, _ execute: () -> Void) {
         let expect = expectation(description: "Assertion failure not called.")
 
         assertionFailureClosures.append { _, _, _ in
@@ -28,10 +28,10 @@ extension XCTestCase {
 
         execute()
 
-        wait(for: [expect], timeout: 0.0)
+        wait(for: [expect], timeout: timeout)
     }
 
-    public func expectAssert(passes: Bool = false, _ execute: () -> Void) {
+    public func expectAssert(passes: Bool = false, timeout: TimeInterval = 0.0, _ execute: () -> Void) {
         let expect = expectation(description: "Assert was not called.")
 
         assertClosures.append { condition, _, _, _ in
@@ -44,6 +44,6 @@ extension XCTestCase {
 
         execute()
 
-        wait(for: [expect], timeout: 0.0)
+        wait(for: [expect], timeout: timeout)
     }
 }

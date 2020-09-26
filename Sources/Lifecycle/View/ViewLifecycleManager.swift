@@ -57,7 +57,19 @@ public final class ViewLifecycleManager: LifecycleProvider, ObjectIdentifiable {
             .removeDuplicates()
     }
 
+    weak var owner: ViewLifecycleManageable? {
+        didSet {
+            if let owner = owner, let oldValue = oldValue, owner !== oldValue {
+                assertionFailure("Already an owner for this manager: \(oldValue). \(ViewLifecycleManager.self)s should only bind to a single \(ViewLifecycleManageable.self). New value: \(owner)")
+            }
+        }
+    }
+
     public init() {}
+
+    deinit {
+        _lifecycleState = .deinitialized
+    }
 
     @Published var viewDidLoad: Bool = false
 
