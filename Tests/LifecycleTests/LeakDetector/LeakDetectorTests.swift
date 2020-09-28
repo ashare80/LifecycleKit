@@ -30,15 +30,15 @@ final class LeakDetectorTests: XCTestCase {
     func testExpectDealloc() {
         weak var object: AnyObject?
         autoreleasepool {
-            let nsObject = NSObject()
-            object = nsObject
+            let testObject = TestNSObject()
+            object = testObject
 
             expectAssertionFailure(timeout: 2.0) {
-                LeakDetector.instance.expectDeallocate(object: nsObject).retained.sink()
+                LeakDetector.instance.expectDeallocate(object: testObject).retained.sink()
                 XCTAssertTrue(LeakDetector.instance.trackingObjects.asArray.first === object)
             }
 
-            LeakDetector.instance.expectDeallocate(object: nsObject, inTime: 0.0).retained.sink()
+            LeakDetector.instance.expectDeallocate(object: testObject, inTime: 0.0).retained.sink()
             XCTAssertTrue(LeakDetector.instance.trackingObjects.asArray.first === object)
         }
 
@@ -57,10 +57,10 @@ final class LeakDetectorTests: XCTestCase {
     }
 
     func testExpectObjectsDealloc() {
-        var objects: WeakSet<NSObject> = []
+        var objects: WeakSet<TestObject> = []
         autoreleasepool {
-            let nsObjects = [NSObject(), NSObject(), NSObject()]
-            objects = WeakSet(nsObjects)
+            let testObjects = [TestObject(), TestObject(), TestObject()]
+            objects = WeakSet(testObjects)
 
             expectAssertionFailure(timeout: 2.0) {
                 LeakDetector.instance.expectDeallocate(objects: objects).retained.sink()
@@ -70,7 +70,7 @@ final class LeakDetectorTests: XCTestCase {
             LeakDetector.instance.expectDeallocate(objects: objects, inTime: 0.0).retained.sink()
             XCTAssertEqual(LeakDetector.instance.trackingObjects.count, 3)
             XCTAssertEqual(objects.count, 3)
-            XCTAssertEqual(nsObjects.count, 3)
+            XCTAssertEqual(testObjects.count, 3)
         }
 
         XCTAssertEqual(LeakDetector.instance.expectationCount, 1)
@@ -92,15 +92,16 @@ final class LeakDetectorTests: XCTestCase {
         viewManageable.viewLifecycleManager.viewDidLoad = true
         viewManageable.viewLifecycleManager.isDisplayed = true
 
-        expectAssert(passes: false, timeout: 2.0) {
+        expectAssertionFailure(timeout: 2.0) {
             LeakDetector.instance.expectViewDisappear(tracker: viewManageable.viewLifecycleManager, inTime: 1.0).retained.sink()
             XCTAssertTrue(LeakDetector.instance.trackingObjects.isEmpty)
         }
 
-        expectAssert(passes: true, timeout: 2.0) {
-            LeakDetector.instance.expectViewDisappear(tracker: viewManageable.viewLifecycleManager, inTime: 1.0).retained.sink()
-            viewManageable.viewLifecycleManager.isDisplayed = false
-            XCTAssertTrue(LeakDetector.instance.trackingObjects.isEmpty)
-        }
+        LeakDetector.instance.expectViewDisappear(tracker: viewManageable.viewLifecycleManager, inTime: 1.0).retained.sink()
+        viewManageable.viewLifecycleManager.isDisplayed = false
+        XCTAssertTrue(LeakDetector.instance.trackingObjects.isEmpty)
     }
 }
+
+final class TestObject {}
+final class TestNSObject: NSObject {}

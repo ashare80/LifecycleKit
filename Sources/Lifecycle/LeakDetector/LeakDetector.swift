@@ -77,17 +77,13 @@ public class LeakDetector {
     /// - returns: `Publishers.First` that outputs after delay.
     public func expectDeallocate<Element>(objects: WeakSet<Element>, inTime time: TimeInterval = .deallocationExpectation) -> RelayPublisher<Void> {
         guard !objects.isEmpty else { return Empty().eraseToAnyPublisher() }
-
-        expectationCount += 1
-        var decrement: (() -> Void)? = {
-            self.expectationCount -= 1
-        }
-
-        trackingObjects.formUnion(objects)
-
         return Timer
             .execute(withDelay: time)
-            .handleEvents(receiveOutput: {
+            .receive(on: Schedulers.main)
+            .handleEvents(receiveSubscription: { _ in
+                self.trackingObjects.formUnion(objects)
+                self.expectationCount += 1
+            }, receiveOutput: {
                 if !objects.isEmpty {
                     let message = "\(objects) have leaked. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
                     if self.disableLeakDetector {
@@ -97,12 +93,12 @@ public class LeakDetector {
                         assertionFailure(message)
                     }
                 }
-                decrement?()
-                decrement = nil
+            }, receiveCompletion: { _ in
+                self.expectationCount -= 1
             }, receiveCancel: {
-                decrement?()
-                decrement = nil
+                self.expectationCount -= 1
             })
+            .subscribe(on: Schedulers.main)
             .eraseToAnyPublisher()
     }
 
@@ -112,18 +108,17 @@ public class LeakDetector {
     /// - parameter inTime: The time the given object is expected to be deallocated within.
     /// - returns: `Publishers.First` that outputs after delay.
     public func expectDeallocate(object: AnyObject, inTime time: TimeInterval = .deallocationExpectation) -> RelayPublisher<Void> {
-        expectationCount += 1
-        var decrement: (() -> Void)? = {
-            self.expectationCount -= 1
-        }
-
-        trackingObjects.insert(object)
-
         return Timer
             .execute(withDelay: time)
-            .handleEvents(receiveOutput: { [weak object] in
+            .receive(on: Schedulers.main)
+            .handleEvents(receiveSubscription: { [weak object] _ in
+                self.expectationCount += 1
                 if let object = object {
-                    let message = "<\(object): \(fromattedMemoryString(for: object))> has leaked. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
+                    self.trackingObjects.insert(object)
+                }
+            }, receiveOutput: { [weak object] in
+                if let object = object {
+                    let message = memoryAddressDescription(for: object) + " has leaked. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
                     if self.disableLeakDetector {
                         print("Leak detection is disabled. This should only be used for debugging purposes.")
                         print(message)
@@ -131,12 +126,12 @@ public class LeakDetector {
                         assertionFailure(message)
                     }
                 }
-                decrement?()
-                decrement = nil
+            }, receiveCompletion: { _ in
+                self.expectationCount -= 1
             }, receiveCancel: {
-                decrement?()
-                decrement = nil
+                self.expectationCount -= 1
             })
+            .subscribe(on: Schedulers.main)
             .eraseToAnyPublisher()
     }
 
@@ -153,33 +148,28 @@ public class LeakDetector {
             return Empty().eraseToAnyPublisher()
         }
 
-        expectationCount += 1
-        var decrement: (() -> Void)? = {
-            self.expectationCount -= 1
-        }
-
         return Timer
             .execute(withDelay: time)
-            .handleEvents(receiveOutput: { [weak tracker] in
-                if let tracker = tracker, let owner = tracker.owner {
-                    let message = "\(owner) appearance has leaked. Either its parent lifecycle who does not own a view was detached, but failed to dismiss the leaked view; or the view is reused and re-added to window, yet the lifcycle was not re-activated but re-created. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
+            .receive(on: Schedulers.main)
+            .handleEvents(receiveSubscription: { _ in
+                self.expectationCount += 1
+            }, receiveOutput: { [weak tracker] in
+                if let tracker = tracker, let owner = tracker.owner, tracker.isDisplayed {
+                    let message = memoryAddressDescription(for: owner) + " appearance has leaked. Either its parent lifecycle who does not own a view was detached, but failed to dismiss the leaked view; or the view is reused and re-added to window, yet the lifcycle was not re-activated but re-created. Objects are expected to be deallocated at this time: \(self.trackingObjects)"
 
                     if self.disableLeakDetector {
-                        if tracker.isDisplayed {
-                            print("Leak detection is disabled. This should only be used for debugging purposes.")
-                            print(message)
-                        }
+                        print("Leak detection is disabled. This should only be used for debugging purposes.")
+                        print(message)
                     } else {
-                        assert(!tracker.isDisplayed, message)
+                        assertionFailure(message)
                     }
                 }
-
-                decrement?()
-                decrement = nil
+            }, receiveCompletion: { _ in
+                self.expectationCount -= 1
             }, receiveCancel: {
-                decrement?()
-                decrement = nil
+                self.expectationCount -= 1
             })
+            .subscribe(on: Schedulers.main)
             .eraseToAnyPublisher()
     }
 

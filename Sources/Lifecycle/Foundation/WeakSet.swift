@@ -19,6 +19,10 @@ import Foundation
 /// Set of weakly referenced objects.
 /// - warning: Element must conform to `AnyObject`.
 public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConvertible {
+
+    private typealias Key = AnyObject
+    private typealias Value = AnyObject
+
     /// Returns an array with a strong reference to elements.
     public var asArray: [Element] {
         storage.dictionaryRepresentation().values.compactMap { $0 as? Element }
@@ -33,17 +37,17 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
         asArray.count
     }
 
-    private var storage: NSMapTable<NSString, AnyObject> = .strongToWeakObjects()
+    private var storage: NSMapTable<Key, Value> = .strongToWeakObjects()
 
     public init(arrayLiteral elements: Element...) {
         for element in elements {
-            insertToStorage(object: element as AnyObject)
+            insertToStorage(object: element)
         }
     }
 
     public init<S: Sequence>(_ elements: S) where S.Element == Element {
         for element in elements {
-            insertToStorage(object: element as AnyObject)
+            insertToStorage(object: element)
         }
     }
 
@@ -51,7 +55,7 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
     /// - parameter element: `Element` to compare.
     /// - parameter element: Returns
     public func contains(_ element: Element) -> Bool {
-        storage.object(forKey: fromattedMemoryString(for: element as AnyObject) as NSString) != nil
+        storage.object(forKey: keyForElement(element)) != nil
     }
 
     public mutating func formUnion<T>(_ other: WeakSet<T>) {
@@ -60,9 +64,11 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
             storage = storageCopy()
         }
 
-        guard let enumerator = other.storage.objectEnumerator() else { return }
-        while let element = enumerator.nextObject() {
-            insertToStorage(object: element as AnyObject)
+        let enumerator = other.storage.objectEnumerator()
+        while let object = enumerator?.nextObject() {
+            if let object = object as? Element {
+                insertToStorage(object: object)
+            }
         }
     }
 
@@ -71,11 +77,11 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
         if !isKnownUniquelyReferenced(&storage) {
             storage = storageCopy()
         }
-        insertToStorage(object: element as AnyObject)
+        insertToStorage(object: element)
     }
 
-    private func insertToStorage(object: AnyObject) {
-        storage.setObject(object, forKey: fromattedMemoryString(for: object) as NSString)
+    private func insertToStorage(object: Element) {
+        storage.setObject(object as Value, forKey: keyForElement(object))
     }
 
     public mutating func removeAll() {
@@ -88,27 +94,37 @@ public struct WeakSet<Element>: ExpressibleByArrayLiteral, CustomDebugStringConv
         if !isKnownUniquelyReferenced(&storage) {
             storage = storageCopy()
         }
-        storage.removeObject(forKey: fromattedMemoryString(for: element as AnyObject) as NSString)
+        storage.removeObject(forKey: keyForElement(element))
     }
 
-    private func storageCopy() -> NSMapTable<NSString, AnyObject> {
-        storage.copy() as? NSMapTable<NSString, AnyObject> ?? .strongToWeakObjects()
+    private func keyForElement(_ element: Element) -> Key {
+        return NSNumber(value: ObjectIdentifier(element as AnyObject).hashValue)
+    }
+
+    private func storageCopy() -> NSMapTable<Key, Value> {
+        storage.copy() as? NSMapTable<Key, Value> ?? .strongToWeakObjects()
     }
 
     public var debugDescription: String {
         var description = "["
-        let enumerator = storage.keyEnumerator()
         var nextSpacer = ""
-        while let key = enumerator.nextObject() as? NSString {
-            if let object = storage.object(forKey: key) {
-                description += nextSpacer + "<\(object): \(key)>"
-                nextSpacer = ", "
-            }
+        let enumerator = storage.objectEnumerator()
+        while let object = enumerator?.nextObject() {
+            description += nextSpacer + memoryAddressDescription(for: object as AnyObject)
+            nextSpacer = ", "
         }
         return description + "]"
     }
 }
 
-func fromattedMemoryString(for object: AnyObject) -> String {
+func memoryAddress(for object: AnyObject) -> String {
     return String(format: "%018p", unsafeBitCast(object, to: Int.self))
+}
+
+func memoryAddressDescription(for object: AnyObject) -> String {
+    if object is NSObject {
+        return "\(object)"
+    } else {
+        return "<\(object): \(memoryAddress(for: object))>"
+    }
 }

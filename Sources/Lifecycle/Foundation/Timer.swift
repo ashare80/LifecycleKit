@@ -31,11 +31,11 @@ extension Timer {
     ///   pauses.
     /// - parameter maxFrameDuration: The maximum duration a single frame should take. Defaults to 33ms.
     /// - returns: `Publishers.First` that outputs after delay.
-    public static func execute(withDelay delay: TimeInterval, maxFrameDuration: Int = 33) -> Publishers.First<RelayPublisher<Void>> {
+    public static func execute(withDelay delay: TimeInterval, maxFrameDuration: Int = 33, runloop: RunLoop = RunLoop.main) -> Publishers.First<RelayPublisher<Void>> {
         let period: TimeInterval = .milliseconds(maxFrameDuration / 3)
         var lastRunLoopTime = Date().timeIntervalSinceReferenceDate
         var properFrameTime = 0.0
-        return publish(every: period, on: RunLoop.main, in: .common)
+        return publish(every: period, on: runloop, in: .common)
             .autoconnect()
             .filter { _ in
                 let currentTime = Date().timeIntervalSinceReferenceDate
