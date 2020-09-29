@@ -141,12 +141,7 @@ public class LeakDetector {
     /// - parameter inTime: The time the given view controller is expected to disappear.
     /// - returns: The handle that can be used to cancel the expectation.
     public func expectViewDisappear(tracker: ViewLifecycleManager, inTime time: TimeInterval = .viewDisappearExpectation) -> RelayPublisher<Void> {
-        guard
-            tracker.viewDidLoad,
-            tracker.isDisplayed
-        else {
-            return Empty().eraseToAnyPublisher()
-        }
+        guard tracker.isActive else { return Empty().eraseToAnyPublisher() }
 
         return Timer
             .execute(withDelay: time)

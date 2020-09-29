@@ -89,7 +89,7 @@ final class LeakDetectorTests: XCTestCase {
 
     func testViewDisappear() {
         let viewManageable = TestViewLifecycleManaged()
-        viewManageable.viewLifecycleManager.viewDidLoad = true
+        viewManageable.viewLifecycleManager.viewDidLoad()
         viewManageable.viewLifecycleManager.isDisplayed = true
 
         expectAssertionFailure(timeout: 2.0) {

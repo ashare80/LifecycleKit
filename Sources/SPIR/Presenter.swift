@@ -45,7 +45,7 @@ open class InteractablePresenter<View>: Presenter<View>, Interactable, Lifecycle
         self.scopeLifecycleManager = scopeLifecycleManager
         super.init(viewLifecycleManager: viewLifecycleManager)
         bind(to: scopeLifecycleManager)
-        scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
+        monitorViewDisappearWhenInactive(viewLifecycleManager)
     }
 
     open func didLoad(_ lifecycleProvider: LifecycleProvider) {}

@@ -23,15 +23,15 @@ final class RootLifecycleManagerTests: XCTestCase {
     let delegate = Delegate()
 
     func testDelegates() {
-        XCTAssertEqual(delegate.rootLifecycleManageable.scopeLifecycleManager.lifecycleState, .initialized)
+        XCTAssertFalse(delegate.rootLifecycleManageable.isActive)
 
         delegate.activateRoot()
 
-        XCTAssertEqual(delegate.rootLifecycleManageable.scopeLifecycleManager.lifecycleState, .active)
+        XCTAssertTrue(delegate.rootLifecycleManageable.isActive)
 
         delegate.deactivateRoot()
 
-        XCTAssertEqual(delegate.rootLifecycleManageable.scopeLifecycleManager.lifecycleState, .inactive)
+        XCTAssertFalse(delegate.rootLifecycleManageable.isActive)
     }
 }
 

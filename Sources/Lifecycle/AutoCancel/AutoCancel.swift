@@ -39,8 +39,8 @@ extension Publisher {
 
 public struct RetainedCancellablePublisher<P: Publisher> {
     let source: P
-    let cancelPublisher: RelayPublisher<()>?
-    
+    let cancelPublisher: RelayPublisher<Void>?
+
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
@@ -70,7 +70,7 @@ public struct RetainedCancellablePublisher<P: Publisher> {
 
 final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancellable {
     public let combineIdentifier: CombineIdentifier = CombineIdentifier()
-    
+
     private var subscription: Subscription? {
         didSet {
             if subscription == nil {
@@ -79,22 +79,22 @@ final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancella
             }
         }
     }
-    
+
     private var cancelPublisherCancellable: Cancellable?
-    
+
     private let receiveValue: ((Input) -> Void)?
     private let receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?
     private let receiveFailure: ((Failure) -> Void)?
     private let receiveFinished: (() -> Void)?
     private let receiveCancel: (() -> Void)?
-    private let cancelPublisher: RelayPublisher<()>?
-    
+    private let cancelPublisher: RelayPublisher<Void>?
+
     init(receiveValue: ((Input) -> Void)? = nil,
          receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
          receiveFailure: ((Failure) -> Void)? = nil,
          receiveFinished: (() -> Void)? = nil,
          receiveCancel: (() -> Void)? = nil,
-         cancelPublisher: RelayPublisher<()>? = nil) {
+         cancelPublisher: RelayPublisher<Void>? = nil) {
         self.receiveValue = receiveValue
         self.receiveCompletion = receiveCompletion
         self.receiveFailure = receiveFailure
@@ -102,13 +102,13 @@ final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancella
         self.receiveCancel = receiveCancel
         self.cancelPublisher = cancelPublisher
     }
-    
+
     func receive(subscription: Subscription) {
         self.subscription = subscription
-        
+
         cancelPublisherCancellable = cancelPublisher?.sink(receiveValue: cancel,
                                                            receiveFinished: cancel)
-        
+
         self.subscription?.request(.unlimited)
     }
 
@@ -119,9 +119,9 @@ final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancella
 
     func receive(completion: Subscribers.Completion<Failure>) {
         subscription = nil
-        
+
         receiveCompletion?(completion)
-        
+
         switch completion {
         case let .failure(error):
             receiveFailure?(error)
@@ -129,7 +129,7 @@ final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancella
             receiveFinished?()
         }
     }
-    
+
     func cancel() {
         guard let subscription = subscription else { return }
         receiveCancel?()

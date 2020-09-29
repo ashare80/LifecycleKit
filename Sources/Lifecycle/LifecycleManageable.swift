@@ -24,23 +24,24 @@ public protocol LifecycleManageable: LifecycleProvider {
 }
 
 extension LifecycleManageable {
-    public var lifecycleState: LifecycleState {
-        return scopeLifecycleManager.lifecycleState
-    }
 
     public var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return scopeLifecycleManager.lifecyclePublisher
+    }
+
+    public var isActive: Bool {
+        return scopeLifecycleManager.isActive
     }
 
     public func expectDeallocateIfOwns(_ ownedObject: AnyObject, inTime time: TimeInterval = .deallocationExpectation) {
         if let lifecycleManaged = ownedObject as? LifecycleManageable {
             guard lifecycleManaged.scopeLifecycleManager === scopeLifecycleManager else { return }
         }
-        
+
         if let lifecycleManaged = ownedObject as? WeakLifecycleManageable {
             guard lifecycleManaged.scopeLifecycleManager === scopeLifecycleManager else { return }
         }
-        
+
         LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
     }
 }
@@ -51,10 +52,6 @@ public protocol WeakLifecycleManageable: LifecycleProvider {
 }
 
 extension WeakLifecycleManageable {
-    public var lifecycleState: LifecycleState {
-        return scopeLifecycleManager?.lifecycleState ?? .deinitialized
-    }
-
     public var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return scopeLifecycleManager?.lifecyclePublisher ?? Just<LifecycleState>(.deinitialized).eraseToAnyPublisher().removeDuplicates()
     }

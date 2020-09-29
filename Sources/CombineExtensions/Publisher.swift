@@ -28,9 +28,9 @@ extension Publisher {
     ///   - receiveRequest: A closure that executes when the publisher receives a request for more elements. Defaults to `nil`.
     /// - Returns: A publisher that performs the specified closures when publisher events occur.
     public func handleEvents(receiveSubscription: ((Subscription) -> Void)? = nil,
-                             receiveOutput: ((Self.Output) -> Void)? = nil,
-                             receiveCompletion: ((Subscribers.Completion<Self.Failure>) -> Void)? = nil,
-                             receiveFailure: ((Self.Failure) -> Void)? = nil,
+                             receiveOutput: ((Output) -> Void)? = nil,
+                             receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
+                             receiveFailure: ((Failure) -> Void)? = nil,
                              receiveFinished: (() -> Void)? = nil,
                              receiveCancel: (() -> Void)? = nil,
                              receiveRequest: ((Subscribers.Demand) -> Void)? = nil) -> Publishers.HandleEvents<Self>
@@ -59,9 +59,9 @@ extension Publisher {
     ///   - receiveFinished: The closure to execute on receipt of a finished. Defaults to `nil`.
     ///   - receiveCancel: The closure to execute on receipt of a cancel. Defaults to `nil`.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveValue: ((Self.Output) -> Void)? = nil,
-                     receiveCompletion: ((Subscribers.Completion<Self.Failure>) -> Void)? = nil,
-                     receiveFailure: ((Self.Failure) -> Void)? = nil,
+    public func sink(receiveValue: ((Output) -> Void)? = nil,
+                     receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
+                     receiveFailure: ((Failure) -> Void)? = nil,
                      receiveFinished: (() -> Void)? = nil,
                      receiveCancel: (() -> Void)? = nil) -> AnyCancellable
     {
@@ -100,7 +100,7 @@ extension Optional: OptionalType {
 }
 
 extension Publisher where Output: OptionalType {
-    public func filterNil() -> AnyPublisher<Output.Wrapped, Failure> {
+    public func filterNil() -> Publishers.SwitchToLatest<AnyPublisher<Output.Wrapped, Failure>, Publishers.Map<Self, AnyPublisher<Output.Wrapped, Failure>>> {
         return map { (output) -> AnyPublisher<Output.Wrapped, Failure> in
             if let output = output.value {
                 return Just(output).mapError().eraseToAnyPublisher()
@@ -109,6 +109,5 @@ extension Publisher where Output: OptionalType {
             }
         }
         .switchToLatest()
-        .eraseToAnyPublisher()
     }
 }

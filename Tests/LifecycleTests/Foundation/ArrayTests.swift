@@ -18,7 +18,6 @@
 import XCTest
 
 final class ArrayTests: XCTestCase {
-    // MARK: - Tests
 
     func test_removeAllByReference() {
         let object1 = NSObject()

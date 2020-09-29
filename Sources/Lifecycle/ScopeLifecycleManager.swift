@@ -20,14 +20,15 @@ import Foundation
 
 /// Internalizes lifecycle management.
 public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable {
-    public var lifecycleState: LifecycleState {
-        return _lifecycleState
-    }
-
     public var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
-        return $_lifecycleState
+        return $lifecycleState
+            .prefix(while: { state in state != .deinitialized })
             .eraseToAnyPublisher()
             .removeDuplicates()
+    }
+
+    public var isActive: Bool {
+        return lifecycleState == .active
     }
 
     weak var parent: ScopeLifecycleManager?
@@ -42,7 +43,7 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
     public init() {}
 
     deinit {
-        if lifecycleState == .active {
+        if isActive {
             deactivate()
         }
 
@@ -50,12 +51,12 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
             detachChild(child)
         }
 
-        _lifecycleState = .deinitialized
+        lifecycleState = .deinitialized
 
         LeakDetector.instance.expectDeallocate(objects: binded, inTime: .viewDisappearExpectation).retained.sink()
     }
 
-    @Published private var _lifecycleState: LifecycleState = .initialized
+    @Published private var lifecycleState: LifecycleState = .initialized
 
     @Published var children: [LifecycleManageable] = []
 
@@ -63,7 +64,7 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
 
     /// Activate this lifecycle scope including all children.
     func activate() {
-        _lifecycleState = .active
+        lifecycleState = .active
 
         for lifecycleManageable in children where !lifecycleManageable.isActive {
             lifecycleManageable.scopeLifecycleManager.activate()
@@ -72,7 +73,7 @@ public final class ScopeLifecycleManager: LifecycleProvider, ObjectIdentifiable 
 
     /// Deactivate this lifecycle scope including all children.
     func deactivate() {
-        _lifecycleState = .inactive
+        lifecycleState = .inactive
 
         for lifecycleManageable in children where lifecycleManageable.isActive {
             lifecycleManageable.scopeLifecycleManager.deactivate()

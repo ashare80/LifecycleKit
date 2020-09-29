@@ -98,7 +98,7 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
             viewLifecycleBindable.bind(to: viewLifecycleManager)
         }
 
-        scopeLifecycleManager.monitorViewDisappearWhenInactive(viewLifecycleManager)
+        monitorViewDisappearWhenInactive(viewLifecycleManager)
     }
 
     deinit {

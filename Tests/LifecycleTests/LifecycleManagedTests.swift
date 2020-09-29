@@ -147,7 +147,6 @@ final class LifecycleManagerTests: XCTestCase {
 
         XCTAssertNil(weakLifecycleManaged.scopeLifecycleManager)
         XCTAssertFalse(weakLifecycleManaged.attachChild(TestLifecycleManaged()))
-        XCTAssertEqual(weakLifecycleManaged.lifecycleState, .deinitialized)
     }
 }
 

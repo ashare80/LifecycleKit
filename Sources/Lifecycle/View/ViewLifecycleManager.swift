@@ -30,7 +30,7 @@ extension ViewLifecycleManageable {
     /// - returns: `View` type after applying appearance closures.
     public func tracked<V: View>(_ view: V) -> some View {
         let viewLifecycleManager = self.viewLifecycleManager
-        viewLifecycleManager.viewDidLoad = true
+        viewLifecycleManager.viewDidLoad()
 
         return view.onAppear {
             viewLifecycleManager.isDisplayed = true
@@ -42,17 +42,13 @@ extension ViewLifecycleManageable {
 }
 
 public final class ViewLifecycleManager: LifecycleProvider, ObjectIdentifiable {
-    public var lifecycleState: LifecycleState {
-        _lifecycleState
+    public var isActive: Bool {
+        return lifecycleState == .active
     }
 
     public var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
-        let statePublisher = $_lifecycleState
-        return $viewDidLoad
-            .drop(while: { didLoad in !didLoad })
-            .first()
-            .map { _ in statePublisher }
-            .switchToLatest()
+        return $lifecycleState
+            .filterNil()
             .eraseToAnyPublisher()
             .removeDuplicates()
     }
@@ -68,30 +64,33 @@ public final class ViewLifecycleManager: LifecycleProvider, ObjectIdentifiable {
     public init() {}
 
     deinit {
-        _lifecycleState = .deinitialized
+        lifecycleState = .deinitialized
     }
 
-    @Published var viewDidLoad: Bool = false
+    func viewDidLoad() {
+        lifecycleState = .initialized
+    }
 
     /// Set to `true` `onAppear`, and `false` `onDisappear`.
     var isDisplayed: Bool = false {
         didSet {
             guard isDisplayed != oldValue else { return }
 
-            _lifecycleState = isDisplayed ? .active : .inactive
+            lifecycleState = isDisplayed ? .active : .inactive
         }
     }
 
-    @Published private var _lifecycleState: LifecycleState = .initialized
+    @Published private var lifecycleState: LifecycleState?
 
     public internal(set) var binded = WeakSet<ViewLifecycleBindable>()
 }
 
-extension LifecycleProvider {
+extension LifecycleManageable {
     /// Subscribes to lifecycle state and expects view to not be disaplyed when inactive.
     public func monitorViewDisappearWhenInactive(_ viewLifecycleManager: ViewLifecycleManager) {
-        isActivePublisher
-            .drop(while: { !$0 })
+        lifecyclePublisher
+            .drop(while: { state in state != .inactive })
+            .map { state in state == .active }
             .removeDuplicates()
             .map { isActive -> RelayPublisher<Void> in
                 if isActive {
