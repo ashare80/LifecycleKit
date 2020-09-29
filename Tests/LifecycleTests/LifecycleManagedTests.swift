@@ -18,33 +18,33 @@ import Foundation
 @testable import Lifecycle
 import XCTest
 
-final class LifecycleManagerTests: XCTestCase {
+final class LifecycleTests: XCTestCase {
     func testBind() {
-        let lifecylceManaged = TestLifecycleManaged()
+        let lifecylceOwner = TestLifecycleOwner()
 
-        lifecylceManaged.scopeLifecycleManager.activate()
+        lifecylceOwner.scopeLifecycle.activate()
 
-        XCTAssertEqual(lifecylceManaged.scopeLifecycleManager.owner as? TestLifecycleManaged, lifecylceManaged)
+        XCTAssertEqual(lifecylceOwner.scopeLifecycle.owner as? TestLifecycleOwner, lifecylceOwner)
     }
 
     func testAddChild() {
-        let parent = TestLifecycleManaged()
-        let child = TestLifecycleManaged()
+        let parent = TestLifecycleOwner()
+        let child = TestLifecycleOwner()
 
         XCTAssertFalse(child.isActive)
 
         XCTAssertTrue(parent.attachChild(child))
 
-        XCTAssertEqual(parent.children as! [TestLifecycleManaged], [child])
+        XCTAssertEqual(parent.children as! [TestLifecycleOwner], [child])
         XCTAssertFalse(parent.isActive)
         XCTAssertFalse(child.isActive)
         XCTAssertEqual(child.didLoadCount, 0)
         XCTAssertEqual(child.didBecomeActiveCount, 0)
         XCTAssertEqual(child.didBecomeInactiveCount, 0)
 
-        parent.scopeLifecycleManager.activate()
+        parent.scopeLifecycle.activate()
 
-        XCTAssertEqual(parent.children as! [TestLifecycleManaged], [child])
+        XCTAssertEqual(parent.children as! [TestLifecycleOwner], [child])
         XCTAssertTrue(parent.isActive)
         XCTAssertTrue(child.isActive)
         XCTAssertEqual(child.didLoadCount, 1)
@@ -53,25 +53,25 @@ final class LifecycleManagerTests: XCTestCase {
 
         XCTAssertFalse(parent.attachChild(child))
 
-        XCTAssertEqual(parent.children as! [TestLifecycleManaged], [child])
+        XCTAssertEqual(parent.children as! [TestLifecycleOwner], [child])
         XCTAssertTrue(parent.isActive)
         XCTAssertTrue(child.isActive)
         XCTAssertEqual(child.didLoadCount, 1)
         XCTAssertEqual(child.didBecomeActiveCount, 1)
         XCTAssertEqual(child.didBecomeInactiveCount, 0)
 
-        parent.scopeLifecycleManager.deactivate()
+        parent.scopeLifecycle.deactivate()
 
-        XCTAssertEqual(parent.children as! [TestLifecycleManaged], [child])
+        XCTAssertEqual(parent.children as! [TestLifecycleOwner], [child])
         XCTAssertFalse(parent.isActive)
         XCTAssertFalse(child.isActive)
         XCTAssertEqual(child.didLoadCount, 1)
         XCTAssertEqual(child.didBecomeActiveCount, 1)
         XCTAssertEqual(child.didBecomeInactiveCount, 1)
 
-        parent.scopeLifecycleManager.activate()
+        parent.scopeLifecycle.activate()
 
-        XCTAssertEqual(parent.children as! [TestLifecycleManaged], [child])
+        XCTAssertEqual(parent.children as! [TestLifecycleOwner], [child])
         XCTAssertTrue(parent.isActive)
         XCTAssertTrue(child.isActive)
         XCTAssertEqual(child.didLoadCount, 1)
@@ -80,7 +80,7 @@ final class LifecycleManagerTests: XCTestCase {
 
         parent.detachChild(child)
 
-        XCTAssertEqual(parent.children as! [TestLifecycleManaged], [])
+        XCTAssertEqual(parent.children as! [TestLifecycleOwner], [])
         XCTAssertTrue(parent.isActive)
         XCTAssertFalse(child.isActive)
         XCTAssertEqual(child.didLoadCount, 1)
@@ -89,7 +89,7 @@ final class LifecycleManagerTests: XCTestCase {
     }
 
     func testAddParentAsChild_asserts() {
-        let parent = TestLifecycleManaged()
+        let parent = TestLifecycleOwner()
 
         expectAssert {
             parent.attachChild(parent)
@@ -97,12 +97,12 @@ final class LifecycleManagerTests: XCTestCase {
     }
 
     func testAddChildAsChild_asserts() {
-        let parent = TestLifecycleManaged()
-        let child = TestLifecycleManaged()
+        let parent = TestLifecycleOwner()
+        let child = TestLifecycleOwner()
 
         XCTAssertTrue(parent.attachChild(child))
 
-        let parent2 = TestLifecycleManaged()
+        let parent2 = TestLifecycleOwner()
 
         expectAssert(passes: true) {
             expectAssert {
@@ -112,55 +112,53 @@ final class LifecycleManagerTests: XCTestCase {
     }
 
     func testDuplicateOwner_asserts() {
-        let manager = ScopeLifecycleManager()
-        let owner = TestLifecycleManaged(scopeLifecycleManager: manager)
+        let scopeLifecycle = ScopeLifecycle()
+        let owner = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
 
         expectAssertionFailure {
-            _ = TestLifecycleManaged(scopeLifecycleManager: manager)
+            _ = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
         }
 
         XCTAssertNotNil(owner)
     }
 
     func testReleasedOwner() {
-        let manager = ScopeLifecycleManager()
+        let scopeLifecycle = ScopeLifecycle()
 
         autoreleasepool {
-            let owner = TestLifecycleManaged(scopeLifecycleManager: manager)
-            XCTAssertEqual(owner, manager.owner as! TestLifecycleManaged)
+            let owner = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
+            XCTAssertEqual(owner, scopeLifecycle.owner as! TestLifecycleOwner)
         }
 
-        let owner = TestLifecycleManaged(scopeLifecycleManager: manager)
+        let owner = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
 
-        XCTAssertEqual(owner, manager.owner as! TestLifecycleManaged)
+        XCTAssertEqual(owner, scopeLifecycle.owner as! TestLifecycleOwner)
     }
 
     func testBindAgain_asserts() {
-        let parent = TestLifecycleManaged()
+        let parent = TestLifecycleOwner()
         expectAssertionFailure {
-            parent.bind(to: parent.scopeLifecycleManager)
+            parent.subscribe(parent.scopeLifecycle)
         }
     }
 
-    func testWeakLifecycleManaged() {
-        let weakLifecycleManaged = WeakLifecycleManaged(scopeLifecycleManager: ScopeLifecycleManager())
+    func testScopeLifecycleDependent() {
+        let weakLifecycleOwner = ScopeLifecycleDependent(scopeLifecycle: ScopeLifecycle())
 
-        XCTAssertNil(weakLifecycleManaged.scopeLifecycleManager)
-        XCTAssertFalse(weakLifecycleManaged.attachChild(TestLifecycleManaged()))
+        XCTAssertNil(weakLifecycleOwner.scopeLifecycle)
+        XCTAssertFalse(weakLifecycleOwner.attachChild(TestLifecycleOwner()))
     }
 }
 
-protocol TestLifecycleManageable: LifecycleManageable {}
-
-final class TestLifecycleManaged: LifecycleManaged, TestLifecycleManageable {
+final class TestLifecycleOwner: BaseLifecycleOwner {
 
     var didLoadCount: Int = 0
-    override func didLoad(_ lifecycleProvider: LifecycleProvider) {
+    override func didLoad(_ lifecyclePublisher: LifecyclePublisher) {
         didLoadCount += 1
     }
 
     var didBecomeActiveCount: Int = 0
-    override func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {
+    override func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {
         didBecomeActiveCount += 1
     }
 

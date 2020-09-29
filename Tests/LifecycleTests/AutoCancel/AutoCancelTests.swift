@@ -140,16 +140,16 @@ final class AutoCancelTests: XCTestCase {
         var receiveCancelCount = 0
 
         let publisher = PassthroughSubject<Void, Never>()
-        var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>>!
+        var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>>!
 
         autoreleasepool {
             let object = TestObject()
             weakObject = object
 
-            let scopeLifecycleManager = ScopeLifecycleManager()
-            lifecyclePublisher = scopeLifecycleManager.lifecyclePublisher
+            let scopeLifecycle = ScopeLifecycle()
+            lifecycleState = scopeLifecycle.lifecycleState
 
-            lifecyclePublisher.retained.sink(receiveValue: { state in
+            lifecycleState.retained.sink(receiveValue: { state in
                 XCTAssertNotNil(object)
             }, receiveFinished: {
                 XCTAssertNotNil(object)
@@ -157,7 +157,7 @@ final class AutoCancelTests: XCTestCase {
         }
 
         let cancellable = publisher
-            .autoCancel(lifecyclePublisher)
+            .autoCancel(lifecycleState)
             .sink(receiveValue: {
                 receiveValueCount += 1
             }, receiveCompletion: { _ in

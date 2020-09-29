@@ -20,13 +20,13 @@ import Foundation
 
 extension Publisher {
     /// Completes when any provided lifecycle states are output, or lifecycle publisher completes.
-    public func autoCancel(_ lifecycleProvider: LifecycleProvider, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> {
-        return autoCancel(lifecycleProvider.lifecyclePublisher, when: states)
+    public func autoCancel(_ lifecyclePublisher: LifecyclePublisher, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> {
+        return autoCancel(lifecyclePublisher.lifecycleState, when: states)
     }
 
     /// Completes when any provided lifecycle states are output, or lifecycle publisher completes.
-    public func autoCancel<P: Publisher>(_ lifecyclePublisher: P, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> where P.Output == LifecycleState {
-        return RetainedCancellablePublisher(source: self, cancelPublisher: lifecyclePublisher.filter(states.contains(state:)).map { _ in () }.replaceError(with: ()).mapError().eraseToAnyPublisher())
+    public func autoCancel<P: Publisher>(_ lifecycleState: P, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> where P.Output == LifecycleState {
+        return RetainedCancellablePublisher(source: self, cancelPublisher: lifecycleState.filter(states.contains(state:)).map { _ in () }.replaceError(with: ()).mapError().eraseToAnyPublisher())
     }
 }
 

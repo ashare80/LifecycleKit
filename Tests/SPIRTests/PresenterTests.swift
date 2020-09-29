@@ -22,29 +22,29 @@ import SwiftUI
 import XCTest
 
 final class PresenterTests: XCTestCase {
-    private let viewLifecycleManager = ViewLifecycleManager()
-    private let scopeLifecycleManager = ScopeLifecycleManager()
+    private let viewLifecycle = ViewLifecycle()
 
     func testPresenter() {
-        testPresenterBinding(presenter: TestPresenter(viewLifecycleManager: viewLifecycleManager))
+        testPresenterBinding(presenter: TestPresenter(viewLifecycle: viewLifecycle))
     }
 
     func testInteractablePresenter() {
-        testPresenterBinding(presenter: TestInteractablePresenter(viewLifecycleManager: viewLifecycleManager))
+        let interactablePresenter = TestInteractablePresenter(viewLifecycle: viewLifecycle)
+        testPresenterBinding(presenter: interactablePresenter)
+        XCTAssertTrue(viewLifecycle.scopeLifecycle === interactablePresenter.scopeLifecycle)
     }
 
     private func testPresenterBinding<PresenterType: Presenting & ViewPresentable>(presenter: PresenterType) {
-        XCTAssertEqual(presenter.viewLifecycleManager, viewLifecycleManager)
-        XCTAssertTrue(viewLifecycleManager.binded.contains(presenter))
-        XCTAssertTrue(viewLifecycleManager.binded.contains(presenter))
+        XCTAssertEqual(presenter.viewLifecycle, viewLifecycle)
+        XCTAssertTrue(viewLifecycle.subscribers.contains(presenter))
         XCTAssertTrue(presenter.viewable is AnyView)
     }
 }
 
-final class TestPresenter: Presenter<TestView<TestPresenter>>, ViewPresentable, LifecycleBindable {
-    func didLoad(_ lifecycleProvider: LifecycleProvider) {}
+final class TestPresenter: Presenter<TestView<TestPresenter>>, ViewPresentable, LifecycleSubscriber {
+    func didLoad(_ lifecyclePublisher: LifecyclePublisher) {}
 
-    func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {}
+    func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {}
 
     func didBecomeInactive() {}
 }

@@ -19,9 +19,9 @@ import Foundation
 import Lifecycle
 
 /// The base protocol for all routers.
-public protocol Routing: WeakLifecycleManageable {}
+public protocol Routing: LifecycleDependent {}
 
-open class Router: WeakLifecycleManaged, Routing {}
+open class Router: ScopeLifecycleDependent, Routing {}
 
 /// Base class of an `Interactor` that has a separate associated `Presenter` and `View`.
 open class PresentableRouter<PresenterType>: Router {
@@ -32,15 +32,15 @@ open class PresentableRouter<PresenterType>: Router {
     /// - note: This holds a strong reference to the given `Presenter`.
     ///
     /// - parameter presenter: The presenter associated with this `Interactor`.
-    public init(scopeLifecycleManager: ScopeLifecycleManager,
+    public init(scopeLifecycle: ScopeLifecycle,
                 presenter: PresenterType)
     {
         self.presenter = presenter
-        super.init(scopeLifecycleManager: scopeLifecycleManager)
+        super.init(scopeLifecycle: scopeLifecycle)
 
-        if let viewLifecycleBindable = self as? ViewLifecycleBindable,
-            let viewLifecycleManageable = presenter as? ViewLifecycleManageable {
-            viewLifecycleBindable.bind(to: viewLifecycleManageable.viewLifecycleManager)
+        if let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber,
+            let viewLifecycleOwner = presenter as? ViewLifecycleOwner {
+            viewLifecycleSubscriber.subscribe(viewLifecycleOwner.viewLifecycle)
         }
     }
 }

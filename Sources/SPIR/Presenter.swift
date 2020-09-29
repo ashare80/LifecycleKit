@@ -20,37 +20,37 @@ import Lifecycle
 import SwiftUI
 
 /// Type erased `Presenter`.
-public protocol Presentable: ViewLifecycleManageable {
+public protocol Presentable: ViewLifecycleOwner {
     /// Type erased view for public use.
     var viewable: Viewable { get }
 }
 
 /// The base protocol for all `Presenter`s.
-public protocol Presenting: ViewLifecycleManageable, ViewLifecycleBindable {}
+public protocol Presenting: ViewLifecycleOwner, ViewLifecycleSubscriber {}
 
 /// The base class of all `Presenter`s. A `Presenter` translates business models into values the corresponding
 /// `View` can consume and display. It also maps UI events to business logic method, invoked to
 /// its listener.
-open class Presenter<View>: ViewLifecycleManaged, Presenting {
+open class Presenter<View>: BaseViewLifecycleOwner, Presenting {
     public typealias ViewType = View
 }
 
-open class InteractablePresenter<View>: Presenter<View>, Interactable, LifecycleBindable, LifecycleManageableRouting {
-    public let scopeLifecycleManager: ScopeLifecycleManager
+open class InteractablePresenter<View>: Presenter<View>, Interactable, LifecycleSubscriber, LifecycleOwnerRouting {
+    public let scopeLifecycle: ScopeLifecycle
 
     /// Initializer.
-    public init(scopeLifecycleManager: ScopeLifecycleManager = ScopeLifecycleManager(),
-                viewLifecycleManager: ViewLifecycleManager = ViewLifecycleManager())
+    public init(scopeLifecycle: ScopeLifecycle = ScopeLifecycle(),
+                viewLifecycle: ViewLifecycle = ViewLifecycle())
     {
-        self.scopeLifecycleManager = scopeLifecycleManager
-        super.init(viewLifecycleManager: viewLifecycleManager)
-        bind(to: scopeLifecycleManager)
-        monitorViewDisappearWhenInactive(viewLifecycleManager)
+        self.scopeLifecycle = scopeLifecycle
+        super.init(viewLifecycle: viewLifecycle)
+        subscribe(scopeLifecycle)
+        viewLifecycle.setScopeLifecycle(scopeLifecycle)
     }
 
-    open func didLoad(_ lifecycleProvider: LifecycleProvider) {}
+    open func didLoad(_ lifecyclePublisher: LifecyclePublisher) {}
 
-    open func didBecomeActive(_ lifecycleProvider: LifecycleProvider) {}
+    open func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {}
 
     open func didBecomeInactive() {}
 }

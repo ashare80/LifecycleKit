@@ -18,49 +18,49 @@ import CombineExtensions
 import Foundation
 import SwiftUI
 
-/// The root `LifecycleManager` of an application.
-public protocol RootLifecycleManager {
-    var rootLifecycleManageable: LifecycleManageable { get }
+/// The root `Lifecycle` of an application.
+public protocol RootLifecycle {
+    var rootLifecycleOwner: LifecycleOwner { get }
 }
 
-extension RootLifecycleManager {
-    /// Monitoring publisher to view `LifecycleManageable` hierarchy for tests and debugging tools.
+extension RootLifecycle {
+    /// Monitoring publisher to view `LifecycleOwner` hierarchy for tests and debugging tools.
     public var childrenChangedPublisher: RelayPublisher<Void> {
-        return rootLifecycleManageable.scopeLifecycleManager.childrenChangedPublisher
+        return rootLifecycleOwner.scopeLifecycle.childrenChangedPublisher
     }
 }
 
 #if os(macOS)
 
-    extension NSApplicationDelegate where Self: RootLifecycleManager {
+    extension NSApplicationDelegate where Self: RootLifecycle {
         public func activateRoot() {
-            rootLifecycleManageable.scopeLifecycleManager.activate()
+            rootLifecycleOwner.scopeLifecycle.activate()
         }
 
         public func deactivateRoot() {
-            rootLifecycleManageable.scopeLifecycleManager.deactivate()
+            rootLifecycleOwner.scopeLifecycle.deactivate()
         }
     }
 
 #else
 
-    extension UIApplicationDelegate where Self: RootLifecycleManager {
+    extension UIApplicationDelegate where Self: RootLifecycle {
         public func activateRoot() {
-            rootLifecycleManageable.scopeLifecycleManager.activate()
+            rootLifecycleOwner.scopeLifecycle.activate()
         }
 
         public func deactivateRoot() {
-            rootLifecycleManageable.scopeLifecycleManager.deactivate()
+            rootLifecycleOwner.scopeLifecycle.deactivate()
         }
     }
 
-    extension UISceneDelegate where Self: RootLifecycleManager {
+    extension UISceneDelegate where Self: RootLifecycle {
         public func activateRoot() {
-            rootLifecycleManageable.scopeLifecycleManager.activate()
+            rootLifecycleOwner.scopeLifecycle.activate()
         }
 
         public func deactivateRoot() {
-            rootLifecycleManageable.scopeLifecycleManager.deactivate()
+            rootLifecycleOwner.scopeLifecycle.deactivate()
         }
     }
 

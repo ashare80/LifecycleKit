@@ -18,33 +18,33 @@
 import SwiftUI
 import XCTest
 
-final class RootLifecycleManagerTests: XCTestCase {
+final class RootLifecycleTests: XCTestCase {
 
     let delegate = Delegate()
 
     func testDelegates() {
-        XCTAssertFalse(delegate.rootLifecycleManageable.isActive)
+        XCTAssertFalse(delegate.rootLifecycleOwner.isActive)
 
         delegate.activateRoot()
 
-        XCTAssertTrue(delegate.rootLifecycleManageable.isActive)
+        XCTAssertTrue(delegate.rootLifecycleOwner.isActive)
 
         delegate.deactivateRoot()
 
-        XCTAssertFalse(delegate.rootLifecycleManageable.isActive)
+        XCTAssertFalse(delegate.rootLifecycleOwner.isActive)
     }
 }
 
 #if os(macOS)
 
-    final class Delegate: NSObject, NSApplicationDelegate, RootLifecycleManager {
-        var rootLifecycleManageable: LifecycleManageable = TestLifecycleManaged()
+    final class Delegate: NSObject, NSApplicationDelegate, RootLifecycle {
+        var rootLifecycleOwner: LifecycleOwner = TestLifecycleOwner()
     }
 
 #else
 
-    final class Delegate: NSObject, UISceneDelegate, RootLifecycleManager {
-        var rootLifecycleManageable: LifecycleManageable = TestLifecycleManaged()
+    final class Delegate: NSObject, UISceneDelegate, RootLifecycle {
+        var rootLifecycleOwner: LifecycleOwner = TestLifecycleOwner()
     }
 
 #endif

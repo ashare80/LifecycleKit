@@ -48,14 +48,14 @@ public struct LifecycleStateOptions: OptionSet {
     }
 }
 
-public protocol LifecycleProvider: AnyObject {
+public protocol LifecyclePublisher: AnyObject {
     /// Publisher of `LifecycleState` updates.
-    var lifecyclePublisher: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> { get }
+    var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> { get }
 }
 
-extension LifecycleProvider {
+extension LifecyclePublisher {
     public var isActivePublisher: Publishers.RemoveDuplicates<RelayPublisher<Bool>> {
-        return lifecyclePublisher
+        return lifecycleState
             .map { state in state == .active }
             .eraseToAnyPublisher()
             .removeDuplicates()

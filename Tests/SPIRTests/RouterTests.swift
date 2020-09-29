@@ -22,23 +22,23 @@ import XCTest
 
 final class RouterTests: XCTestCase {
 
-    let scopeLifecycleManager = ScopeLifecycleManager()
+    let scopeLifecycle = ScopeLifecycle()
     let presenter = TestPresenter()
 
     func testRouterBinding() {
-        let router = Router(scopeLifecycleManager: scopeLifecycleManager)
-        XCTAssertTrue(scopeLifecycleManager.binded.contains(router))
+        let router = Router(scopeLifecycle: scopeLifecycle)
+        XCTAssertTrue(scopeLifecycle.subscribers.contains(router))
     }
 
     func testPresentableRouterBinding() {
-        let router = TestPresentableRouter(scopeLifecycleManager: scopeLifecycleManager,
+        let router = TestPresentableRouter(scopeLifecycle: scopeLifecycle,
                                            presenter: presenter)
-        XCTAssertTrue(scopeLifecycleManager.binded.contains(router))
-        XCTAssertTrue(presenter.viewLifecycleManager.binded.contains(router))
+        XCTAssertTrue(scopeLifecycle.subscribers.contains(router))
+        XCTAssertTrue(presenter.viewLifecycle.subscribers.contains(router))
     }
 }
 
-final class TestPresentableRouter: PresentableRouter<TestPresenter>, ViewLifecycleBindable {
+final class TestPresentableRouter: PresentableRouter<TestPresenter>, ViewLifecycleSubscriber {
     func viewDidLoad() {}
     func viewDidAppear() {}
     func viewDidDisappear() {}

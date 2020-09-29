@@ -17,13 +17,13 @@
 import Foundation
 import Lifecycle
 
-public typealias LifecycleBindable = Lifecycle.LifecycleBindable
-public typealias LifecycleManageable = Lifecycle.LifecycleManageable
-public typealias LifecycleManageableRouting = Lifecycle.LifecycleManageableRouting
-public typealias LifecycleProvider = Lifecycle.LifecycleProvider
+public typealias LifecycleSubscriber = Lifecycle.LifecycleSubscriber
+public typealias LifecycleOwner = Lifecycle.LifecycleOwner
+public typealias LifecycleOwnerRouting = Lifecycle.LifecycleOwnerRouting
+public typealias LifecyclePublisher = Lifecycle.LifecyclePublisher
 public typealias LifecycleState = Lifecycle.LifecycleState
 public typealias LifecycleStateOptions = Lifecycle.LifecycleStateOptions
-public typealias RootLifecycleManager = Lifecycle.RootLifecycleManager
-public typealias ScopeLifecycleManager = Lifecycle.ScopeLifecycleManager
-public typealias ViewLifecycleBindable = Lifecycle.ViewLifecycleBindable
-public typealias ViewLifecycleManager = Lifecycle.ViewLifecycleManager
+public typealias RootLifecycle = Lifecycle.RootLifecycle
+public typealias ScopeLifecycle = Lifecycle.ScopeLifecycle
+public typealias ViewLifecycleSubscriber = Lifecycle.ViewLifecycleSubscriber
+public typealias ViewLifecycle = Lifecycle.ViewLifecycle

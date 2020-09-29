@@ -17,13 +17,13 @@
 import Foundation
 import Lifecycle
 
-public protocol LifecycleManagedScope {
-    /// Provided shared `ScopeLifecycleManager` for the component's scope.
-    var scopeLifecycleManager: ScopeLifecycleManager { get }
+public protocol LifecycleOwnerScope {
+    /// Provided shared `ScopeLifecycle` for the component's scope.
+    var scopeLifecycle: ScopeLifecycle { get }
 }
 
 /// Type for dependency frameworks such as Needle to conform to and provide a shared lifecycle instance.
-public protocol LifecycleManagedScopeComponent: LifecycleManagedScope {
+public protocol LifecycleOwnerScopeComponent: LifecycleOwnerScope {
     /// Share the enclosed object as a singleton at this scope. This allows
     /// this scope as well as all child scopes to share a single instance of
     /// the object, for as long as this component lives.
@@ -36,11 +36,11 @@ public protocol LifecycleManagedScopeComponent: LifecycleManagedScope {
     func shared<T>(__function: String, _ factory: () -> T) -> T
 }
 
-extension LifecycleManagedScopeComponent {
-    /// Provided shared `ScopeLifecycleManager` for the component's scope.
-    public var scopeLifecycleManager: ScopeLifecycleManager {
+extension LifecycleOwnerScopeComponent {
+    /// Provided shared `ScopeLifecycle` for the component's scope.
+    public var scopeLifecycle: ScopeLifecycle {
         return shared(__function: #function) {
-            return ScopeLifecycleManager()
+            return ScopeLifecycle()
         }
     }
 }
@@ -55,6 +55,6 @@ extension LifecycleManagedScopeComponent {
     public typealias Component = NeedleFoundation.Component
     public typealias Scope = NeedleFoundation.Scope
 
-    extension NeedleFoundation.Component: LifecycleManagedScopeComponent {}
+    extension NeedleFoundation.Component: LifecycleOwnerScopeComponent {}
 
 #endif

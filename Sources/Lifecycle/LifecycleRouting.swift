@@ -16,75 +16,75 @@
 
 import Foundation
 
-public protocol LifecycleManageableRouting: AnyObject {
-    /// All attached `LifecycleManageable`s.
-    var children: [LifecycleManageable] { get }
+public protocol LifecycleOwnerRouting: AnyObject {
+    /// All attached `LifecycleOwner`s.
+    var children: [LifecycleOwner] { get }
 
-    /// Attaches the given `LifecycleManageable` as a child.
+    /// Attaches the given `LifecycleOwner` as a child.
     ///
     /// The child will activate if the receiver is active.
     /// Child activation may run logic that synchornously results in a call to detach before `attachChild` returns.
     /// Best practice is to ensure the return value is`true` before performing additional routing logic such as presenting views.
     ///
-    /// - parameter child: The child `LifecycleManageable` to attach.
+    /// - parameter child: The child `LifecycleOwner` to attach.
     /// - returns: Is `true` if child was successfully attached.
     @discardableResult
-    func attachChild(_ child: LifecycleManageable) -> Bool
+    func attachChild(_ child: LifecycleOwner) -> Bool
 
-    /// Detaches the given `LifecycleManageable` from the tree.
+    /// Detaches the given `LifecycleOwner` from the tree.
     ///
-    /// - parameter child: The child `LifecycleManageable` to detach.
-    func detachChild(_ child: LifecycleManageable)
+    /// - parameter child: The child `LifecycleOwner` to detach.
+    func detachChild(_ child: LifecycleOwner)
 }
 
-extension LifecycleManageableRouting where Self: LifecycleManageable {
-    public var children: [LifecycleManageable] {
-        return scopeLifecycleManager.children
+extension LifecycleOwnerRouting where Self: LifecycleOwner {
+    public var children: [LifecycleOwner] {
+        return scopeLifecycle.children
     }
 
-    /// Attaches the given `LifecycleManageable` as a child.
+    /// Attaches the given `LifecycleOwner` as a child.
     ///
     /// The child will activate if the receiver is active.
     /// Child activation may run logic that synchornously results in a call to detach before `attachChild` returns.
     /// Best practice is to ensure the return value is`true` before performing additional routing logic such as presenting views.
     ///
-    /// - parameter child: The child `LifecycleManageable` to attach.
+    /// - parameter child: The child `LifecycleOwner` to attach.
     /// - returns: Is `true` if child was successfully attached.
     @discardableResult
-    public func attachChild(_ child: LifecycleManageable) -> Bool {
-        return scopeLifecycleManager.attachChild(child)
+    public func attachChild(_ child: LifecycleOwner) -> Bool {
+        return scopeLifecycle.attachChild(child)
     }
 
-    /// Detaches the given `LifecycleManageable` from the tree.
+    /// Detaches the given `LifecycleOwner` from the tree.
     ///
-    /// - parameter child: The child `LifecycleManageable` to detach.
-    public func detachChild(_ child: LifecycleManageable) {
-        scopeLifecycleManager.detachChild(child)
+    /// - parameter child: The child `LifecycleOwner` to detach.
+    public func detachChild(_ child: LifecycleOwner) {
+        scopeLifecycle.detachChild(child)
     }
 }
 
-extension LifecycleManageableRouting where Self: WeakLifecycleManageable {
-    public var children: [LifecycleManageable] {
-        return scopeLifecycleManager?.children ?? []
+extension LifecycleOwnerRouting where Self: LifecycleDependent {
+    public var children: [LifecycleOwner] {
+        return scopeLifecycle?.children ?? []
     }
 
-    /// Attaches the given `LifecycleManageable` as a child.
+    /// Attaches the given `LifecycleOwner` as a child.
     ///
     /// The child will activate if the receiver is active.
     /// Child activation may run logic that synchornously results in a call to detach before `attachChild` returns.
     /// Best practice is to ensure the return value is`true` before performing additional routing logic such as presenting views.
     ///
-    /// - parameter child: The child `LifecycleManageable` to attach.
+    /// - parameter child: The child `LifecycleOwner` to attach.
     /// - returns: Is `true` if child was successfully attached.
     @discardableResult
-    public func attachChild(_ child: LifecycleManageable) -> Bool {
-        return scopeLifecycleManager?.attachChild(child) ?? false
+    public func attachChild(_ child: LifecycleOwner) -> Bool {
+        return scopeLifecycle?.attachChild(child) ?? false
     }
 
-    /// Detaches the given `LifecycleManageable` from the tree.
+    /// Detaches the given `LifecycleOwner` from the tree.
     ///
-    /// - parameter child: The child `LifecycleManageable` to detach.
-    public func detachChild(_ child: LifecycleManageable) {
-        scopeLifecycleManager?.detachChild(child)
+    /// - parameter child: The child `LifecycleOwner` to detach.
+    public func detachChild(_ child: LifecycleOwner) {
+        scopeLifecycle?.detachChild(child)
     }
 }

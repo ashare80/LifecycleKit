@@ -88,17 +88,17 @@ final class LeakDetectorTests: XCTestCase {
     }
 
     func testViewDisappear() {
-        let viewManageable = TestViewLifecycleManaged()
-        viewManageable.viewLifecycleManager.viewDidLoad()
-        viewManageable.viewLifecycleManager.isDisplayed = true
+        let viewLifecycleOwner = TestViewLifecycleOwner()
+        viewLifecycleOwner.viewLifecycle.viewDidLoad()
+        viewLifecycleOwner.viewLifecycle.isDisplayed = true
 
         expectAssertionFailure(timeout: 2.0) {
-            LeakDetector.instance.expectViewDisappear(tracker: viewManageable.viewLifecycleManager, inTime: 1.0).retained.sink()
+            LeakDetector.instance.expectViewDisappear(tracker: viewLifecycleOwner.viewLifecycle, inTime: 1.0).retained.sink()
             XCTAssertTrue(LeakDetector.instance.trackingObjects.isEmpty)
         }
 
-        LeakDetector.instance.expectViewDisappear(tracker: viewManageable.viewLifecycleManager, inTime: 1.0).retained.sink()
-        viewManageable.viewLifecycleManager.isDisplayed = false
+        LeakDetector.instance.expectViewDisappear(tracker: viewLifecycleOwner.viewLifecycle, inTime: 1.0).retained.sink()
+        viewLifecycleOwner.viewLifecycle.isDisplayed = false
         XCTAssertTrue(LeakDetector.instance.trackingObjects.isEmpty)
     }
 }

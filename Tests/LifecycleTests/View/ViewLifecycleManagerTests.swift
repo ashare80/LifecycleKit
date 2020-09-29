@@ -19,60 +19,60 @@ import Foundation
 import SwiftUI
 import XCTest
 
-final class ViewLifecycleManagerTests: XCTestCase {
+final class ViewLifecycleTests: XCTestCase {
     func testBind() {
-        let viewLifecycleManaged = TestViewLifecycleManaged()
+        let viewLifecycleOwner = TestViewLifecycleOwner()
 
-        XCTAssertEqual(viewLifecycleManaged.viewDidLoadCount, 0)
-        XCTAssertEqual(viewLifecycleManaged.viewDidAppearCount, 0)
-        XCTAssertEqual(viewLifecycleManaged.viewDidDisappearCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 0)
 
-        _ = viewLifecycleManaged.tracked(EmptyView())
+        _ = viewLifecycleOwner.tracked(EmptyView())
 
-        XCTAssertEqual(viewLifecycleManaged.viewDidLoadCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidAppearCount, 0)
-        XCTAssertEqual(viewLifecycleManaged.viewDidDisappearCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 0)
 
-        _ = viewLifecycleManaged.tracked(EmptyView())
+        _ = viewLifecycleOwner.tracked(EmptyView())
 
-        XCTAssertEqual(viewLifecycleManaged.viewDidLoadCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidAppearCount, 0)
-        XCTAssertEqual(viewLifecycleManaged.viewDidDisappearCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 0)
 
-        viewLifecycleManaged.viewLifecycleManager.isDisplayed = true
+        viewLifecycleOwner.viewLifecycle.isDisplayed = true
 
-        XCTAssertEqual(viewLifecycleManaged.viewDidLoadCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidAppearCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidDisappearCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 0)
 
-        viewLifecycleManaged.viewLifecycleManager.isDisplayed = true
+        viewLifecycleOwner.viewLifecycle.isDisplayed = true
 
-        XCTAssertEqual(viewLifecycleManaged.viewDidLoadCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidAppearCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidDisappearCount, 0)
+        XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 0)
 
-        viewLifecycleManaged.viewLifecycleManager.isDisplayed = false
+        viewLifecycleOwner.viewLifecycle.isDisplayed = false
 
-        XCTAssertEqual(viewLifecycleManaged.viewDidLoadCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidAppearCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidDisappearCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 1)
 
-        viewLifecycleManaged.viewLifecycleManager.isDisplayed = false
+        viewLifecycleOwner.viewLifecycle.isDisplayed = false
 
-        XCTAssertEqual(viewLifecycleManaged.viewDidLoadCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidAppearCount, 1)
-        XCTAssertEqual(viewLifecycleManaged.viewDidDisappearCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 1)
+        XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 1)
     }
 
     func testBindAgain_asserts() {
-        let viewLifecycleManaged = TestViewLifecycleManaged()
+        let viewLifecycleOwner = TestViewLifecycleOwner()
         expectAssertionFailure {
-            viewLifecycleManaged.bind(to: viewLifecycleManaged.viewLifecycleManager)
+            viewLifecycleOwner.subscribe(viewLifecycleOwner.viewLifecycle)
         }
     }
 }
 
-final class TestViewLifecycleManaged: ViewLifecycleManaged {
+final class TestViewLifecycleOwner: BaseViewLifecycleOwner {
     var viewDidLoadCount: Int = 0
     override func viewDidLoad() {
         viewDidLoadCount += 1

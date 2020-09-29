@@ -16,58 +16,61 @@
 
 import Combine
 import Foundation
+@testable import Lifecycle
 @testable import SPIR
 import XCTest
 
 final class InteractorTests: XCTestCase {
     private let presenter = TestPresenter()
-    private let scopeLifecycleManager = ScopeLifecycleManager()
+    private let scopeLifecycle = ScopeLifecycle()
 
     func testInteractor() {
-        let interactor = Interactor(scopeLifecycleManager: scopeLifecycleManager)
-        XCTAssertEqual(interactor.scopeLifecycleManager, scopeLifecycleManager)
+        let interactor = Interactor(scopeLifecycle: scopeLifecycle)
+        XCTAssertEqual(interactor.scopeLifecycle, scopeLifecycle)
     }
 
     func testRoutingInteractor() {
-        let router = Router(scopeLifecycleManager: scopeLifecycleManager)
+        let router = Router(scopeLifecycle: scopeLifecycle)
         let interactor = RoutingInteractor(router: router)
-        XCTAssertEqual(interactor.scopeLifecycleManager, scopeLifecycleManager)
+        XCTAssertEqual(interactor.scopeLifecycle, scopeLifecycle)
         XCTAssertEqual(interactor.router, router)
-        XCTAssertTrue(scopeLifecycleManager.binded.contains(interactor))
+        XCTAssertTrue(scopeLifecycle.subscribers.contains(interactor))
     }
 
     func testPresentableInteractor() {
-        let interactor = TestPresentableInteractor(scopeLifecycleManager: scopeLifecycleManager,
+        let interactor = TestPresentableInteractor(scopeLifecycle: scopeLifecycle,
                                                    presenter: presenter)
-        XCTAssertEqual(interactor.scopeLifecycleManager, scopeLifecycleManager)
+        XCTAssertEqual(interactor.scopeLifecycle, scopeLifecycle)
         XCTAssertEqual(interactor.presenter, presenter)
-        XCTAssertTrue(scopeLifecycleManager.binded.contains(interactor))
-        XCTAssertTrue(presenter.viewLifecycleManager.binded.contains(interactor))
-        XCTAssertTrue(scopeLifecycleManager.binded.contains(presenter))
+        XCTAssertTrue(scopeLifecycle.subscribers.contains(interactor))
+        XCTAssertTrue(presenter.viewLifecycle.subscribers.contains(interactor))
+        XCTAssertTrue(presenter.viewLifecycle.scopeLifecycle === scopeLifecycle)
+        XCTAssertTrue(scopeLifecycle.subscribers.contains(presenter))
     }
 
     func testPresentableRoutingInteractor() {
         let presenter = TestPresenter()
-        let router = Router(scopeLifecycleManager: scopeLifecycleManager)
+        let router = Router(scopeLifecycle: scopeLifecycle)
         let interactor = TestPresentableRoutingInteractor(presenter: presenter,
                                                           router: router)
-        XCTAssertEqual(interactor.scopeLifecycleManager, scopeLifecycleManager)
+        XCTAssertEqual(interactor.scopeLifecycle, scopeLifecycle)
         XCTAssertEqual(interactor.presenter, presenter)
         XCTAssertEqual(interactor.router, router)
-        XCTAssertTrue(scopeLifecycleManager.binded.contains(interactor))
-        XCTAssertTrue(presenter.viewLifecycleManager.binded.contains(interactor))
-        XCTAssertTrue(scopeLifecycleManager.binded.contains(presenter))
+        XCTAssertTrue(scopeLifecycle.subscribers.contains(interactor))
+        XCTAssertTrue(presenter.viewLifecycle.subscribers.contains(interactor))
+        XCTAssertTrue(presenter.viewLifecycle.scopeLifecycle === scopeLifecycle)
+        XCTAssertTrue(scopeLifecycle.subscribers.contains(presenter))
     }
 }
 
 final class TestInteractor: Interactor {}
-final class TestPresentableInteractor: PresentableInteractor<TestPresenter>, ViewLifecycleBindable {
+final class TestPresentableInteractor: PresentableInteractor<TestPresenter>, ViewLifecycleSubscriber {
     func viewDidLoad() {}
     func viewDidAppear() {}
     func viewDidDisappear() {}
 }
 
-final class TestPresentableRoutingInteractor: PresentableRoutingInteractor<TestPresenter, Router>, ViewLifecycleBindable {
+final class TestPresentableRoutingInteractor: PresentableRoutingInteractor<TestPresenter, Router>, ViewLifecycleSubscriber {
     func viewDidLoad() {}
     func viewDidAppear() {}
     func viewDidDisappear() {}

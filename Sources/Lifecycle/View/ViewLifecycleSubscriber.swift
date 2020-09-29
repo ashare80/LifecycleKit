@@ -18,50 +18,50 @@ import Combine
 import CombineExtensions
 import Foundation
 
-public protocol ViewLifecycleBindable: AnyObject {
+public protocol ViewLifecycleSubscriber: AnyObject {
     func viewDidLoad()
     func viewDidAppear()
     func viewDidDisappear()
 }
 
-extension ViewLifecycleBindable where Self: ViewLifecycleManageable {
-    /// Binds to lifecycle events receiving on main thread and sets the receiver as the owner of the `ViewLifecycleManager`.
-    public func bind(to viewLifecycleManager: ViewLifecycleManager) {
-        viewLifecycleManager.owner = self
-        bindActiveState(to: viewLifecycleManager)
+extension ViewLifecycleSubscriber where Self: ViewLifecycleOwner {
+    /// Binds to lifecycle events receiving on main thread and sets the receiver as the owner of the `ViewLifecycle`.
+    public func subscribe(_ viewLifecycle: ViewLifecycle) {
+        viewLifecycle.owner = self
+        subscribeActiveState(viewLifecycle)
     }
 }
 
-extension ViewLifecycleBindable {
+extension ViewLifecycleSubscriber {
     /// Binds to lifecycle states receiving on main thread.
-    public func bind(to viewLifecycleManager: ViewLifecycleManager) {
-        bindActiveState(to: viewLifecycleManager)
+    public func subscribe(_ viewLifecycle: ViewLifecycle) {
+        subscribeActiveState(viewLifecycle)
     }
 
     /// Binds to lifecycle states receiving on main thread.
-    fileprivate func bindActiveState(to viewLifecycleManager: ViewLifecycleManager) {
-        if viewLifecycleManager.binded.contains(self) {
-            assertionFailure("Binding to \(viewLifecycleManager) that has already been binded to. \(viewLifecycleManager.binded)")
+    fileprivate func subscribeActiveState(_ viewLifecycle: ViewLifecycle) {
+        if viewLifecycle.subscribers.contains(self) {
+            assertionFailure("Binding to \(viewLifecycle) that has already been subscribes to. \(viewLifecycle.subscribers)")
         }
-        viewLifecycleManager.binded.insert(self)
+        viewLifecycle.subscribers.insert(self)
 
-        viewLifecycleManager
-            .lifecyclePublisher
+        viewLifecycle
+            .lifecycleState
             .first(where: { $0 == .initialized })
             .receive(on: Schedulers.main)
-            .autoCancel(viewLifecycleManager, when: .deinitialized)
-            // Weak to ensure binding from owner does not cause retain cycle.
+            .autoCancel(viewLifecycle, when: .deinitialized)
+            // Weak to ensure observing from owner does not cause retain cycle.
             .sink(receiveValue: { [weak self] _ in
                 guard let self = self else { return }
                 self.viewDidLoad()
             })
 
-        viewLifecycleManager
+        viewLifecycle
             .isActivePublisher
             .drop(while: { !$0 })
             .receive(on: Schedulers.main)
-            .autoCancel(viewLifecycleManager, when: .deinitialized)
-            // Weak to ensure binding from owner does not cause retain cycle.
+            .autoCancel(viewLifecycle, when: .deinitialized)
+            // Weak to ensure observing from owner does not cause retain cycle.
             .sink(receiveValue: { [weak self] isActive in
                 guard let self = self else { return }
                 if isActive {
