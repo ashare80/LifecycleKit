@@ -35,6 +35,9 @@ public struct Schedulers {
 
     /// In case `schedule` methods are called from `DispatchQueue.utility`, it will perform action immediately without scheduling.
     public static let utility: DispatchQueue.Scheduler = .init(.utility)
+
+    /// In case `schedule` methods are called from `DispatchQueue.background`, it will perform action immediately without scheduling.
+    public static let background: DispatchQueue.Scheduler = .init(.background)
 }
 
 extension DispatchQueue {

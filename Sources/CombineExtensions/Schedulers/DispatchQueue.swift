@@ -18,32 +18,44 @@ import Combine
 import Foundation
 
 public struct DispatchQueue: DispatchQueueContext, Scheduler {
-    /// `DispatchQueue.main` underlying queue.
-    public static let main = DispatchQueue(backingQueue: Foundation.DispatchQueue.main)
 
-    /// `DispatchQueue.global(qos: .userInteractive)` underlying queue.
+    /// `DispatchQueue.global(qos: .background)` underlying queue.
+    public static let background = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .background))
+
+    /// `DispatchQueue.global(qos: .default)` underlying queue.
     public static let `default` = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .default))
 
-    /// `DispatchQueue.global(qos: .userInteractive)` underlying queue.
-    public static let userInteractive = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .userInteractive))
+    /// `DispatchQueue.main` underlying queue.
+    public static let main = DispatchQueue(backingQueue: Foundation.DispatchQueue.main)
 
     /// `DispatchQueue.global(qos: .userInitiated)` underlying queue.
     public static let userInitiated = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .userInitiated))
 
+    /// `DispatchQueue.global(qos: .userInteractive)` underlying queue.
+    public static let userInteractive = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .userInteractive))
+
     /// `DispatchQueue.global(qos: .utility)` underlying queue.
     public static let utility = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .utility))
 
+    /// The quality of service, or the execution priority, to apply to tasks. From highest (`userInteractive`) to lowest (`background`).
     public enum QualityOfService {
-        case `default`
+        /// The quality-of-service class for user-interactive tasks, such as animations, event handling, or updating your app's user interface.
         case userInteractive
+        /// The quality-of-service class for tasks that prevent the user from actively using your app.
         case userInitiated
+        /// The default quality-of-service class.
+        case `default`
+        /// The quality-of-service class for tasks that the user does not track actively.
         case utility
+        /// The quality-of-service class for maintenance or cleanup tasks that you create.
+        case background
 
         fileprivate var asDispatchQoS: DispatchQoS {
             switch self {
+            case .background: return .background
             case .default: return .default
-            case .userInteractive: return .userInteractive
             case .userInitiated: return .userInitiated
+            case .userInteractive: return .userInteractive
             case .utility: return .utility
             }
         }
