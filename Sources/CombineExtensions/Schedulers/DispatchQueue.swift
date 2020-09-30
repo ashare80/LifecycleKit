@@ -19,23 +19,23 @@ import Foundation
 
 public struct DispatchQueue: DispatchQueueContext, Scheduler {
 
-    /// `DispatchQueue.global(qos: .background)` underlying queue.
-    public static let background = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .background))
-
-    /// `DispatchQueue.global(qos: .default)` underlying queue.
-    public static let `default` = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .default))
-
     /// `DispatchQueue.main` underlying queue.
     public static let main = DispatchQueue(backingQueue: Foundation.DispatchQueue.main)
-
-    /// `DispatchQueue.global(qos: .userInitiated)` underlying queue.
-    public static let userInitiated = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .userInitiated))
 
     /// `DispatchQueue.global(qos: .userInteractive)` underlying queue.
     public static let userInteractive = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .userInteractive))
 
+    /// `DispatchQueue.global(qos: .userInitiated)` underlying queue.
+    public static let userInitiated = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .userInitiated))
+
+    /// `DispatchQueue.global(qos: .default)` underlying queue.
+    public static let `default` = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .default))
+
     /// `DispatchQueue.global(qos: .utility)` underlying queue.
     public static let utility = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .utility))
+
+    /// `DispatchQueue.global(qos: .background)` underlying queue.
+    public static let background = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .background))
 
     /// The quality of service, or the execution priority, to apply to tasks. From highest (`userInteractive`) to lowest (`background`).
     public enum QualityOfService {

@@ -22,7 +22,7 @@ public var isMainQueue: Bool {
 }
 
 /// Syncs to main queue or executes closure if `isMainQueue`.
-public func syncMain<T>(closure: @escaping () -> T) -> T {
+public func syncMain<T>(closure: () -> T) -> T {
     return DispatchQueue.main.sync(closure)
 }
 
@@ -30,12 +30,6 @@ public func syncMain<T>(closure: @escaping () -> T) -> T {
 /// a specified time.
 public func asyncMain(delay: TimeInterval = 0, execute work: @escaping () -> Void) {
     DispatchQueue.main.async(delay: delay, execute: work)
-}
-
-/// Submits a work item to the default dispatch queue for asynchronous execution after
-/// a specified time.
-public func asyncDefault(delay: TimeInterval = 0, execute work: @escaping () -> Void) {
-    DispatchQueue.default.async(delay: delay, execute: work)
 }
 
 /// Submits a work item to the userInitiated dispatch queue for asynchronous execution after
@@ -50,8 +44,20 @@ public func asyncUserInteractive(delay: TimeInterval = 0, execute work: @escapin
     DispatchQueue.userInteractive.async(delay: delay, execute: work)
 }
 
+/// Submits a work item to the default dispatch queue for asynchronous execution after
+/// a specified time.
+public func asyncDefault(delay: TimeInterval = 0, execute work: @escaping () -> Void) {
+    DispatchQueue.default.async(delay: delay, execute: work)
+}
+
 /// Submits a work item to the utility dispatch queue for asynchronous execution after
 /// a specified time.
 public func asyncUtility(delay: TimeInterval = 0, execute work: @escaping () -> Void) {
     DispatchQueue.utility.async(delay: delay, execute: work)
+}
+
+/// Submits a work item to the utility dispatch queue for asynchronous execution after
+/// a specified time.
+public func asyncBackground(delay: TimeInterval = 0, execute work: @escaping () -> Void) {
+    DispatchQueue.background.async(delay: delay, execute: work)
 }

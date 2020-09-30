@@ -19,31 +19,52 @@ import Foundation
 
 public struct Schedulers {
     /// In case `schedule` methods are called from `DispatchQueue.main`, it will perform action immediately without scheduling.
-    public static let main: DispatchQueue.Scheduler = .init(.main)
+    public static var main: DispatchQueue.Scheduler { .main }
 
     /// Schedules to `DispatchQueue.main` to run at the next possible opportunity.
-    public static let asyncMain: DispatchQueue = .main
-
-    /// In case `schedule` methods are called from `DispatchQueue.userInitiated`, it will perform action immediately without scheduling.
-    public static let userInitiated: DispatchQueue.Scheduler = .init(.userInitiated)
+    public static var asyncMain: DispatchQueue.Scheduler { .asyncMain }
 
     /// In case `schedule` methods are called from `DispatchQueue.userInteractive`, it will perform action immediately without scheduling.
-    public static let userInteractive: DispatchQueue.Scheduler = .init(.userInteractive)
+    public static var userInteractive: DispatchQueue.Scheduler { .userInteractive }
+
+    /// In case `schedule` methods are called from `DispatchQueue.userInitiated`, it will perform action immediately without scheduling.
+    public static var userInitiated: DispatchQueue.Scheduler { .userInitiated }
 
     /// In case `schedule` methods are called from `DispatchQueue.default`, it will perform action immediately without scheduling.
-    public static let `default`: DispatchQueue.Scheduler = .init(.default)
+    public static var `default`: DispatchQueue.Scheduler { .default }
 
     /// In case `schedule` methods are called from `DispatchQueue.utility`, it will perform action immediately without scheduling.
-    public static let utility: DispatchQueue.Scheduler = .init(.utility)
+    public static var utility: DispatchQueue.Scheduler { .utility }
 
     /// In case `schedule` methods are called from `DispatchQueue.background`, it will perform action immediately without scheduling.
-    public static let background: DispatchQueue.Scheduler = .init(.background)
+    public static var background: DispatchQueue.Scheduler { .background }
 }
 
 extension DispatchQueue {
     /// A scheduler that will perfom the action immediately if the current execution context matches the dispatch queue.
     /// Otherwise the default schedule async to queue is performed.
     public struct Scheduler: Combine.Scheduler {
+        /// In case `schedule` methods are called from `DispatchQueue.main`, it will perform action immediately without scheduling.
+        public static let main: Scheduler = .init(.main)
+
+        /// Schedules to `DispatchQueue.main` to run at the next possible opportunity.
+        public static let asyncMain: Scheduler = .init(.main, alwaysAsync: true)
+
+        /// In case `schedule` methods are called from `DispatchQueue.userInteractive`, it will perform action immediately without scheduling.
+        public static let userInteractive: Scheduler = .init(.userInteractive)
+
+        /// In case `schedule` methods are called from `DispatchQueue.userInitiated`, it will perform action immediately without scheduling.
+        public static let userInitiated: Scheduler = .init(.userInitiated)
+
+        /// In case `schedule` methods are called from `DispatchQueue.default`, it will perform action immediately without scheduling.
+        public static let `default`: Scheduler = .init(.default)
+
+        /// In case `schedule` methods are called from `DispatchQueue.utility`, it will perform action immediately without scheduling.
+        public static let utility: Scheduler = .init(.utility)
+
+        /// In case `schedule` methods are called from `DispatchQueue.background`, it will perform action immediately without scheduling.
+        public static let background: Scheduler = .init(.background)
+
         public typealias SchedulerOptions = Never
         public typealias SchedulerTimeType = Foundation.DispatchQueue.SchedulerTimeType
 
@@ -55,14 +76,16 @@ extension DispatchQueue {
             return dispatchQueue.minimumTolerance
         }
 
-        private let dispatchQueue: DispatchQueue
+        let dispatchQueue: DispatchQueue
+        let alwaysAsync: Bool
 
-        public init(_ dispatchQueue: DispatchQueue) {
+        public init(_ dispatchQueue: DispatchQueue, alwaysAsync: Bool = false) {
             self.dispatchQueue = dispatchQueue
+            self.alwaysAsync = alwaysAsync
         }
 
         public func schedule(options: SchedulerOptions? = nil, _ action: @escaping () -> Void) {
-            if dispatchQueue.isCurrentExecutionContext {
+            if !alwaysAsync && dispatchQueue.isCurrentExecutionContext {
                 action()
             } else {
                 dispatchQueue.schedule(action)
