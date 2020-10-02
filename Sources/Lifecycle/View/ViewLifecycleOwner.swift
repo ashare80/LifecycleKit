@@ -39,6 +39,13 @@ extension ViewLifecycleOwner {
             viewLifecycle.isDisplayed = false
         }
     }
+
+    /// Tracks view by capturing `ViewLifecycle` inside `onAppear` and `onDisappear` closures of the returned` View`
+    /// - parameter content: `View` type instance to track.
+    /// - returns: `View` type after applying appearance closures.
+    public func tracked<V: View>(@ViewBuilder content: () -> V) -> some View {
+        tracked(content())
+    }
 }
 
 /// Base class to conform to `ViewLifecycleOwner` observing as the owner of a `ViewLifecycle`.
@@ -47,7 +54,7 @@ open class BaseViewLifecycleOwner: ObjectIdentifiable, ViewLifecycleOwner, ViewL
 
     public init(viewLifecycle: ViewLifecycle = ViewLifecycle()) {
         self.viewLifecycle = viewLifecycle
-        subscribe(viewLifecycle)
+        subscribe(to: viewLifecycle)
     }
 
     open func viewDidLoad() {}

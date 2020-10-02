@@ -19,9 +19,16 @@ import CombineExtensions
 import Foundation
 
 public enum LifecycleState: Int, CaseIterable, Hashable {
+    /// Scope has been initialized but not yet active.
     case initialized
+
+    /// Scope is currently active.
     case active
+
+    /// Scope is currently inactive.
     case inactive
+
+    /// Scope deinit called.
     case deinitialized
 }
 

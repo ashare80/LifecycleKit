@@ -19,28 +19,28 @@ import CombineExtensions
 import Foundation
 
 public protocol LifecycleSubscriber: AnyObject {
+    /// Called when the lifecycle did become active for the first time.
+    ///
+    /// This method is invoked only once. Subclasses should override this method to perform one time setup logic,
+    /// such as attaching immutable children.
+    func didLoad(_ lifecyclePublisher: LifecyclePublisher)
+
     /// The lifecycle did become active.
     ///
     /// - note: This method is driven by the attachment of this lifecycle's owner  Subclasses should override
     ///   this method to setup subscriptions and initial states.
     func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher)
 
-    /// Called when the lifecycle did become active for the first time.
-    ///
-    /// This method is invoked only once. Subclasses should override this method to perform one time setup logic,
-    /// such as attaching immutable children. The default implementation does nothing.
-    func didLoad(_ lifecyclePublisher: LifecyclePublisher)
-
     /// Callend when the `lifecycle` will resign the active state.
     ///
     /// This method is driven by the detachment of this lifecycle's owner  Subclasses should override this
-    /// method to cleanup any resources and states of the `LifecycleSubscriber`. The default implementation does nothing.
-    func didBecomeInactive()
+    /// method to cleanup any resources and states of the `LifecycleSubscriber`.
+    func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher)
 }
 
 extension LifecycleSubscriber where Self: LifecycleOwner {
     /// Binds to lifecycle events receiving on main thread and sets the receiver as the owner of the `ScopeLifecycle`.
-    public func subscribe(_ scopeLifecycle: ScopeLifecycle) {
+    public func subscribe(to scopeLifecycle: ScopeLifecycle) {
         scopeLifecycle.owner = self
         subscribeActiveState(scopeLifecycle)
     }
@@ -48,7 +48,7 @@ extension LifecycleSubscriber where Self: LifecycleOwner {
 
 extension LifecycleSubscriber {
     /// Binds to lifecycle states receiving on main thread.
-    public func subscribe(_ scopeLifecycle: ScopeLifecycle) {
+    public func subscribe(to scopeLifecycle: ScopeLifecycle) {
         subscribeActiveState(scopeLifecycle)
     }
 
@@ -81,7 +81,7 @@ extension LifecycleSubscriber {
                 if isActive {
                     self.didBecomeActive(scopeLifecycle)
                 } else {
-                    self.didBecomeInactive()
+                    self.didBecomeInactive(scopeLifecycle)
                 }
             })
     }

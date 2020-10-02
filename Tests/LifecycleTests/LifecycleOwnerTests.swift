@@ -18,13 +18,13 @@ import Foundation
 @testable import Lifecycle
 import XCTest
 
-final class LifecycleTests: XCTestCase {
+final class LifecycleOwnerTests: XCTestCase {
     func testBind() {
-        let lifecylceOwner = TestLifecycleOwner()
+        let lifecycleOwner = TestLifecycleOwner()
 
-        lifecylceOwner.scopeLifecycle.activate()
+        lifecycleOwner.scopeLifecycle.activate()
 
-        XCTAssertEqual(lifecylceOwner.scopeLifecycle.owner as? TestLifecycleOwner, lifecylceOwner)
+        XCTAssertEqual(lifecycleOwner.scopeLifecycle.owner as? TestLifecycleOwner, lifecycleOwner)
     }
 
     func testAddChild() {
@@ -138,7 +138,7 @@ final class LifecycleTests: XCTestCase {
     func testBindAgain_asserts() {
         let parent = TestLifecycleOwner()
         expectAssertionFailure {
-            parent.subscribe(parent.scopeLifecycle)
+            parent.subscribe(to: parent.scopeLifecycle)
         }
     }
 
@@ -163,7 +163,7 @@ final class TestLifecycleOwner: BaseLifecycleOwner {
     }
 
     var didBecomeInactiveCount: Int = 0
-    override func didBecomeInactive() {
+    override func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {
         didBecomeInactiveCount += 1
     }
 }

@@ -46,7 +46,7 @@ final class TestPresenter: Presenter<TestView<TestPresenter>>, ViewPresentable, 
 
     func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {}
 
-    func didBecomeInactive() {}
+    func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {}
 }
 
 final class TestInteractablePresenter: InteractablePresenter<TestView<TestInteractablePresenter>>, ViewPresentable, PresentableInteractable {}

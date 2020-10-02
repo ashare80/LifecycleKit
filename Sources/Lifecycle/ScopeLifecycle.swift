@@ -23,6 +23,7 @@ public final class ScopeLifecycle: LifecyclePublisher, ObjectIdentifiable {
     public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return $state
             .prefix(while: { state in state != .deinitialized })
+            .append(.deinitialized)
             .eraseToAnyPublisher()
             .removeDuplicates()
     }

@@ -40,7 +40,7 @@ open class PresentableRouter<PresenterType>: Router {
 
         if let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber,
             let viewLifecycleOwner = presenter as? ViewLifecycleOwner {
-            viewLifecycleSubscriber.subscribe(viewLifecycleOwner.viewLifecycle)
+            viewLifecycleSubscriber.subscribe(to: viewLifecycleOwner.viewLifecycle)
         }
     }
 }

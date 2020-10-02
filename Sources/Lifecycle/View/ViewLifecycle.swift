@@ -26,6 +26,8 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
     public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return $state
             .filterNil()
+            .prefix(while: { state in state != .deinitialized })
+            .append(.deinitialized)
             .eraseToAnyPublisher()
             .removeDuplicates()
     }

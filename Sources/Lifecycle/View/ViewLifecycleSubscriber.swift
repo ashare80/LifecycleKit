@@ -19,14 +19,19 @@ import CombineExtensions
 import Foundation
 
 public protocol ViewLifecycleSubscriber: AnyObject {
+    /// Called when the view is first initialized.
     func viewDidLoad()
+
+    /// Called when view receives `onAppear` callback.
     func viewDidAppear()
+
+    /// Called when view receives `onDisappear` callback.
     func viewDidDisappear()
 }
 
 extension ViewLifecycleSubscriber where Self: ViewLifecycleOwner {
     /// Binds to lifecycle events receiving on main thread and sets the receiver as the owner of the `ViewLifecycle`.
-    public func subscribe(_ viewLifecycle: ViewLifecycle) {
+    public func subscribe(to viewLifecycle: ViewLifecycle) {
         viewLifecycle.owner = self
         subscribeActiveState(viewLifecycle)
     }
@@ -34,7 +39,7 @@ extension ViewLifecycleSubscriber where Self: ViewLifecycleOwner {
 
 extension ViewLifecycleSubscriber {
     /// Binds to lifecycle states receiving on main thread.
-    public func subscribe(_ viewLifecycle: ViewLifecycle) {
+    public func subscribe(to viewLifecycle: ViewLifecycle) {
         subscribeActiveState(viewLifecycle)
     }
 

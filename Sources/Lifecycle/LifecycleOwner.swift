@@ -57,12 +57,12 @@ open class BaseLifecycleOwner: ObjectIdentifiable, LifecycleOwner, LifecycleOwne
     /// Initializer.
     public init(scopeLifecycle: ScopeLifecycle = ScopeLifecycle()) {
         self.scopeLifecycle = scopeLifecycle
-        subscribe(scopeLifecycle)
+        subscribe(to: scopeLifecycle)
     }
 
     open func didLoad(_ lifecyclePublisher: LifecyclePublisher) {}
 
     open func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {}
 
-    open func didBecomeInactive() {}
+    open func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {}
 }

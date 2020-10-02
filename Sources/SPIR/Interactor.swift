@@ -91,11 +91,11 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
         super.init(scopeLifecycle: scopeLifecycle)
 
         if let lifecycleSubscriber = presenter as? LifecycleSubscriber {
-            lifecycleSubscriber.subscribe(scopeLifecycle)
+            lifecycleSubscriber.subscribe(to: scopeLifecycle)
         }
 
         if let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber {
-            viewLifecycleSubscriber.subscribe(viewLifecycle)
+            viewLifecycleSubscriber.subscribe(to: viewLifecycle)
         }
 
         viewLifecycle.setScopeLifecycle(scopeLifecycle)

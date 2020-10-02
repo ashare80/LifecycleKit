@@ -44,7 +44,7 @@ open class InteractablePresenter<View>: Presenter<View>, Interactable, Lifecycle
     {
         self.scopeLifecycle = scopeLifecycle
         super.init(viewLifecycle: viewLifecycle)
-        subscribe(scopeLifecycle)
+        subscribe(to: scopeLifecycle)
         viewLifecycle.setScopeLifecycle(scopeLifecycle)
     }
 
@@ -52,7 +52,7 @@ open class InteractablePresenter<View>: Presenter<View>, Interactable, Lifecycle
 
     open func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {}
 
-    open func didBecomeInactive() {}
+    open func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {}
 }
 
 /// Conformance by `Presenter` subclasses to provide a `ViewType` and be an `ObservableObject`.

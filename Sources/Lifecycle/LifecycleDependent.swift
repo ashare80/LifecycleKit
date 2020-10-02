@@ -36,12 +36,12 @@ open class ScopeLifecycleDependent: ObjectIdentifiable, LifecycleDependent, Life
     /// Initializer.
     public init(scopeLifecycle: ScopeLifecycle) {
         self.scopeLifecycle = scopeLifecycle
-        subscribe(scopeLifecycle)
+        subscribe(to: scopeLifecycle)
     }
 
     open func didLoad(_ lifecyclePublisher: LifecyclePublisher) {}
 
     open func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {}
 
-    open func didBecomeInactive() {}
+    open func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {}
 }

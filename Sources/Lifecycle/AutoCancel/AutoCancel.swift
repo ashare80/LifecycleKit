@@ -66,6 +66,16 @@ public struct RetainedCancellablePublisher<P: Publisher> {
         source.subscribe(retainedSink)
         return retainedSink
     }
+
+    /// Attaches a subscriber with closure-based behavior.
+    ///
+    /// - Parameters:
+    ///   - receiveValue: The closure to execute on receipt of a value. Defaults to `nil`.
+    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
+    @discardableResult
+    public func sink(_ receiveValue: @escaping (P.Output) -> Void) -> Cancellable {
+        return self.sink(receiveValue: receiveValue)
+    }
 }
 
 final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancellable {

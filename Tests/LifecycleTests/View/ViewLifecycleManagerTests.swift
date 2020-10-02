@@ -67,7 +67,7 @@ final class ViewLifecycleTests: XCTestCase {
     func testBindAgain_asserts() {
         let viewLifecycleOwner = TestViewLifecycleOwner()
         expectAssertionFailure {
-            viewLifecycleOwner.subscribe(viewLifecycleOwner.viewLifecycle)
+            viewLifecycleOwner.subscribe(to: viewLifecycleOwner.viewLifecycle)
         }
     }
 }
