@@ -4,13 +4,26 @@
 LifecycleKit is a framework for building lifecycle-aware architecture components.
 
 Inspired by [RIBs](https://github.com/uber/ribs) and [Android Jetpack Lifecycle](https://developer.android.com/jetpack/androidx/releases/lifecycle).
-Complemented by [Needle](https://github.com/uber/needle), a compile-time safe Swift dependency injection framework.
 
 ## Overview
 
 [Lifecycle](https://github.com/ashare80/LifecycleKit/wiki/Lifecycle) provides protocols and implementations that can be used to facilitate building safe and scalable application architecture.
 
-[SPIR](https://github.com/ashare80/LifecycleKit/wiki/SPIR) is an app architecture utilizing Lifecycle to create a scoped business logic tree independent of the view hierarchy.
+[SPIR](https://github.com/ashare80/LifecycleKit/wiki/SPIR) is an app architecture utilizing Lifecycle to create a scoped business logic tree independent of the view hierarchy. Complemented by [Needle](https://github.com/uber/needle), a compile-time safe Swift dependency injection framework.
+
+## Requirements
+
+- iOS 13.0+ / macOS 10.15+ / tvOS 13.0+ / watchOS 6.0+
+
+## Installation
+
+### Swift Package Manager
+
+```swift
+dependencies: [
+    .package(url: "https://github.com/ashare80/LifecycleKit.git", .upToNextMajor(from: "0.2.0"))
+]
+```
 
 # License
 

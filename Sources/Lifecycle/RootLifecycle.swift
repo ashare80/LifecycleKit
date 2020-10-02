@@ -42,7 +42,7 @@ extension RootLifecycle {
         }
     }
 
-#else
+#elseif os(iOS) || os(tvOS)
 
     extension UIApplicationDelegate where Self: RootLifecycle {
         public func activateRoot() {
