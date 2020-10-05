@@ -41,12 +41,23 @@ final class PresenterTests: XCTestCase {
     }
 }
 
-final class TestPresenter: Presenter<TestView<TestPresenter>>, ViewPresentable, LifecycleSubscriber {
+final class TestPresenter: Presenter, ViewPresentable, LifecycleSubscriber {
     func didLoad(_ lifecyclePublisher: LifecyclePublisher) {}
 
     func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {}
 
     func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {}
+
+    struct ContentView: View, PresenterView {
+
+        @ObservedObject var presenter: TestPresenter
+
+        var body: some View {
+            EmptyView()
+        }
+    }
 }
 
-final class TestInteractablePresenter: InteractablePresenter<TestView<TestInteractablePresenter>>, ViewPresentable, PresentableInteractable {}
+final class TestInteractablePresenter: InteractablePresenter, ViewPresentable, PresentableInteractable {
+    typealias ContentView = TestView<TestInteractablePresenter>
+}
