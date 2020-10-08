@@ -27,3 +27,15 @@ public typealias RootLifecycle = Lifecycle.RootLifecycle
 public typealias ScopeLifecycle = Lifecycle.ScopeLifecycle
 public typealias ViewLifecycleSubscriber = Lifecycle.ViewLifecycleSubscriber
 public typealias ViewLifecycle = Lifecycle.ViewLifecycle
+
+#if canImport(NeedleFoundation)
+    import NeedleFoundation
+
+    public typealias EmptyDependency = NeedleFoundation.EmptyDependency
+    public typealias BootstrapComponent = NeedleFoundation.BootstrapComponent
+    public typealias Dependency = NeedleFoundation.Dependency
+    public typealias Component = NeedleFoundation.Component
+    public typealias Scope = NeedleFoundation.Scope
+
+    extension NeedleFoundation.Component: LifecycleOwnerComponent {}
+#endif

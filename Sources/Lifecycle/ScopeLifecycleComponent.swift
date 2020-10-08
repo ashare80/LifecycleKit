@@ -15,7 +15,6 @@
 //
 
 import Foundation
-import Lifecycle
 
 public protocol LifecycleOwnerScope {
     /// Provided shared `ScopeLifecycle` for the component's scope.
@@ -23,7 +22,7 @@ public protocol LifecycleOwnerScope {
 }
 
 /// Type for dependency frameworks such as Needle to conform to and provide a shared lifecycle instance.
-public protocol LifecycleOwnerScopeComponent: LifecycleOwnerScope {
+public protocol LifecycleOwnerComponent: LifecycleOwnerScope {
     /// Share the enclosed object as a singleton at this scope. This allows
     /// this scope as well as all child scopes to share a single instance of
     /// the object, for as long as this component lives.
@@ -36,7 +35,7 @@ public protocol LifecycleOwnerScopeComponent: LifecycleOwnerScope {
     func shared<T>(__function: String, _ factory: () -> T) -> T
 }
 
-extension LifecycleOwnerScopeComponent {
+extension LifecycleOwnerComponent {
     /// Provided shared `ScopeLifecycle` for the component's scope.
     public var scopeLifecycle: ScopeLifecycle {
         return shared(__function: #function) {
@@ -77,17 +76,3 @@ final class WeakShared<R: AnyObject> {
         fatalError("Attempting to access instance from scope that has been deinitialized.")
     }
 }
-
-#if canImport(NeedleFoundation)
-
-    import NeedleFoundation
-
-    public typealias EmptyDependency = NeedleFoundation.EmptyDependency
-    public typealias BootstrapComponent = NeedleFoundation.BootstrapComponent
-    public typealias Dependency = NeedleFoundation.Dependency
-    public typealias Component = NeedleFoundation.Component
-    public typealias Scope = NeedleFoundation.Scope
-
-    extension NeedleFoundation.Component: LifecycleOwnerScopeComponent {}
-
-#endif

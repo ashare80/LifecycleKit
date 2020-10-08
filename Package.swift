@@ -4,7 +4,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "SPIR",
+    name: "LifecycleKit",
     platforms: [
         .iOS(.v13),
         .tvOS(.v13),
