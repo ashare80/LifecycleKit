@@ -64,11 +64,12 @@ public final class ScopeLifecycle: LifecyclePublisher, ObjectIdentifiable {
     var subscribers = WeakSet<LifecycleSubscriber>()
 
     /// Activate this lifecycle scope including all children.
-    func activate() {
+    func activate(with owner: LifecycleOwner) {
+        self.owner = owner
         state = .active
 
         for lifecycleOwner in children where !lifecycleOwner.isActive {
-            lifecycleOwner.scopeLifecycle.activate()
+            lifecycleOwner.activate()
         }
     }
 
@@ -102,7 +103,7 @@ public final class ScopeLifecycle: LifecyclePublisher, ObjectIdentifiable {
         child.scopeLifecycle.parent = self
 
         if state == .active {
-            child.scopeLifecycle.activate()
+            child.activate()
         }
 
         // Activate could run logic that removes the child before return.

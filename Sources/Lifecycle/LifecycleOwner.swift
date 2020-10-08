@@ -48,6 +48,14 @@ extension LifecycleOwner {
             LeakDetector.instance.expectDeallocate(object: ownedObject, inTime: time).retained.sink()
         }
     }
+
+    func activate() {
+        scopeLifecycle.activate(with: self)
+    }
+
+    func deactivate() {
+        scopeLifecycle.deactivate()
+    }
 }
 
 /// Base class to conform to `LifecycleOwner` observing as the owner of a `ScopeLifecycle`.
@@ -57,7 +65,7 @@ open class BaseLifecycleOwner: ObjectIdentifiable, LifecycleOwner, LifecycleOwne
     /// Initializer.
     public init(scopeLifecycle: ScopeLifecycle = ScopeLifecycle()) {
         self.scopeLifecycle = scopeLifecycle
-        subscribe(to: scopeLifecycle)
+        scopeLifecycle.subscribe(self)
     }
 
     open func didLoad(_ lifecyclePublisher: LifecyclePublisher) {}

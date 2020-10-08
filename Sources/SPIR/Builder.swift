@@ -246,3 +246,59 @@ extension WeakCachedBuilder: LazyPresentableInteractable where R: PresentableInt
         return getOrCreate()
     }
 }
+
+public protocol PresenterProviding {
+    associatedtype Presenter: Presentable
+
+    var presenter: Presenter { get }
+}
+
+public protocol InteractablePresententerProviding: PresenterProviding, PresentableInteractableConvertible, PresentableInteractableBuildable where Presenter: PresentableInteractable {}
+
+extension InteractablePresententerProviding {
+    public var presentableInteractable: PresentableInteractable {
+        return presenter
+    }
+
+    public func build() -> PresentableInteractable {
+        return presentableInteractable
+    }
+}
+
+public protocol InteractorProviding: InteractableConvertible {
+    associatedtype Interactor: Interactable
+
+    var interactor: Interactor { get }
+}
+
+extension InteractorProviding {
+    public var interactable: Interactable {
+        return interactor
+    }
+}
+
+public protocol PresentableInteractorProviding: InteractorProviding, PresentableInteractableConvertible, PresentableInteractableBuildable where Interactor: PresentableInteractable {}
+
+extension PresentableInteractorProviding {
+    public var presentableInteractable: PresentableInteractable {
+        return interactor
+    }
+
+    public func build() -> PresentableInteractable {
+        return presentableInteractable
+    }
+}
+
+extension AnyBuilder where R == PresentableInteractable {
+    public convenience init(presentableInteractable: @escaping @autoclosure () -> PresentableInteractable) {
+        self.init { () -> PresentableInteractable in
+            return presentableInteractable()
+        }
+    }
+
+    public convenience init(component: @escaping @autoclosure () -> PresentableInteractableConvertible) {
+        self.init { () -> PresentableInteractable in
+            return component().presentableInteractable
+        }
+    }
+}

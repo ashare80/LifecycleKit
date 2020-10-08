@@ -36,7 +36,7 @@ open class ScopeLifecycleDependent: ObjectIdentifiable, LifecycleDependent, Life
     /// Initializer.
     public init(scopeLifecycle: ScopeLifecycle) {
         self.scopeLifecycle = scopeLifecycle
-        subscribe(to: scopeLifecycle)
+        scopeLifecycle.subscribe(self)
     }
 
     open func didLoad(_ lifecyclePublisher: LifecyclePublisher) {}

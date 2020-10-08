@@ -38,50 +38,35 @@ public protocol LifecycleSubscriber: AnyObject {
     func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher)
 }
 
-extension LifecycleSubscriber where Self: LifecycleOwner {
-    /// Binds to lifecycle events receiving on main thread and sets the receiver as the owner of the `ScopeLifecycle`.
-    public func subscribe(to scopeLifecycle: ScopeLifecycle) {
-        scopeLifecycle.owner = self
-        subscribeActiveState(scopeLifecycle)
-    }
-}
-
-extension LifecycleSubscriber {
+extension ScopeLifecycle {
     /// Binds to lifecycle states receiving on main thread.
-    public func subscribe(to scopeLifecycle: ScopeLifecycle) {
-        subscribeActiveState(scopeLifecycle)
-    }
-
-    /// Binds to lifecycle states receiving on main thread.
-    fileprivate func subscribeActiveState(_ scopeLifecycle: ScopeLifecycle) {
-        if scopeLifecycle.subscribers.contains(self) {
-            assertionFailure("Binding to \(scopeLifecycle) that has already been subscribes to. \(scopeLifecycle.subscribers)")
+    public func subscribe(_ subscriber: LifecycleSubscriber) {
+        if subscribers.contains(subscriber) {
+            assertionFailure("Binding to \(subscriber) that has already been subscribes to. \(subscribers)")
         }
 
-        scopeLifecycle.subscribers.insert(self)
+        subscribers.insert(subscriber)
 
-        scopeLifecycle
-            .firstActive
+        firstActive
             .receive(on: Schedulers.main)
-            .autoCancel(scopeLifecycle, when: .deinitialized)
+            .autoCancel(self, when: .deinitialized)
             // Weak to ensure observing from owner does not cause retain cycle.
-            .sink(receiveValue: { [weak self, weak scopeLifecycle] _ in
-                guard let self = self, let scopeLifecycle = scopeLifecycle else { return }
-                self.didLoad(scopeLifecycle)
+            .sink(receiveValue: { [weak self, weak subscriber] _ in
+                guard let self = self, let subscriber = subscriber else { return }
+                subscriber.didLoad(self)
             })
 
-        scopeLifecycle
-            .isActivePublisher
+        isActivePublisher
             .drop(while: { !$0 })
             .receive(on: Schedulers.main)
-            .autoCancel(scopeLifecycle, when: .deinitialized)
+            .autoCancel(self, when: .deinitialized)
             // Weak to ensure observing from owner does not cause retain cycle.
-            .sink(receiveValue: { [weak self, weak scopeLifecycle] isActive in
-                guard let self = self, let scopeLifecycle = scopeLifecycle else { return }
+            .sink(receiveValue: { [weak self, weak subscriber] isActive in
+                guard let self = self, let subscriber = subscriber else { return }
                 if isActive {
-                    self.didBecomeActive(scopeLifecycle)
+                    subscriber.didBecomeActive(self)
                 } else {
-                    self.didBecomeInactive(scopeLifecycle)
+                    subscriber.didBecomeInactive(self)
                 }
             })
     }

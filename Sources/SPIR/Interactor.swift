@@ -19,7 +19,15 @@ import Foundation
 import Lifecycle
 
 /// The base protocol for all interactors.
-public protocol Interactable: LifecycleOwner {}
+public protocol Interactable: LifecycleOwner, InteractableConvertible {}
+
+public protocol InteractableConvertible {
+    var interactable: Interactable { get }
+}
+
+extension Interactable {
+    public var interactable: Interactable { self }
+}
 
 /// An `Interactor` defines a unit of business logic that corresponds to a interactable unit.
 ///
@@ -58,7 +66,15 @@ open class RoutingInteractor<RouterType>: Interactor {
 }
 
 /// `Interactor` that provides a `View`
-public protocol PresentableInteractable: Interactable, Presentable {}
+public protocol PresentableInteractable: Interactable, Presentable, PresentableInteractableConvertible {}
+
+public protocol PresentableInteractableConvertible {
+    var presentableInteractable: PresentableInteractable { get }
+}
+
+extension PresentableInteractable {
+    public var presentableInteractable: PresentableInteractable { self }
+}
 
 /// Base class of an `Interactor` that has a separate associated `Presenter` and `View`.
 open class PresentableInteractor<PresenterType>: Interactor, PresentableInteractable {
@@ -91,7 +107,7 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
         super.init(scopeLifecycle: scopeLifecycle)
 
         if let lifecycleSubscriber = presenter as? LifecycleSubscriber {
-            lifecycleSubscriber.subscribe(to: scopeLifecycle)
+            scopeLifecycle.subscribe(lifecycleSubscriber)
         }
 
         if let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber {

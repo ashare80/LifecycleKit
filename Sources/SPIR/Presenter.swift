@@ -42,7 +42,7 @@ open class InteractablePresenter: Presenter, Interactable, LifecycleSubscriber, 
     {
         self.scopeLifecycle = scopeLifecycle
         super.init(viewLifecycle: viewLifecycle)
-        subscribe(to: scopeLifecycle)
+        scopeLifecycle.subscribe(self)
         viewLifecycle.setScopeLifecycle(scopeLifecycle)
     }
 

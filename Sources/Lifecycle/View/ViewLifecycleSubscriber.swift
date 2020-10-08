@@ -29,14 +29,6 @@ public protocol ViewLifecycleSubscriber: AnyObject {
     func viewDidDisappear()
 }
 
-extension ViewLifecycleSubscriber where Self: ViewLifecycleOwner {
-    /// Binds to lifecycle events receiving on main thread and sets the receiver as the owner of the `ViewLifecycle`.
-    public func subscribe(to viewLifecycle: ViewLifecycle) {
-        viewLifecycle.owner = self
-        subscribeActiveState(viewLifecycle)
-    }
-}
-
 extension ViewLifecycleSubscriber {
     /// Binds to lifecycle states receiving on main thread.
     public func subscribe(to viewLifecycle: ViewLifecycle) {

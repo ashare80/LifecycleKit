@@ -30,7 +30,7 @@ extension ViewLifecycleOwner {
     /// - returns: `View` type after applying appearance closures.
     public func tracked<V: View>(_ view: V) -> some View {
         let viewLifecycle = self.viewLifecycle
-        viewLifecycle.viewDidLoad()
+        viewLifecycle.viewDidLoad(with: self)
 
         return view.onAppear {
             viewLifecycle.isDisplayed = true

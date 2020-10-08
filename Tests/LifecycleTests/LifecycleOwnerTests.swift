@@ -22,7 +22,7 @@ final class LifecycleOwnerTests: XCTestCase {
     func testBind() {
         let lifecycleOwner = TestLifecycleOwner()
 
-        lifecycleOwner.scopeLifecycle.activate()
+        lifecycleOwner.activate()
 
         XCTAssertEqual(lifecycleOwner.scopeLifecycle.owner as? TestLifecycleOwner, lifecycleOwner)
     }
@@ -42,7 +42,7 @@ final class LifecycleOwnerTests: XCTestCase {
         XCTAssertEqual(child.didBecomeActiveCount, 0)
         XCTAssertEqual(child.didBecomeInactiveCount, 0)
 
-        parent.scopeLifecycle.activate()
+        parent.activate()
 
         XCTAssertEqual(parent.children as! [TestLifecycleOwner], [child])
         XCTAssertTrue(parent.isActive)
@@ -60,7 +60,7 @@ final class LifecycleOwnerTests: XCTestCase {
         XCTAssertEqual(child.didBecomeActiveCount, 1)
         XCTAssertEqual(child.didBecomeInactiveCount, 0)
 
-        parent.scopeLifecycle.deactivate()
+        parent.deactivate()
 
         XCTAssertEqual(parent.children as! [TestLifecycleOwner], [child])
         XCTAssertFalse(parent.isActive)
@@ -69,7 +69,7 @@ final class LifecycleOwnerTests: XCTestCase {
         XCTAssertEqual(child.didBecomeActiveCount, 1)
         XCTAssertEqual(child.didBecomeInactiveCount, 1)
 
-        parent.scopeLifecycle.activate()
+        parent.activate()
 
         XCTAssertEqual(parent.children as! [TestLifecycleOwner], [child])
         XCTAssertTrue(parent.isActive)
@@ -114,9 +114,11 @@ final class LifecycleOwnerTests: XCTestCase {
     func testDuplicateOwner_asserts() {
         let scopeLifecycle = ScopeLifecycle()
         let owner = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
+        owner.activate()
 
         expectAssertionFailure {
-            _ = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
+            let owner = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
+            owner.activate()
         }
 
         XCTAssertNotNil(owner)
@@ -127,18 +129,21 @@ final class LifecycleOwnerTests: XCTestCase {
 
         autoreleasepool {
             let owner = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
+            XCTAssertNil(scopeLifecycle.owner)
+            owner.activate()
             XCTAssertEqual(owner, scopeLifecycle.owner as! TestLifecycleOwner)
         }
 
         let owner = TestLifecycleOwner(scopeLifecycle: scopeLifecycle)
-
+        XCTAssertNil(scopeLifecycle.owner)
+        owner.activate()
         XCTAssertEqual(owner, scopeLifecycle.owner as! TestLifecycleOwner)
     }
 
     func testBindAgain_asserts() {
         let parent = TestLifecycleOwner()
         expectAssertionFailure {
-            parent.subscribe(to: parent.scopeLifecycle)
+            parent.scopeLifecycle.subscribe(parent)
         }
     }
 

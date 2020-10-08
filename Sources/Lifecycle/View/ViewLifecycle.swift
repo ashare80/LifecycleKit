@@ -86,7 +86,8 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
         self.scopeLifecycle = scopeLifecycle
     }
 
-    func viewDidLoad() {
+    func viewDidLoad(with owner: ViewLifecycleOwner) {
+        self.owner = owner
         state = .initialized
     }
 }

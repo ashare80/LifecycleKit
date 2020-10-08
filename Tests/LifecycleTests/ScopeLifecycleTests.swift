@@ -35,7 +35,7 @@ final class ScopeLifecycleTests: XCTestCase {
 
             XCTAssertEqual(events, [.value(.initialized)])
 
-            scopeLifecycle.activate()
+            scopeLifecycle.activate(with: TestLifecycleOwner())
 
             XCTAssertEqual(events, [.value(.initialized),
                                     .value(.active)])
@@ -46,7 +46,7 @@ final class ScopeLifecycleTests: XCTestCase {
                                     .value(.active),
                                     .value(.inactive)])
 
-            scopeLifecycle.activate()
+            scopeLifecycle.activate(with: TestLifecycleOwner())
 
             XCTAssertEqual(events, [.value(.initialized),
                                     .value(.active),
