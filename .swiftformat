@@ -79,3 +79,6 @@
 --indent 4
 --allman false
 
+# file options
+--exclude **/.build/
+--exclude **/CodeGen/
