@@ -34,11 +34,11 @@ extension RootLifecycle {
 
     extension NSApplicationDelegate where Self: RootLifecycle {
         public func activateRoot() {
-            rootLifecycleOwner.scopeLifecycle.activate()
+            rootLifecycleOwner.activate()
         }
 
         public func deactivateRoot() {
-            rootLifecycleOwner.scopeLifecycle.deactivate()
+            rootLifecycleOwner.deactivate()
         }
     }
 

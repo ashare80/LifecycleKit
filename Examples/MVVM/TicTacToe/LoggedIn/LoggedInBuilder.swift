@@ -51,7 +51,7 @@ final class LoggedInComponent: Component<LoggedInDependency>, InteractorProvidin
     }
 
     var offGameBuilder: PresentableInteractableBuildable {
-        return AnyBuilder { OffGameComponent(parent: self).presentableInteractable }
+        return OffGameComponent(parent: self)
     }
 
     var router: LoggedInRouter {

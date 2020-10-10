@@ -23,6 +23,10 @@ public protocol RandomWinDependency: Dependency {
     var mutableScoreStream: MutableScoreStream { get }
 }
 
+protocol RandomWinBuildable {
+    func build(_ dynamicDependency: RandomWinComponent.DynamicDependency) -> PresentableInteractable
+}
+
 final class RandomWinComponent: Component<RandomWinDependency>, InteractablePresententerProviding {
 
     var dynamicDependency: DynamicDependency
@@ -42,10 +46,6 @@ final class RandomWinComponent: Component<RandomWinDependency>, InteractablePres
     public struct DynamicDependency {
         var listener: RandomWinListener
     }
-}
-
-protocol RandomWinBuildable {
-    func build(_ dynamicDependency: RandomWinComponent.DynamicDependency) -> PresentableInteractable
 }
 
 extension AnyDynamicBuilder: RandomWinBuildable where R == PresentableInteractable, DynamicDependency == RandomWinComponent.DynamicDependency {}

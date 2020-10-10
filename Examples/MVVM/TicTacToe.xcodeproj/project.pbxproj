@@ -41,9 +41,9 @@
 /* Begin PBXFileReference section */
 		7EDD594F1FA13579005EC8B2 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		E34E6D06250D3575001DC023 /* SceneDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		E37408E5252CAFB90006E2A5 /* LifecycleKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LifecycleKit; path = ..; sourceTree = "<group>"; };
 		E37408F0252CB0ED0006E2A5 /* TicTacToe.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TicTacToe.entitlements; sourceTree = "<group>"; };
 		E37408F2252F77270006E2A5 /* NeedleGenerated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NeedleGenerated.swift; sourceTree = "<group>"; };
+		E388462B253216CB00A994AB /* LifecycleKit */ = {isa = PBXFileReference; lastKnownFileType = folder; name = LifecycleKit; path = ../..; sourceTree = "<group>"; };
 		E9894B4A1F972CC500688FCB /* TicTacToe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TicTacToe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9894B591F972CC500688FCB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E9C86D981FA389E000B61DF6 /* BasicScoreBoard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicScoreBoard.swift; sourceTree = "<group>"; };
@@ -111,7 +111,7 @@
 		E9894B411F972CC500688FCB = {
 			isa = PBXGroup;
 			children = (
-				E37408E5252CAFB90006E2A5 /* LifecycleKit */,
+				E388462B253216CB00A994AB /* LifecycleKit */,
 				E9894B4C1F972CC500688FCB /* TicTacToe */,
 				E9894B4B1F972CC500688FCB /* Products */,
 				E37408E9252CB0C00006E2A5 /* Frameworks */,

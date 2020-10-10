@@ -43,7 +43,7 @@ final class RootComponent: BootstrapComponent, PresentableInteractorProviding {
     }
 
     var loggedOutBuilder: PresentableInteractableBuildable {
-        return AnyBuilder(component: LoggedOutComponent(parent: self))
+        return LoggedOutComponent(parent: self)
     }
 
     var loggedInBuilder: LoggedInBuildable {
