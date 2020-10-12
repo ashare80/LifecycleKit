@@ -16,11 +16,6 @@
 
 import SPIR
 
-protocol RootPresentable: Presentable {
-    func present(presenter: Presentable)
-    func dismiss(presenter: Presentable)
-}
-
 final class RootRouter: PresentableRouter<RootPresentable>, RootRouting {
 
     private var loggedOut: PresentableInteractable?

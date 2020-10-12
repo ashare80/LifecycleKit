@@ -16,18 +16,18 @@
 
 import Foundation
 @testable import Lifecycle
-@testable import SPIR
+@testable import MVVM
+import SwiftUI
 import XCTest
 
-final class BuilderTests: XCTestCase {
-    func testAnyBuilderAutoClosure() {
-        var string = ""
-        let builder = AnyBuilder { string }
-        string = "test"
-        XCTAssertEqual(builder.build(), "test")
-    }
+final class ViewTests: XCTestCase {
+}
 
-    func testAnyDynamicBuilder() {
-        XCTAssertEqual(AnyDynamicBuilder { test in test }.build("test"), "test")
+struct TestView<ViewModel: ObservableObject>: View, ViewModelView {
+
+    @ObservedObject var viewModel: ViewModel
+
+    var body: some View {
+        EmptyView()
     }
 }

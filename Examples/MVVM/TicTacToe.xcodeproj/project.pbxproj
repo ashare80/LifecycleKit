@@ -14,6 +14,7 @@
 		E37408ED252CB0C00006E2A5 /* Lifecycle in Frameworks */ = {isa = PBXBuildFile; productRef = E37408EC252CB0C00006E2A5 /* Lifecycle */; };
 		E37408EF252CB0C00006E2A5 /* SPIR in Frameworks */ = {isa = PBXBuildFile; productRef = E37408EE252CB0C00006E2A5 /* SPIR */; };
 		E37408F3252F77270006E2A5 /* NeedleGenerated.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37408F2252F77270006E2A5 /* NeedleGenerated.swift */; };
+		E3884632253484B500A994AB /* MVVM in Frameworks */ = {isa = PBXBuildFile; productRef = E3884631253484B500A994AB /* MVVM */; };
 		E9C86DA31FA38A0A00B61DF6 /* RandomWinPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C86D9D1FA389EC00B61DF6 /* RandomWinPresenter.swift */; };
 		E9C86DA81FA38AD600B61DF6 /* ScoreStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C86DA71FA38AD000B61DF6 /* ScoreStream.swift */; };
 		E9C86DA91FA38AEC00B61DF6 /* PlayerType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9C86DA61FA38AD000B61DF6 /* PlayerType.swift */; };
@@ -78,6 +79,7 @@
 				E37408ED252CB0C00006E2A5 /* Lifecycle in Frameworks */,
 				E37408EB252CB0C00006E2A5 /* CombineExtensions in Frameworks */,
 				E37408EF252CB0C00006E2A5 /* SPIR in Frameworks */,
+				E3884632253484B500A994AB /* MVVM in Frameworks */,
 				E37408E8252CB0A80006E2A5 /* NeedleFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -253,6 +255,7 @@
 				E37408EA252CB0C00006E2A5 /* CombineExtensions */,
 				E37408EC252CB0C00006E2A5 /* Lifecycle */,
 				E37408EE252CB0C00006E2A5 /* SPIR */,
+				E3884631253484B500A994AB /* MVVM */,
 			);
 			productName = TicTacToe;
 			productReference = E9894B4A1F972CC500688FCB /* TicTacToe.app */;
@@ -545,6 +548,10 @@
 		E37408EE252CB0C00006E2A5 /* SPIR */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SPIR;
+		};
+		E3884631253484B500A994AB /* MVVM */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MVVM;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -15,29 +15,31 @@
 //
 
 import SPIR
+import Lifecycle
+import SwiftUI
+import MVVM
 
-final class RootComponent: BootstrapComponent, PresentableInteractorProviding {
-
+final class Root: BootstrapComponent, MVVMScope {
     var loggedOutListener: LoggedOutListener {
-        return interactor
+        return controller
     }
 
-    var presenter: RootPresenter {
+    var viewModel: RootPresenter {
         shared {
             RootPresenter()
         }
     }
 
-    var interactor: RootInteractor {
+    var controller: RootInteractor {
         weakShared {
-            RootInteractor(presenter: presenter,
+            RootInteractor(presenter: viewModel,
                            router: router)
         }
     }
 
     var router: RootRouter {
         return RootRouter(scopeLifecycle: scopeLifecycle,
-                          presenter: presenter,
+                          presenter: viewModel,
                           loggedOutBuilder: loggedOutBuilder,
                           loggedInBuilder: loggedInBuilder)
     }
@@ -51,6 +53,10 @@ final class RootComponent: BootstrapComponent, PresentableInteractorProviding {
     }
 
     var loggedInPresenter: LoggedInPresentable {
-        return presenter
+        return viewModel
+    }
+    
+    var view: AnyView {
+        return viewModel.viewable.asAnyView
     }
 }

@@ -16,18 +16,7 @@
 
 import Foundation
 import SwiftUI
-
-/// Type erased `View`.
-public protocol Viewable {
-    /// Wraps in `AnyView`.
-    var asAnyView: AnyView { get }
-}
-
-extension AnyView: Viewable {
-    public var asAnyView: AnyView {
-        return self
-    }
-}
+import Lifecycle
 
 /// Convenience protocol for a `View ` with only a `Presenter` dependency.
 public protocol PresenterView: View {
@@ -38,8 +27,14 @@ public protocol PresenterView: View {
     init(presenter: PresenterType)
 }
 
-extension View {
-    public var asAnyView: AnyView {
-        return AnyView(self)
+extension ViewProvidingScope where Self: InteractablePresententerProviding {
+    public var view: AnyView {
+        return presenter.viewable.asAnyView
+    }
+}
+
+extension InteractablePresententerProviding where Self: ViewProvidingScope {
+    public var lifecycleOwner: LifecycleOwner {
+        return presentableInteractable
     }
 }

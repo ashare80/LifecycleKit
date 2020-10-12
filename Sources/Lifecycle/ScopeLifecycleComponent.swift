@@ -45,34 +45,22 @@ extension LifecycleOwnerComponent {
 
     /// Allows a shared parent instance to be passed by DI to a child scope and avoid a circular reference from parentScope->shared->childScope->parentScope.
     public func weakShared<T: AnyObject>(__function: String = #function, _ factory: () -> T) -> T {
-        return shared(__function: __function) { WeakShared(factory) }.instance
+        return shared(__function: __function) { WeakShared() }.getOrCreate(factory)
     }
 }
 
 /// Weakly holds reference to the lazily created value.
 final class WeakShared<R: AnyObject> {
-    private var tempInstance: R?
     private weak var weakInstance: R?
 
-    /// Initializer.
-    ///
-    /// - parameter builder: The building closure that creates a new instance of `R` on each call to build.
-    public init(_ builder: () -> R) {
-        self.tempInstance = builder()
-    }
-
     /// Builds a new instance of `R`.
-    public var instance: R {
-        if let tempInstance = tempInstance {
-            defer { self.tempInstance = nil }
-            weakInstance = tempInstance
-            return tempInstance
-        }
-
+    public func getOrCreate(_ builder: () -> R) -> R  {
         if let weakInstance = weakInstance {
             return weakInstance
         }
-
-        fatalError("Attempting to access instance from scope that has been deinitialized.")
+        
+        let instance = builder()
+        weakInstance = instance
+        return instance
     }
 }

@@ -54,7 +54,7 @@ open class BaseViewLifecycleOwner: ObjectIdentifiable, ViewLifecycleOwner, ViewL
 
     public init(viewLifecycle: ViewLifecycle = ViewLifecycle()) {
         self.viewLifecycle = viewLifecycle
-        subscribe(to: viewLifecycle)
+        viewLifecycle.subscribe(self)
     }
 
     open func viewDidLoad() {}

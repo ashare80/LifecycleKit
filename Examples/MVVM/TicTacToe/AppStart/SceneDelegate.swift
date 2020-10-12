@@ -18,14 +18,7 @@ import Lifecycle
 import SPIR
 import SwiftUI
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate, RootLifecycle {
-
-    let rootInteractor = RootComponent().interactor
-
-    var rootLifecycleOwner: LifecycleOwner {
-        return rootInteractor
-    }
-
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
 
     func scene(_ scene: UIScene, willConnectTo _: UISceneSession, options _: UIScene.ConnectionOptions) {
@@ -33,10 +26,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate, RootLifecycle {
             let window = UIWindow(windowScene: windowScene)
             self.window = window
 
-            window.rootViewController = UIHostingController(rootView: rootInteractor.presenter.viewable.asAnyView)
+            window.rootViewController = UIHostingController(rootView: Root().scopeView)
             window.makeKeyAndVisible()
-
-            activateRoot()
         }
     }
 

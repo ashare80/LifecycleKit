@@ -25,8 +25,8 @@ let package = Package(
             targets: ["SPIR"]
         ),
         .library(
-            name: "MVC",
-            targets: ["MVC"]
+            name: "MVVM",
+            targets: ["MVVM"]
         ),
     ],
     dependencies: [
@@ -46,10 +46,10 @@ let package = Package(
         .testTarget(name: "SPIRTests",
                     dependencies: ["SPIR",
                                    "NeedleFoundation"]),
-        .target(name: "MVC",
+        .target(name: "MVVM",
                 dependencies: ["Lifecycle"]),
-        .testTarget(name: "MVCTests",
-                    dependencies: ["MVC",
+        .testTarget(name: "MVVMTests",
+                    dependencies: ["MVVM",
                                    "NeedleFoundation"]),
     ]
 )

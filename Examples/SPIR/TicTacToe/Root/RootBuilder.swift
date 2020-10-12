@@ -15,6 +15,8 @@
 //
 
 import SPIR
+import Lifecycle
+import SwiftUI
 
 final class RootComponent: BootstrapComponent, PresentableInteractorProviding {
 

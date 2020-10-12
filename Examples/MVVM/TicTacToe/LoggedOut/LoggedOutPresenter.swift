@@ -21,7 +21,7 @@ protocol LoggedOutDependency: Dependency {
     var loggedOutListener: LoggedOutListener { get }
 }
 
-final class LoggedOutComponent: Component<LoggedOutDependency>, InteractablePresententerProviding {
+final class LoggedOutComponent: Component<LoggedOutDependency>, InteractablePresententerProviding, ViewProvidingScope {
 
     var presenter: LoggedOutPresenter {
         return LoggedOutPresenter(listener: dependency.loggedOutListener)

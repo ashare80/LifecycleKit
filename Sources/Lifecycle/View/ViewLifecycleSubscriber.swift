@@ -29,42 +29,35 @@ public protocol ViewLifecycleSubscriber: AnyObject {
     func viewDidDisappear()
 }
 
-extension ViewLifecycleSubscriber {
+extension ViewLifecycle {
     /// Binds to lifecycle states receiving on main thread.
-    public func subscribe(to viewLifecycle: ViewLifecycle) {
-        subscribeActiveState(viewLifecycle)
-    }
-
-    /// Binds to lifecycle states receiving on main thread.
-    fileprivate func subscribeActiveState(_ viewLifecycle: ViewLifecycle) {
-        if viewLifecycle.subscribers.contains(self) {
-            assertionFailure("Binding to \(viewLifecycle) that has already been subscribes to. \(viewLifecycle.subscribers)")
+    public func subscribe(_ subscriber: ViewLifecycleSubscriber) {
+        if subscribers.contains(subscriber) {
+            assertionFailure("Binding to \(self) that has already been subscribes to. \(subscribers)")
         }
-        viewLifecycle.subscribers.insert(self)
+        subscribers.insert(subscriber)
 
-        viewLifecycle
-            .lifecycleState
+        lifecycleState
             .first(where: { $0 == .initialized })
             .receive(on: Schedulers.main)
-            .autoCancel(viewLifecycle, when: .deinitialized)
+            .autoCancel(self, when: .deinitialized)
             // Weak to ensure observing from owner does not cause retain cycle.
-            .sink(receiveValue: { [weak self] _ in
-                guard let self = self else { return }
-                self.viewDidLoad()
+            .sink(receiveValue: { [weak subscriber] _ in
+                guard let subscriber = subscriber else { return }
+                subscriber.viewDidLoad()
             })
 
-        viewLifecycle
-            .isActivePublisher
+        isActivePublisher
             .drop(while: { !$0 })
             .receive(on: Schedulers.main)
-            .autoCancel(viewLifecycle, when: .deinitialized)
+            .autoCancel(self, when: .deinitialized)
             // Weak to ensure observing from owner does not cause retain cycle.
-            .sink(receiveValue: { [weak self] isActive in
-                guard let self = self else { return }
+            .sink(receiveValue: { [weak subscriber] isActive in
+                guard let subscriber = subscriber else { return }
                 if isActive {
-                    self.viewDidAppear()
+                    subscriber.viewDidAppear()
                 } else {
-                    self.viewDidDisappear()
+                    subscriber.viewDidDisappear()
                 }
             })
     }

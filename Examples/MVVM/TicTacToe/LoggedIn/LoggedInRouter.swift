@@ -16,7 +16,7 @@
 
 import SPIR
 
-protocol LoggedInPresentable: Presentable {
+protocol LoggedInPresentable {
     func present(presenter: Presentable)
     func dismiss(presenter: Presentable)
 }

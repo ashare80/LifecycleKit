@@ -27,6 +27,8 @@ public typealias RootLifecycle = Lifecycle.RootLifecycle
 public typealias ScopeLifecycle = Lifecycle.ScopeLifecycle
 public typealias ViewLifecycleSubscriber = Lifecycle.ViewLifecycleSubscriber
 public typealias ViewLifecycle = Lifecycle.ViewLifecycle
+public typealias ViewProvidingScope = Lifecycle.ViewProvidingScope
+public typealias Viewable = Lifecycle.Viewable
 
 #if canImport(NeedleFoundation)
     import NeedleFoundation

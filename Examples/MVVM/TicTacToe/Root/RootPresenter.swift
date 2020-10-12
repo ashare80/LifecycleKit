@@ -17,6 +17,11 @@
 import SPIR
 import SwiftUI
 
+protocol RootPresentable: Presentable {
+    func present(presenter: Presentable)
+    func dismiss(presenter: Presentable)
+}
+
 final class RootPresenter: Presenter, ViewPresentable, RootPresentable {
     @Published var presentedPresenter: Presentable?
 

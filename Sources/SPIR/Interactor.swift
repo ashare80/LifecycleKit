@@ -111,7 +111,7 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
         }
 
         if let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber {
-            viewLifecycleSubscriber.subscribe(to: viewLifecycle)
+            viewLifecycle.subscribe(viewLifecycleSubscriber)
         }
 
         viewLifecycle.setScopeLifecycle(scopeLifecycle)
