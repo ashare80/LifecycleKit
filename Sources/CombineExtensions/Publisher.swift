@@ -100,14 +100,25 @@ extension Optional: OptionalType {
 }
 
 extension Publisher where Output: OptionalType {
-    public func filterNil() -> Publishers.SwitchToLatest<AnyPublisher<Output.Wrapped, Failure>, Publishers.Map<Self, AnyPublisher<Output.Wrapped, Failure>>> {
-        return map { (output) -> AnyPublisher<Output.Wrapped, Failure> in
-            if let output = output.value {
-                return Just(output).mapError().eraseToAnyPublisher()
-            } else {
-                return Empty().eraseToAnyPublisher()
-            }
+    public func filterNil() -> Publishers.Map<Publishers.Filter<Self>, Output.Wrapped> {
+        return filter { (output) -> Bool in output.value != nil }
+            .map { output -> Output.Wrapped in output.value! }
+    }
+}
+
+@propertyWrapper
+public final class DidSetPublished<Element> {
+    public let projectedValue: CurrentValueRelay<Element>
+    public var wrappedValue: Element {
+        set {
+            projectedValue.send(newValue)
         }
-        .switchToLatest()
+        get {
+            projectedValue.value
+        }
+    }
+
+    public init(wrappedValue: Element) {
+        projectedValue = CurrentValueRelay(wrappedValue)
     }
 }

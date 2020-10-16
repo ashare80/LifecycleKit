@@ -71,6 +71,6 @@ extension ViewPresentable where ContentView: PresenterView, ContentView.Presente
 extension ViewPresentable {
     /// The corresponding `View` owned by this `Presenter`.
     public var viewable: Viewable {
-        return tracked(view).asAnyView
+        return ViewProvider(view: tracked(view))
     }
 }

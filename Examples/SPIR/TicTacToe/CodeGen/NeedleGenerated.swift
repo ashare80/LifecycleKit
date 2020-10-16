@@ -44,8 +44,8 @@ private class OffGameDependency19a483c7a4199f31827fBaseProvider: OffGameDependen
     var player2Name: String {
         return loggedInComponent.player2Name
     }
-    var scoreStream: ScoreStream {
-        return loggedInComponent.scoreStream
+    var scorePublisher: ScorePublisher {
+        return loggedInComponent.scorePublisher
     }
     var games: [Game] {
         return loggedInComponent.games
@@ -71,8 +71,8 @@ private class RandomWinDependencydf572f38235b3dd4a3ffBaseProvider: RandomWinDepe
     var player2Name: String {
         return loggedInComponent.player2Name
     }
-    var mutableScoreStream: MutableScoreStream {
-        return loggedInComponent.mutableScoreStream
+    var scoreRelay: ScoreRelay {
+        return loggedInComponent.scoreRelay
     }
     private let loggedInComponent: LoggedInComponent
     init(loggedInComponent: LoggedInComponent) {
@@ -92,8 +92,8 @@ private class TicTacToeDependency116f7b2429d569089340BaseProvider: TicTacToeDepe
     var player2Name: String {
         return loggedInComponent.player2Name
     }
-    var mutableScoreStream: MutableScoreStream {
-        return loggedInComponent.mutableScoreStream
+    var scoreRelay: ScoreRelay {
+        return loggedInComponent.scoreRelay
     }
     private let loggedInComponent: LoggedInComponent
     init(loggedInComponent: LoggedInComponent) {
@@ -128,8 +128,8 @@ private class BasicScoreBoardDependency699de4e23ddb78e22b46BaseProvider: BasicSc
     var player2Name: String {
         return loggedInComponent.player2Name
     }
-    var scoreStream: ScoreStream {
-        return loggedInComponent.scoreStream
+    var scorePublisher: ScorePublisher {
+        return loggedInComponent.scorePublisher
     }
     private let loggedInComponent: LoggedInComponent
     init(loggedInComponent: LoggedInComponent) {

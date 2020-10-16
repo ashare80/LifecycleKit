@@ -24,9 +24,9 @@ final class SchedulersTests: XCTestCase {
             let e = self.expectation(description: "Expect sink call immediately")
             _ = Just(())
                 .receive(on: Schedulers.main)
-                .sink {
+                .sink(receiveValue:  {
                     e.fulfill()
-                }
+                })
             self.waitForExpectations(timeout: 0.0)
         }
 
@@ -35,9 +35,9 @@ final class SchedulersTests: XCTestCase {
                 var called = false
                 let cancellable = Just(())
                     .receive(on: scheduler)
-                    .sink {
+                    .sink(receiveValue: {
                         called = true
-                    }
+                    })
                 XCTAssertTrue(called)
                 cancellable.cancel()
             }
@@ -56,9 +56,9 @@ final class SchedulersTests: XCTestCase {
             var called = false
             let cancellable = Just(())
                 .receive(on: scheduler)
-                .sink {
+                .sink(receiveValue: {
                     called = true
-                }
+                })
             XCTAssertFalse(called)
             cancellable.cancel()
         }

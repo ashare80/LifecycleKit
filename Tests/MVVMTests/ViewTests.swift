@@ -20,8 +20,7 @@ import Foundation
 import SwiftUI
 import XCTest
 
-final class ViewTests: XCTestCase {
-}
+final class ViewTests: XCTestCase {}
 
 struct TestView<ViewModel: ObservableObject>: View, ViewModelView {
 

@@ -28,7 +28,7 @@ extension ViewLifecycleOwner {
     /// Tracks view by capturing `ViewLifecycle` inside `onAppear` and `onDisappear` closures of the returned` View`
     /// - parameter view: `View` type instance to track.
     /// - returns: `View` type after applying appearance closures.
-    public func tracked<V: View>(_ view: V) -> some View {
+    public func tracked<V: View>(_ view: V) -> AnyView {
         let viewLifecycle = self.viewLifecycle
         viewLifecycle.viewDidLoad(with: self)
 
@@ -38,13 +38,14 @@ extension ViewLifecycleOwner {
         .onDisappear {
             viewLifecycle.isDisplayed = false
         }
+        .asAnyView
     }
 
     /// Tracks view by capturing `ViewLifecycle` inside `onAppear` and `onDisappear` closures of the returned` View`
     /// - parameter content: `View` type instance to track.
     /// - returns: `View` type after applying appearance closures.
-    public func tracked<V: View>(@ViewBuilder content: () -> V) -> some View {
-        tracked(content())
+    public func tracked<V: View>(@ViewBuilder content: () -> V) -> AnyView {
+        tracked(content()).asAnyView
     }
 }
 
