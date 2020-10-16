@@ -15,8 +15,8 @@
 //
 
 import Foundation
-import SwiftUI
 import Lifecycle
+import SwiftUI
 
 /// Convenience protocol for a `View ` with only a `Presenter` dependency.
 public protocol PresenterView: View {
@@ -27,13 +27,13 @@ public protocol PresenterView: View {
     init(presenter: PresenterType)
 }
 
-extension ViewProvidingScope where Self: InteractablePresententerProviding {
+extension LifecycleOwnerViewProviding where Self: InteractablePresententerProviding {
     public var view: AnyView {
         return presenter.viewable.asAnyView
     }
 }
 
-extension InteractablePresententerProviding where Self: ViewProvidingScope {
+extension InteractablePresententerProviding where Self: LifecycleOwnerViewProviding {
     public var lifecycleOwner: LifecycleOwner {
         return presentableInteractable
     }

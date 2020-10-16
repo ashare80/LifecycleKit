@@ -22,8 +22,6 @@ import Foundation
 public final class ScopeLifecycle: LifecyclePublisher, ObjectIdentifiable {
     public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return $state
-            .prefix(while: { state in state != .deinitialized })
-            .append(.deinitialized)
             .eraseToAnyPublisher()
             .removeDuplicates()
     }
@@ -53,13 +51,14 @@ public final class ScopeLifecycle: LifecyclePublisher, ObjectIdentifiable {
         }
 
         state = .deinitialized
+        $state.send(completion: .finished)
 
         LeakDetector.instance.expectDeallocate(objects: subscribers, inTime: .viewDisappearExpectation).retained.sink()
     }
 
-    @Published private var state: LifecycleState = .initialized
+    @DidSetPublished private var state: LifecycleState = .initialized
 
-    @Published var children: [LifecycleOwner] = []
+    @DidSetPublished var children: [LifecycleOwner] = []
 
     var subscribers = WeakSet<LifecycleSubscriber>()
 

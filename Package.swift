@@ -30,7 +30,7 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(name: "NeedleFoundation", url: "https://github.com/ashare80/needle.git", .branch("master")),
+        .package(name: "NeedleFoundation", url: "https://github.com/uber/needle.git", .branch("master")),
     ],
     targets: [
         .target(name: "CombineExtensions",

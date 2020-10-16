@@ -1,48 +1,51 @@
 //
-//  File.swift
-//  
+//  Copyright (c) 2020. Adam Share
 //
-//  Created by Adam Share on 10/10/20.
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 import Lifecycle
 import SwiftUI
 
-protocol Controller:
-    LifecycleOwner,
-    LifecycleSubscriber,
-    LifecycleOwnerRouting
-{
-}
-
-extension Controller {
-    public func didLoad(_ lifecyclePublisher: LifecyclePublisher) {}
-    public func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {}
-    public func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {}
-}
-    
-protocol ViewLifecycleController: Controller,
+public protocol ViewLifecycleController: LifecycleController,
     ViewLifecycleOwner,
     ViewLifecycleSubscriber
-{
-}
+{}
 
-extension ViewLifecycleController {
-    public func viewDidLoad() {}
-    public func viewDidAppear() {}
-    public func viewDidDisappear() {}
-}
-
-open class ViewController: ObjectIdentifiable, ViewLifecycleController, ObservableObject {
-    public let scopeLifecycle: ScopeLifecycle
+open class ViewLifecycleOwnerController: LifecycleOwnerController, ViewLifecycleController {
     public let viewLifecycle: ViewLifecycle
 
     public init(scopeLifecycle: ScopeLifecycle = ScopeLifecycle(),
                 viewLifecycle: ViewLifecycle = ViewLifecycle()) {
-        self.scopeLifecycle = scopeLifecycle
         self.viewLifecycle = viewLifecycle
-        scopeLifecycle.subscribe(self)
+        super.init(scopeLifecycle: scopeLifecycle)
         viewLifecycle.subscribe(self)
         viewLifecycle.setScopeLifecycle(scopeLifecycle)
+    }
+
+    open func viewDidLoad() {}
+    open func viewDidAppear() {}
+    open func viewDidDisappear() {}
+}
+
+public protocol ViewController: ViewLifecycleController, ObservableObject {}
+
+open class ViewModelController<Model: ObservableObject & ViewLifecycleOwner>: ViewLifecycleOwnerController {
+    public let viewModel: Model
+
+    public init(scopeLifecycle: ScopeLifecycle = ScopeLifecycle(),
+                viewModel: Model) {
+        self.viewModel = viewModel
+        super.init(scopeLifecycle: scopeLifecycle, viewLifecycle: viewModel.viewLifecycle)
     }
 }

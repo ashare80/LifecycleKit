@@ -74,30 +74,37 @@ public struct RetainedCancellablePublisher<P: Publisher> {
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
     @discardableResult
     public func sink(_ receiveValue: @escaping (P.Output) -> Void) -> Cancellable {
-        return self.sink(receiveValue: receiveValue)
+        return sink(receiveValue: receiveValue)
     }
 }
 
 final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancellable {
     public let combineIdentifier: CombineIdentifier = CombineIdentifier()
 
-    private var subscription: Subscription? {
-        didSet {
-            if subscription == nil {
-                cancelPublisherCancellable?.cancel()
-                cancelPublisherCancellable = nil
-            }
-        }
+    private var subscription: Subscription?
+
+    /// Make sure everything is cleared to avoid retain cycles.
+    func clear() {
+        subscription?.cancel()
+        subscription = nil
+        cancelPublisherCancellable?.cancel()
+        cancelPublisherCancellable = nil
+        receiveValue = nil
+        receiveCompletion = nil
+        receiveFailure = nil
+        receiveFinished = nil
+        receiveCancel = nil
+        cancelPublisher = nil
     }
 
     private var cancelPublisherCancellable: Cancellable?
 
-    private let receiveValue: ((Input) -> Void)?
-    private let receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?
-    private let receiveFailure: ((Failure) -> Void)?
-    private let receiveFinished: (() -> Void)?
-    private let receiveCancel: (() -> Void)?
-    private let cancelPublisher: RelayPublisher<Void>?
+    private var receiveValue: ((Input) -> Void)?
+    private var receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?
+    private var receiveFailure: ((Failure) -> Void)?
+    private var receiveFinished: (() -> Void)?
+    private var receiveCancel: (() -> Void)?
+    private var cancelPublisher: RelayPublisher<Void>?
 
     init(receiveValue: ((Input) -> Void)? = nil,
          receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
@@ -128,8 +135,6 @@ final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancella
     }
 
     func receive(completion: Subscribers.Completion<Failure>) {
-        subscription = nil
-
         receiveCompletion?(completion)
 
         switch completion {
@@ -138,12 +143,16 @@ final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancella
         case .finished:
             receiveFinished?()
         }
+
+        clear()
     }
 
     func cancel() {
-        guard let subscription = subscription else { return }
+        guard subscription != nil else {
+            clear()
+            return
+        }
         receiveCancel?()
-        subscription.cancel()
-        self.subscription = nil
+        clear()
     }
 }
