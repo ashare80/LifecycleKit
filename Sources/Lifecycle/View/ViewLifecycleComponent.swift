@@ -21,8 +21,6 @@ public protocol ViewableBuildable {
     func build() -> Viewable
 }
 
-extension AnyBuilder: ViewableBuildable where R == Viewable {}
-
 public protocol LifecycleOwnerViewProviding: ViewableBuildable {
     associatedtype ContentView: View
     var lifecycleOwner: LifecycleOwner { get }
@@ -30,8 +28,12 @@ public protocol LifecycleOwnerViewProviding: ViewableBuildable {
 }
 
 extension LifecycleOwnerViewProviding {
+    public func viewProvider() -> LifecycleOwnerViewProvider<AnyView> {
+        return LifecycleOwnerViewProvider(view: self.view.asAnyView, childLifecycle: self.lifecycleOwner)
+    }
+    
     public func build() -> Viewable {
-        return LifecycleOwnerViewProvider(view: view.asAnyView, childLifecycle: lifecycleOwner)
+        return viewProvider()
     }
 }
 
@@ -43,7 +45,41 @@ public protocol ViewLifecycleOwnerViewProviding: ViewableBuildable {
 }
 
 extension ViewLifecycleOwnerViewProviding {
+    public func viewProvider() -> LifecycleOwnerViewProvider<AnyView> {
+        return LifecycleOwnerViewProvider(view: self.viewLifecycleOwner.tracked(self.view), childLifecycle: self.lifecycleOwner)
+    }
+    
     public func build() -> Viewable {
-        return LifecycleOwnerViewProvider(view: viewLifecycleOwner.tracked(view), childLifecycle: lifecycleOwner)
+        return viewProvider()
+    }
+}
+
+extension AnyBuilder: ViewableBuildable where R == Viewable {}
+
+public protocol LazyViewable {
+    var value: Viewable { get }
+}
+
+extension CachedBuilder: ViewableBuildable where R == Viewable {
+    public func build() -> Viewable {
+        return getOrCreate()
+    }
+}
+
+extension CachedBuilder: LazyViewable where R == Viewable {
+    public var value: Viewable {
+        return getOrCreate()
+    }
+}
+
+extension WeakCachedBuilder: ViewableBuildable where R: Viewable {
+    public func build() -> Viewable {
+        return getOrCreate()
+    }
+}
+
+extension WeakCachedBuilder: LazyViewable where R: Viewable {
+    public var value: Viewable {
+        return getOrCreate()
     }
 }

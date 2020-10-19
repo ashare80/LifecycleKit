@@ -45,7 +45,7 @@ extension ViewLifecycleOwner {
     /// - parameter content: `View` type instance to track.
     /// - returns: `View` type after applying appearance closures.
     public func tracked<V: View>(@ViewBuilder content: () -> V) -> AnyView {
-        tracked(content()).asAnyView
+        tracked(content())
     }
 }
 

@@ -37,7 +37,7 @@ final class PresenterTests: XCTestCase {
     private func testPresenterBinding<PresenterType: Presenting & ViewPresentable>(presenter: PresenterType) {
         XCTAssertEqual(presenter.viewLifecycle, viewLifecycle)
         XCTAssertTrue(viewLifecycle.subscribers.contains(presenter))
-        XCTAssertTrue(presenter.viewable is AnyView)
+        XCTAssertTrue(presenter.viewable is ViewProvider)
     }
 }
 

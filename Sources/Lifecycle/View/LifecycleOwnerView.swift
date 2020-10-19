@@ -65,21 +65,43 @@ extension View {
     }
 #endif
 
-/// Lifecycle active as long as the view is referenced.
-public final class LifecycleOwnerViewProvider: Viewable {
-    public let asAnyView: AnyView
-    private let childLifecycle: LifecycleOwner
-
-    public init(view: AnyView, childLifecycle: LifecycleOwner) {
-        let lifecycleView = LifecycleView(body: view)
-        self.asAnyView = lifecycleView.asAnyView
-        self.childLifecycle = childLifecycle
+/// Lifecycle active as long as the view is referenced. Lazily loads when `asAnyView` is accessed.
+public final class LifecycleOwnerViewProvider<Content: View>: Viewable {
+    public lazy var asAnyView: AnyView = {
+        let lifecycleView = LifecycleView(body: viewBuilder())
         lifecycleView.lifecycle.attachChild(childLifecycle)
         lifecycleView.lifecycle.activate()
+        return lifecycleView.asAnyView
+    }()
+    private lazy var childLifecycle: LifecycleOwner = childLifecycleBuilder()
+    
+    private let viewBuilder: () -> Content
+    private let childLifecycleBuilder: () -> LifecycleOwner
+
+    public init(view: @autoclosure @escaping () -> Content,
+                childLifecycle: @autoclosure @escaping () -> LifecycleOwner) {
+        viewBuilder = view
+        childLifecycleBuilder = childLifecycle
     }
 
-    struct LifecycleView: View {
+    struct LifecycleView<Content: View>: View {
         let lifecycle: ReferenceLifecycleOwner = ReferenceLifecycleOwner()
-        let body: AnyView
+        let body: Content
+    }
+}
+
+public struct LazyView<Content: View>: View {
+    private let build: () -> Content
+    
+    public init(view: @autoclosure @escaping () -> Content) {
+        self.build = view
+    }
+    
+    public init(_ build: @autoclosure @escaping () -> Content) {
+        self.build = build
+    }
+    
+    public var body: Content {
+        build()
     }
 }

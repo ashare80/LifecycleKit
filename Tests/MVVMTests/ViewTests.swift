@@ -22,9 +22,9 @@ import XCTest
 
 final class ViewTests: XCTestCase {}
 
-struct TestView<ViewModel: ObservableObject>: View, ViewModelView {
+struct TestView<ViewModel: ObservableObject & ViewLifecycleOwner>: View, ViewModelView {
 
-    @ObservedObject var viewModel: ViewModel
+    @ObservedObject var model: ViewModel
 
     var body: some View {
         EmptyView()
