@@ -86,6 +86,17 @@ extension Subscribers {
             return false
         }
     }
+
+    public final class RecordSink<Input, Failure: Error> {
+        public var cancellable: AnyCancellable?
+        public var events: [Event<Input, Failure>] = []
+
+        public init<P: Publisher>(publisher: P) where P.Output == Input, P.Failure == Failure {
+            cancellable = publisher.sink(receiveEvent: { [weak self] event in
+                self?.events.append(event)
+            })
+        }
+    }
 }
 
 extension Subscribers.Event: Equatable where Input: Equatable, Failure: Equatable {}
@@ -103,5 +114,9 @@ extension Publisher {
         }, receiveValue: { value in
             receiveEvent(Subscribers.Event(value))
         })
+    }
+
+    public func record() -> Subscribers.RecordSink<Output, Failure> {
+        return Subscribers.RecordSink(publisher: self)
     }
 }

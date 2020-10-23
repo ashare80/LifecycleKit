@@ -16,6 +16,7 @@
 
 import Foundation
 
+/// Class type that use reference for equality and hash value.
 public protocol ObjectIdentifiable: AnyObject, Hashable {}
 
 extension ObjectIdentifiable {

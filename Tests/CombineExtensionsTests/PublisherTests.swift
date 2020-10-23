@@ -22,26 +22,22 @@ final class PublisherTests: XCTestCase {
     func testFilterNil() {
         let publisher = CurrentValueRelay<Bool?>(nil)
 
-        var calls: [Bool] = []
-
-        let cancellable = publisher
+        let record = publisher
             .filterNil()
-            .sink { value in calls.append(value)  }
+            .record()
 
-        XCTAssertEqual(calls, [])
+        XCTAssertEqual(record.events, [])
 
         publisher.send(true)
 
-        XCTAssertEqual(calls, [true])
+        XCTAssertEqual(record.events, [Subscribers.Event(true)])
 
         publisher.send(nil)
 
-        XCTAssertEqual(calls, [true])
+        XCTAssertEqual(record.events, [Subscribers.Event(true)])
 
         publisher.send(false)
 
-        XCTAssertEqual(calls, [true, false])
-
-        cancellable.cancel()
+        XCTAssertEqual(record.events, [Subscribers.Event(true), Subscribers.Event(false)])
     }
 }

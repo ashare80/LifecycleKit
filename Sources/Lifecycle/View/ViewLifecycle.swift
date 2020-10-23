@@ -24,10 +24,7 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
     }
 
     public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
-        return $state
-            .filterNil()
-            .eraseToAnyPublisher()
-            .removeDuplicates()
+        return $state.removeDuplicates()
     }
 
     /// Set to `true` `onAppear`, and `false` `onDisappear`.
@@ -72,13 +69,12 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
 
     var subscribers = WeakSet<ViewLifecycleSubscriber>()
 
-    @DidSetPublished private var state: LifecycleState?
+    @DidSetFilterNilPublished private var state: LifecycleState?
 
     public init() {}
 
     deinit {
         state = .deinitialized
-        $state.send(completion: .finished)
     }
 
     public func setScopeLifecycle(_ scopeLifecycle: ScopeLifecycle) {

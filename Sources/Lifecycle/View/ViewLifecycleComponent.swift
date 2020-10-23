@@ -31,7 +31,7 @@ extension LifecycleOwnerViewProviding {
     public func viewProvider() -> LifecycleOwnerViewProvider<AnyView> {
         return LifecycleOwnerViewProvider(view: self.view.asAnyView, childLifecycle: self.lifecycleOwner)
     }
-    
+
     public func build() -> Viewable {
         return viewProvider()
     }
@@ -48,7 +48,7 @@ extension ViewLifecycleOwnerViewProviding {
     public func viewProvider() -> LifecycleOwnerViewProvider<AnyView> {
         return LifecycleOwnerViewProvider(view: self.viewLifecycleOwner.tracked(self.view), childLifecycle: self.lifecycleOwner)
     }
-    
+
     public func build() -> Viewable {
         return viewProvider()
     }

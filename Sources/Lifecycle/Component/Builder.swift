@@ -14,6 +14,7 @@
 //  limitations under the License.
 //
 
+import CombineExtensions
 import Foundation
 
 /// Type that builds with no added dependencies..

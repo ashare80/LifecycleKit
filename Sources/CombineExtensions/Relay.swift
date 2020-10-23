@@ -17,9 +17,10 @@
 import Combine
 import Foundation
 
-public typealias RelayPublisher<Output> = AnyPublisher<Output, Never>
 public typealias CurrentValueRelay<Output> = CurrentValueSubject<Output, Never>
 public typealias PassthroughRelay<Output> = PassthroughSubject<Output, Never>
+public typealias RelayPublisher<Output> = AnyPublisher<Output, Never>
+public typealias ReplayRelay<Output> = ReplaySubject<Output, Never>
 
 extension Publisher where Failure == Never {
     /// Maps a `Never` to the new `F` failure type.

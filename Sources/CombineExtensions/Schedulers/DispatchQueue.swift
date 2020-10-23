@@ -73,7 +73,7 @@ public struct DispatchQueue: DispatchQueueContext, Scheduler {
         return context.isCurrentExecutionContext
     }
 
-    private let backingQueue: Foundation.DispatchQueue
+    public let backingQueue: Foundation.DispatchQueue
     private let context: DispatchQueueContext
 
     /// A new `DispatchQueue` from a `Foundation.DispatchQueue` instance.

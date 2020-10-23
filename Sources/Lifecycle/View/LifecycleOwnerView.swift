@@ -73,8 +73,9 @@ public final class LifecycleOwnerViewProvider<Content: View>: Viewable {
         lifecycleView.lifecycle.activate()
         return lifecycleView.asAnyView
     }()
+
     private lazy var childLifecycle: LifecycleOwner = childLifecycleBuilder()
-    
+
     private let viewBuilder: () -> Content
     private let childLifecycleBuilder: () -> LifecycleOwner
 
@@ -92,15 +93,15 @@ public final class LifecycleOwnerViewProvider<Content: View>: Viewable {
 
 public struct LazyView<Content: View>: View {
     private let build: () -> Content
-    
+
     public init(view: @autoclosure @escaping () -> Content) {
         self.build = view
     }
-    
+
     public init(_ build: @autoclosure @escaping () -> Content) {
         self.build = build
     }
-    
+
     public var body: Content {
         build()
     }

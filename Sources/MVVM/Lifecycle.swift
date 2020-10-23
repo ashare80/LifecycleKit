@@ -51,5 +51,5 @@ public typealias WeakCachedBuilder = Lifecycle.WeakCachedBuilder
     public typealias Component = NeedleFoundation.Component
     public typealias Scope = NeedleFoundation.Scope
 
-extension NeedleFoundation.Component: SharedComponent {}
+    extension NeedleFoundation.Component: SharedComponent {}
 #endif

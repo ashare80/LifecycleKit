@@ -108,17 +108,57 @@ extension Publisher where Output: OptionalType {
 
 @propertyWrapper
 public final class DidSetPublished<Element> {
-    public let projectedValue: CurrentValueRelay<Element>
+    
+    public var projectedValue: RelayPublisher<Element> {
+        return relay.eraseToAnyPublisher()
+    }
+    
     public var wrappedValue: Element {
         set {
-            projectedValue.send(newValue)
+            relay.send(newValue)
         }
         get {
-            projectedValue.value
+            relay.value
+        }
+    }
+    
+    private let relay: CurrentValueRelay<Element>
+
+    public init(wrappedValue: Element) {
+        relay = CurrentValueRelay(wrappedValue)
+    }
+    
+    deinit {
+        relay.send(completion: .finished)
+    }
+}
+
+@propertyWrapper
+public final class DidSetFilterNilPublished<Element> {
+    
+    public var projectedValue: RelayPublisher<Element> {
+        return relay.eraseToAnyPublisher()
+    }
+    
+    public var wrappedValue: Element? {
+        didSet {
+            if let value = wrappedValue {
+                relay.send(value)
+            }
         }
     }
 
-    public init(wrappedValue: Element) {
-        projectedValue = CurrentValueRelay(wrappedValue)
+    private let relay: ReplayRelay<Element> = ReplayRelay(bufferSize: 1)
+    
+    public init(wrappedValue: Element?) {
+        self.wrappedValue = wrappedValue
+        
+        if let value = wrappedValue {
+            relay.send(value)
+        }
+    }
+    
+    deinit {
+        relay.send(completion: .finished)
     }
 }

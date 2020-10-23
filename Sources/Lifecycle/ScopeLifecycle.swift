@@ -21,9 +21,7 @@ import Foundation
 /// Internalizes lifecycle management.
 public final class ScopeLifecycle: LifecyclePublisher, ObjectIdentifiable {
     public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
-        return $state
-            .eraseToAnyPublisher()
-            .removeDuplicates()
+        return $state.removeDuplicates()
     }
 
     public var isActive: Bool {
@@ -51,7 +49,6 @@ public final class ScopeLifecycle: LifecyclePublisher, ObjectIdentifiable {
         }
 
         state = .deinitialized
-        $state.send(completion: .finished)
 
         LeakDetector.instance.expectDeallocate(objects: subscribers, inTime: .viewDisappearExpectation).retained.sink()
     }
