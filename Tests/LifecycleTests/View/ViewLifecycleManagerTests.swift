@@ -27,13 +27,13 @@ final class ViewLifecycleTests: XCTestCase {
         XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 0)
         XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 0)
 
-        _ = viewLifecycleOwner.tracked(EmptyView())
+        _ = EmptyView().tracked(by: viewLifecycleOwner)
 
         XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 1)
         XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 0)
         XCTAssertEqual(viewLifecycleOwner.viewDidDisappearCount, 0)
 
-        _ = viewLifecycleOwner.tracked(EmptyView())
+        _ = EmptyView().tracked(by: viewLifecycleOwner)
 
         XCTAssertEqual(viewLifecycleOwner.viewDidLoadCount, 1)
         XCTAssertEqual(viewLifecycleOwner.viewDidAppearCount, 0)

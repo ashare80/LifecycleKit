@@ -33,21 +33,29 @@ public protocol SharedComponent {
 extension SharedComponent {
     /// Allows a shared parent instance to be passed by DI to a child scope and avoid a circular reference from parentScope->shared->childScope->parentScope.
     /// If the instance is released the factory will be used to build a new object.
-    public func weakShared<T: AnyObject>(__function: String = #function, _ factory: () -> T) -> T {
-        return shared(__function: __function) { WeakShared() }.getOrCreate(factory)
+    /// - parameter __function:
+    /// - parameter singleBuild: Set false if object is expected to be released and created again. Defaults to `true`.
+    /// - parameter factory:
+    public func weakShared<T: AnyObject>(__function: String = #function, singleBuild: Bool = true, _ factory: () -> T) -> T {
+        let builder: WeakShared<T> = shared(__function: __function) { WeakShared() }
+        if singleBuild {
+            assert(builder.buildCount <= 1, "weakShared builder called \(builder.buildCount) times. Set `singleBuild` false if this is expected. " + __function)
+        }
+        return builder.getOrCreate(factory)
     }
 }
 
 /// Weakly holds reference to the lazily created value.
 final class WeakShared<R: AnyObject> {
     private weak var weakInstance: R?
+    var buildCount: Int = 0
 
     /// Builds a new instance of `R`.
     public func getOrCreate(_ builder: () -> R) -> R  {
         if let weakInstance = weakInstance {
             return weakInstance
         }
-
+        buildCount += 1
         let instance = builder()
         weakInstance = instance
         return instance

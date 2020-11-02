@@ -33,11 +33,11 @@ public protocol Viewable: AnyObject {
     var asAnyView: AnyView { get }
 }
 
-public final class ViewProvider: Viewable {
+public final class ViewProvider<Content: View>: Viewable {
     public let asAnyView: AnyView
 
-    public init(view: AnyView) {
-        self.asAnyView = view
+    public init(view: Content) {
+        self.asAnyView = view.asAnyView
     }
 }
 
@@ -46,8 +46,8 @@ extension View {
         return AnyView(self)
     }
 
-    public var asViewProvider: ViewProvider {
-        return ViewProvider(view: asAnyView)
+    public var asViewProvider: ViewProvider<Self> {
+        return ViewProvider(view: self)
     }
 }
 

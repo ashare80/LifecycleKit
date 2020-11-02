@@ -25,19 +25,21 @@ final class PresenterTests: XCTestCase {
     private let viewLifecycle = ViewLifecycle()
 
     func testPresenter() {
-        testPresenterBinding(presenter: TestPresenter(viewLifecycle: viewLifecycle))
+        let presenter = TestPresenter(viewLifecycle: viewLifecycle)
+        testPresenterBinding(presenter: presenter)
+        XCTAssertTrue(presenter.viewable is ViewProvider<ModifiedContent<TestPresenter.ContentView, TrackingViewModifier>>)
     }
 
     func testInteractablePresenter() {
         let interactablePresenter = TestInteractablePresenter(viewLifecycle: viewLifecycle)
         testPresenterBinding(presenter: interactablePresenter)
         XCTAssertTrue(viewLifecycle.scopeLifecycle === interactablePresenter.scopeLifecycle)
+        XCTAssertTrue(interactablePresenter.viewable is ViewProvider<ModifiedContent<TestView<TestInteractablePresenter>, TrackingViewModifier>>)
     }
 
     private func testPresenterBinding<PresenterType: Presenting & ViewPresentable>(presenter: PresenterType) {
         XCTAssertEqual(presenter.viewLifecycle, viewLifecycle)
         XCTAssertTrue(viewLifecycle.subscribers.contains(presenter))
-        XCTAssertTrue(presenter.viewable is ViewProvider)
     }
 }
 
