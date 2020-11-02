@@ -24,28 +24,28 @@ public protocol ViewLifecycleOwner: AnyObject {
     var viewLifecycle: ViewLifecycle { get }
 }
 
-extension ViewLifecycleOwner {
-    /// Tracks view by capturing `ViewLifecycle` inside `onAppear` and `onDisappear` closures of the returned` View`
-    /// - parameter view: `View` type instance to track.
-    /// - returns: `View` type after applying appearance closures.
-    public func tracked<V: View>(_ view: V) -> AnyView {
-        let viewLifecycle = self.viewLifecycle
-        viewLifecycle.viewDidLoad(with: self)
+struct TrackingViewModifier: ViewModifier {
+    var viewLifecycleOwner: ViewLifecycleOwner
 
-        return view.onAppear {
-            viewLifecycle.isDisplayed = true
-        }
-        .onDisappear {
-            viewLifecycle.isDisplayed = false
-        }
-        .asAnyView
+    init(_ viewLifecycleOwner: ViewLifecycleOwner) {
+        viewLifecycleOwner.viewLifecycle.viewDidLoad(with: viewLifecycleOwner)
+        self.viewLifecycleOwner = viewLifecycleOwner
     }
 
-    /// Tracks view by capturing `ViewLifecycle` inside `onAppear` and `onDisappear` closures of the returned` View`
-    /// - parameter content: `View` type instance to track.
-    /// - returns: `View` type after applying appearance closures.
-    public func tracked<V: View>(@ViewBuilder content: () -> V) -> AnyView {
-        tracked(content())
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                self.viewLifecycleOwner.viewLifecycle.isDisplayed = true
+            }
+            .onDisappear {
+                self.viewLifecycleOwner.viewLifecycle.isDisplayed = false
+            }
+    }
+}
+
+extension View {
+    public func tracked(by viewLifecycleOwner: ViewLifecycleOwner) -> some View {
+        ModifiedContent(content: self, modifier: TrackingViewModifier(viewLifecycleOwner))
     }
 }
 

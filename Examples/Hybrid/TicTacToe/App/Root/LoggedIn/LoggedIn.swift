@@ -52,7 +52,7 @@ final class LoggedIn: Component<LoggedInDependency>, InteractorProviding {
     }
 
     var offGameBuilder: ViewableBuildable {
-        return OffGame(parent: self)
+        return AnyBuilder { OffGame(parent: self).build() }
     }
 
     var router: Router {

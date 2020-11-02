@@ -22,7 +22,7 @@ import XCTest
 
 final class ViewTests: XCTestCase {
     func testPresenterView() {
-        XCTAssertTrue(TestPresenter().viewable is ViewProvider)
+        XCTAssertTrue(TestPresenter().viewable is ViewProvider<ModifiedContent<TestPresenter.ContentView, TrackingViewModifier>>)
     }
 }
 
