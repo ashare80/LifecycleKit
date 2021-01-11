@@ -39,7 +39,7 @@ extension SharedComponent {
     public func weakShared<T: AnyObject>(__function: String = #function, singleBuild: Bool = true, _ factory: () -> T) -> T {
         let builder: WeakShared<T> = shared(__function: __function) { WeakShared() }
         if singleBuild {
-            assert(builder.buildCount <= 1, "\(String(describing: self)).\(__function) weakShared builder called \(builder.buildCount) times. Set `singleBuild` false if this is expected.")
+            assert(builder.buildCount <= 1, "weakShared builder called \(builder.buildCount) times. Set `singleBuild` false if this is expected. " + __function)
         }
         return builder.getOrCreate(factory)
     }
