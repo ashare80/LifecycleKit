@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -44,49 +44,49 @@ public protocol LazyPresentableInteractable: AnyObject {
     var value: PresentableInteractable { get }
 }
 
-extension CachedBuilder: InteractableBuildable where R == Interactable {
+extension Lazy: InteractableBuildable where R == Interactable {
     public func build() -> Interactable {
         return getOrCreate()
     }
 }
 
-extension CachedBuilder: PresentableInteractableBuildable where R == PresentableInteractable {
+extension Lazy: PresentableInteractableBuildable where R == PresentableInteractable {
     public func build() -> PresentableInteractable {
         return getOrCreate()
     }
 }
 
-extension CachedBuilder: LazyInteractable where R == Interactable {
+extension Lazy: LazyInteractable where R == Interactable {
     public var value: Interactable {
         return getOrCreate()
     }
 }
 
-extension CachedBuilder: LazyPresentableInteractable where R == PresentableInteractable {
+extension Lazy: LazyPresentableInteractable where R == PresentableInteractable {
     public var value: PresentableInteractable {
         return getOrCreate()
     }
 }
 
-extension WeakCachedBuilder: InteractableBuildable where R: Interactable {
+extension WeakLazy: InteractableBuildable where R: Interactable {
     public func build() -> Interactable {
         return getOrCreate()
     }
 }
 
-extension WeakCachedBuilder: PresentableInteractableBuildable where R: PresentableInteractable {
+extension WeakLazy: PresentableInteractableBuildable where R: PresentableInteractable {
     public func build() -> PresentableInteractable {
         return getOrCreate()
     }
 }
 
-extension WeakCachedBuilder: LazyInteractable where R: Interactable {
+extension WeakLazy: LazyInteractable where R: Interactable {
     public var value: Interactable {
         return getOrCreate()
     }
 }
 
-extension WeakCachedBuilder: LazyPresentableInteractable where R: PresentableInteractable {
+extension WeakLazy: LazyPresentableInteractable where R: PresentableInteractable {
     public var value: PresentableInteractable {
         return getOrCreate()
     }

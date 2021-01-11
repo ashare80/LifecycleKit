@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -92,17 +92,17 @@ public final class LifecycleOwnerViewProvider<Content: View>: Viewable {
 }
 
 public struct LazyView<Content: View>: View {
-    private let build: () -> Content
+    private let builder: Lazy<Content>
 
     public init(view: @autoclosure @escaping () -> Content) {
-        self.build = view
+        self.builder = Lazy(view)
     }
 
-    public init(_ build: @autoclosure @escaping () -> Content) {
-        self.build = build
+    public init(_ builder: @escaping () -> Content) {
+        self.builder = Lazy(builder)
     }
 
     public var body: Content {
-        build()
+        builder.getOrCreate()
     }
 }

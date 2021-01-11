@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -111,13 +111,11 @@ extension LazyValue {
     }
 }
 
-/// Weakly holds reference to the lazily created value.
-public final class WeakCachedBuilder<R: AnyObject>: ObjectIdentifiable, WeakCachedBuildable, LazyValue {
-
-    public weak var instance: R?
-
+/// Holds a strong reference to the lazily created value.
+/// - warning: Not thread safe.
+public class Lazy<R>: ObjectIdentifiable, CachedBuildable, LazyValue {
     private let builder: () -> R
-    private let lock: NSRecursiveLock = NSRecursiveLock()
+    private var instance: R?
 
     /// Initializer.
     ///
@@ -128,8 +126,6 @@ public final class WeakCachedBuilder<R: AnyObject>: ObjectIdentifiable, WeakCach
 
     /// Builds a new instance of `R`.
     public func getOrCreate() -> R {
-        lock.lock(); defer { lock.unlock() }
-
         if let instance = instance {
             return instance
         } else {
@@ -140,16 +136,12 @@ public final class WeakCachedBuilder<R: AnyObject>: ObjectIdentifiable, WeakCach
     }
 }
 
-/// Holds a strong reference to the lazily created value.
-public final class CachedBuilder<R>: ObjectIdentifiable, CachedBuildable {
-
-    public var value: R {
-        return getOrCreate()
-    }
+/// Weakly holds reference to the lazily created value.
+/// - warning: Not thread safe.
+public class WeakLazy<R: AnyObject>: ObjectIdentifiable, WeakCachedBuildable, LazyValue {
+    public weak var instance: R?
 
     private let builder: () -> R
-    private var instance: R?
-    private let lock: NSRecursiveLock = NSRecursiveLock()
 
     /// Initializer.
     ///
@@ -160,8 +152,6 @@ public final class CachedBuilder<R>: ObjectIdentifiable, CachedBuildable {
 
     /// Builds a new instance of `R`.
     public func getOrCreate() -> R {
-        lock.lock(); defer { lock.unlock() }
-
         if let instance = instance {
             return instance
         } else {
@@ -169,5 +159,27 @@ public final class CachedBuilder<R>: ObjectIdentifiable, CachedBuildable {
             instance = newInstance
             return newInstance
         }
+    }
+}
+
+/// Weakly holds reference to the lazily created value with recursive lock.
+public class AtomicWeakLazy<R: AnyObject>: WeakLazy<R> {
+    private let lock: NSRecursiveLock = NSRecursiveLock()
+
+    /// Builds a new instance of `R`.
+    override public func getOrCreate() -> R {
+        lock.lock(); defer { lock.unlock() }
+        return super.getOrCreate()
+    }
+}
+
+/// Holds a strong reference to the lazily created value with recursive lock.
+public class AtomicLazy<R>: Lazy<R> {
+    private let lock: NSRecursiveLock = NSRecursiveLock()
+
+    /// Builds a new instance of `R`.
+    override public func getOrCreate() -> R {
+        lock.lock(); defer { lock.unlock() }
+        return super.getOrCreate()
     }
 }

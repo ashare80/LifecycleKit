@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -53,25 +53,25 @@ public protocol LazyViewable {
     var value: Viewable { get }
 }
 
-extension CachedBuilder: ViewableBuildable where R == Viewable {
+extension Lazy: ViewableBuildable where R == Viewable {
     public func build() -> Viewable {
         return getOrCreate()
     }
 }
 
-extension CachedBuilder: LazyViewable where R == Viewable {
+extension Lazy: LazyViewable where R == Viewable {
     public var value: Viewable {
         return getOrCreate()
     }
 }
 
-extension WeakCachedBuilder: ViewableBuildable where R: Viewable {
+extension WeakLazy: ViewableBuildable where R: Viewable {
     public func build() -> Viewable {
         return getOrCreate()
     }
 }
 
-extension WeakCachedBuilder: LazyViewable where R: Viewable {
+extension WeakLazy: LazyViewable where R: Viewable {
     public var value: Viewable {
         return getOrCreate()
     }

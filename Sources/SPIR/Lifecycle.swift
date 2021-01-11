@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import Lifecycle
 
 public typealias AnyBuilder = Lifecycle.AnyBuilder
 public typealias AnyDynamicBuilder = Lifecycle.AnyDynamicBuilder
-public typealias CachedBuilder = Lifecycle.CachedBuilder
+public typealias AtomicLazy = Lifecycle.AtomicLazy
+public typealias AtomicWeakLazy = Lifecycle.AtomicWeakLazy
+public typealias Lazy = Lifecycle.Lazy
 public typealias LazyViewable = Lifecycle.LazyViewable
 public typealias LazyView = Lifecycle.LazyView
 public typealias LifecycleSubscriber = Lifecycle.LifecycleSubscriber
@@ -40,7 +42,7 @@ public typealias ViewLifecycleOwner = Lifecycle.ViewLifecycleOwner
 public typealias ViewLifecycleOwnerViewProviding = Lifecycle.ViewLifecycleOwnerViewProviding
 public typealias Viewable = Lifecycle.Viewable
 public typealias ViewableBuildable = Lifecycle.ViewableBuildable
-public typealias WeakCachedBuilder = Lifecycle.WeakCachedBuilder
+public typealias WeakLazy = Lifecycle.WeakLazy
 
 #if canImport(NeedleFoundation)
     import NeedleFoundation
