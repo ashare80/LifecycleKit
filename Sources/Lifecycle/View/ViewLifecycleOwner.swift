@@ -24,7 +24,7 @@ public protocol ViewLifecycleOwner: AnyObject {
     var viewLifecycle: ViewLifecycle { get }
 }
 
-struct TrackingViewModifier: ViewModifier {
+public struct TrackingViewModifier: ViewModifier {
     var viewLifecycleOwner: ViewLifecycleOwner
 
     init(_ viewLifecycleOwner: ViewLifecycleOwner) {
@@ -32,7 +32,7 @@ struct TrackingViewModifier: ViewModifier {
         self.viewLifecycleOwner = viewLifecycleOwner
     }
 
-    func body(content: Content) -> some View {
+    public func body(content: Content) -> some View {
         content
             .onAppear {
                 self.viewLifecycleOwner.viewLifecycle.isDisplayed = true
@@ -44,7 +44,7 @@ struct TrackingViewModifier: ViewModifier {
 }
 
 extension View {
-    public func tracked(by viewLifecycleOwner: ViewLifecycleOwner) -> some View {
+    public func tracked(by viewLifecycleOwner: ViewLifecycleOwner) -> ModifiedContent<Self, TrackingViewModifier> {
         ModifiedContent(content: self, modifier: TrackingViewModifier(viewLifecycleOwner))
     }
 }

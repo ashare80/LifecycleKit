@@ -27,9 +27,9 @@ public protocol PresenterView: View {
     init(presenter: PresenterType)
 }
 
-extension LifecycleOwnerViewProviding where Self: InteractablePresententerProviding {
-    public var view: AnyView {
-        return presenter.viewable.asAnyView
+extension LifecycleOwnerViewProviding where Self: InteractablePresententerProviding, Presenter: ViewPresentable {
+    public var view: ModifiedContent<Presenter.ContentView, TrackingViewModifier> {
+        return presenter.view
     }
 }
 

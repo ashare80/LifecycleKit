@@ -20,7 +20,7 @@ import Foundation
 import SwiftUI
 
 /// Creates an active lifecycle that deactivates when released.
-final class ReferenceLifecycleOwner: ObjectIdentifiable, LifecycleOwner, LifecycleOwnerRouting {
+final class ReferenceLifecycleOwner<ReferenceView>: ObjectIdentifiable, LifecycleOwner, LifecycleOwnerRouting {
     public let scopeLifecycle: ScopeLifecycle = ScopeLifecycle()
     deinit {
         scopeLifecycle.deactivate()
@@ -86,7 +86,7 @@ public final class LifecycleOwnerViewProvider<Content: View>: Viewable {
     }
 
     struct LifecycleView<Content: View>: View {
-        let lifecycle: ReferenceLifecycleOwner = ReferenceLifecycleOwner()
+        let lifecycle: ReferenceLifecycleOwner<Content> = ReferenceLifecycleOwner()
         let body: Content
     }
 }

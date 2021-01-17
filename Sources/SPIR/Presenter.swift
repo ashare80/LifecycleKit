@@ -59,18 +59,18 @@ public protocol ViewPresentable: Presentable, ObservableObject {
     associatedtype ContentView: View
 
     /// Typed view for internal reference.
-    var view: ContentView { get }
+    var view: ModifiedContent<ContentView, TrackingViewModifier> { get }
 }
 
 extension ViewPresentable where ContentView: PresenterView, ContentView.PresenterType == Self {
-    public var view: ContentView {
-        return ContentView(presenter: self)
+    public var view: ModifiedContent<Self.ContentView, TrackingViewModifier> {
+        return ContentView(presenter: self).tracked(by: self)
     }
 }
 
 extension ViewPresentable {
     /// The corresponding `View` owned by this `Presenter`.
     public var viewable: Viewable {
-        return ViewProvider(view: view.tracked(by: self))
+        return ViewProvider(view: view)
     }
 }
