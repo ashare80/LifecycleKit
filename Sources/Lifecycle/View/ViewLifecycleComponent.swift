@@ -17,7 +17,7 @@
 import Foundation
 import SwiftUI
 
-public protocol ViewableBuildable {
+public protocol ViewableBuildable: AnyObject {
     func build() -> Viewable
 }
 
@@ -29,7 +29,7 @@ public protocol LifecycleOwnerViewProviding: ViewableBuildable {
 
 extension LifecycleOwnerViewProviding {
     public func build() -> Viewable {
-        return LifecycleOwnerViewProvider(view: view, childLifecycle: lifecycleOwner)
+        return LifecycleOwnerViewProvider(view: self.view, childLifecycle: self.lifecycleOwner)
     }
 }
 
@@ -42,8 +42,8 @@ public protocol ViewLifecycleOwnerViewProviding: ViewableBuildable {
 
 extension ViewLifecycleOwnerViewProviding {
     public func build() -> Viewable {
-        return LifecycleOwnerViewProvider(view: view.tracked(by: viewLifecycleOwner),
-                                          childLifecycle: lifecycleOwner)
+        return LifecycleOwnerViewProvider(view: self.view.tracked(by: self.viewLifecycleOwner),
+                                          childLifecycle: self.lifecycleOwner)
     }
 }
 
