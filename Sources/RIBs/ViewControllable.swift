@@ -21,7 +21,7 @@ import Lifecycle
 #endif
 
 /// Basic interface between a `Router` and the UIKit `UIViewController`.
-public protocol ViewControllable {
+public protocol ViewControllable: AnyObject {
 
     #if !os(macOS)
         var uiviewController: UIViewController { get }

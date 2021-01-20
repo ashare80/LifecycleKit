@@ -28,7 +28,7 @@ public protocol ViewableRouting: Routing {
 }
 
 /// Base class of an `Interactor` that has a separate associated `Presenter` and `View`.
-open class ViewableRouter<InteractorType, ViewControllerType>: Router<InteractorType> {
+open class ViewableRouter<InteractorType, ViewControllerType>: Router<InteractorType>, ViewableRouting {
 
     /// The corresponding `ViewController` owned by this `Router`.
     public let viewController: ViewControllerType
