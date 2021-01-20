@@ -41,25 +41,25 @@ public final class ViewProvider<Content: View>: Viewable {
     }
 }
 
-extension View {
-    public var asAnyView: AnyView {
+public extension View {
+    var asAnyView: AnyView {
         return AnyView(self)
     }
 
-    public var asViewProvider: ViewProvider<Self> {
+    var asViewProvider: ViewProvider<Self> {
         return ViewProvider(view: self)
     }
 }
 
 #if os(iOS) || os(tvOS)
-    extension View {
-        public var asUIViewController: UIViewController {
+    public extension View {
+        var asUIViewController: UIViewController {
             return UIHostingController(rootView: self)
         }
     }
 
-    extension Viewable {
-        public var asUIViewController: UIViewController {
+    public extension Viewable {
+        var asUIViewController: UIViewController {
             return UIHostingController(rootView: asAnyView)
         }
     }

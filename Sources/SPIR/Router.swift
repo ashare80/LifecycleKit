@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ open class PresentableRouter<PresenterType>: Router {
         super.init(scopeLifecycle: scopeLifecycle)
 
         if let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber,
-            let viewLifecycleOwner = presenter as? ViewLifecycleOwner {
+           let viewLifecycleOwner = presenter as? ViewLifecycleOwner {
             viewLifecycleOwner.viewLifecycle.subscribe(viewLifecycleSubscriber)
         }
     }

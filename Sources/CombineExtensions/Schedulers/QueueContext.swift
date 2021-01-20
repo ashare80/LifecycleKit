@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ public protocol DispatchQueueContext {
     var isCurrentExecutionContext: Bool { get }
 }
 
-extension DispatchQueue {
-    public struct Context<Value: Equatable>: DispatchQueueContext {
+public extension DispatchQueue {
+    struct Context<Value: Equatable>: DispatchQueueContext {
         public let key: DispatchSpecificKey<Value>
         public let value: Value
 
@@ -35,11 +35,11 @@ extension DispatchQueue {
         }
     }
 
-    public typealias DefaultContext = Context<UInt8>
+    typealias DefaultContext = Context<UInt8>
 }
 
-extension DispatchQueue.DefaultContext {
-    public init() {
+public extension DispatchQueue.DefaultContext {
+    init() {
         self.init(key: DispatchSpecificKey<UInt8>(), value: 0)
     }
 }

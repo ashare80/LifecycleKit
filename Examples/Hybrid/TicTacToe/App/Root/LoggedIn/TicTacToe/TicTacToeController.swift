@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ public protocol TicTacToeListener {
 }
 
 extension TicTacToe {
-    struct GameConstants {
+    enum GameConstants {
         static let rowCount = 3
         static let colCount = 3
     }

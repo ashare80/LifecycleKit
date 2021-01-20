@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -144,10 +144,10 @@ public final class ReplaySubject<Output, Failure: Error>: Subject {
     }
 }
 
-extension Publisher {
+public extension Publisher {
     /// Provides a subject that shares a single subscription to the upstream publisher and replays at most `bufferSize` items emitted by that publisher
     /// - Parameter bufferSize: limits the number of items that can be replayed
-    public func share(replay: Int) -> AnyPublisher<Output, Failure> {
+    func share(replay: Int) -> AnyPublisher<Output, Failure> {
         if replay <= 0  {
             return share().eraseToAnyPublisher()
         }

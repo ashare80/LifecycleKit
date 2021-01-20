@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017. Uber Technologies
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ import Foundation
 
 #if !canImport(NeedleFoundation)
 
-/// The base dependency protocol.
-///
-/// Subclasses should define a set of properties that are required by the module from the DI graph. A dependency is
-/// typically provided and satisfied by its immediate parent module.
-public protocol Dependency: AnyObject {}
+    /// The base dependency protocol.
+    ///
+    /// Subclasses should define a set of properties that are required by the module from the DI graph. A dependency is
+    /// typically provided and satisfied by its immediate parent module.
+    public protocol Dependency: AnyObject {}
 
-/// The special empty dependency.
-public protocol EmptyDependency: Dependency {}
+    /// The special empty dependency.
+    public protocol EmptyDependency: Dependency {}
 #endif

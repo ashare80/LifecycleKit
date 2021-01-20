@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -28,12 +28,12 @@ public enum LeakDetectionStatus {
 }
 
 /// The default time values used for leak detection expectations.
-extension TimeInterval {
+public extension TimeInterval {
     /// The object deallocation time.
-    public static let deallocationExpectation: TimeInterval = 1.0
+    static let deallocationExpectation: TimeInterval = 1.0
 
     /// The view disappear time.
-    public static let viewDisappearExpectation: TimeInterval = 5.0
+    static let viewDisappearExpectation: TimeInterval = 5.0
 }
 
 /// An expectation based leak detector, that allows an object's owner to set an expectation that an owned object to be

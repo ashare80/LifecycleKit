@@ -109,8 +109,8 @@ extension WeakLazy: LazyViewableRouting where R: ViewableRouting {
     }
 }
 
-extension AnyBuilder where R == ViewableRouting {
-    public convenience init(viewableRouting: @escaping @autoclosure () -> ViewableRouting) {
+public extension AnyBuilder where R == ViewableRouting {
+    convenience init(viewableRouting: @escaping @autoclosure () -> ViewableRouting) {
         self.init { () -> ViewableRouting in
             return viewableRouting()
         }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ public protocol SharedScopeLifecycleComponent: SharedComponent {
     var scopeLifecycle: ScopeLifecycle { get }
 }
 
-extension SharedScopeLifecycleComponent {
+public extension SharedScopeLifecycleComponent {
     /// Provided shared `ScopeLifecycle` for the component's scope.
-    public var scopeLifecycle: ScopeLifecycle {
+    var scopeLifecycle: ScopeLifecycle {
         return shared(__function: #function) {
             return ScopeLifecycle()
         }

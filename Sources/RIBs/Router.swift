@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ open class Router<InteractorType>: BaseLifecycleOwner, Routing {
 
     /// The base `Interactable` associated with this `Router`.
     public let interactable: Interactable
-    
+
     /// Initializer.
     ///
     /// - parameter interactor: The corresponding `Interactor` of this `Router`.
@@ -63,21 +63,21 @@ open class Router<InteractorType>: BaseLifecycleOwner, Routing {
             fatalError("\(interactor) should conform to \(Interactable.self)")
         }
         self.interactable = interactable
-        
+
         super.init()
-        
+
         interactable.scopeLifecycle = scopeLifecycle
     }
-    
+
     deinit {
         expectDeallocateIfOwns(interactable as AnyObject)
     }
-    
-    open override func didLoad(_ lifecyclePublisher: LifecyclePublisher) {
+
+    override open func didLoad(_ lifecyclePublisher: LifecyclePublisher) {
         super.didLoad(lifecyclePublisher)
         self.didLoad()
     }
-    
+
     /// The publisher that emits values when the router scope reaches its corresponding life-cycle stages.
     ///
     /// This publisher completes when the router scope is deallocated.
@@ -88,7 +88,7 @@ open class Router<InteractorType>: BaseLifecycleOwner, Routing {
             .prefix(1)
             .eraseToAnyPublisher()
     }
-    
+
     /// Called when the router has finished loading.
     ///
     /// This method is invoked only once. Subclasses should override this method to perform one time setup logic,

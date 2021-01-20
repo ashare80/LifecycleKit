@@ -27,8 +27,8 @@ public protocol LifecycleOwnerViewProviding: ViewableBuildable {
     var view: ContentView { get }
 }
 
-extension LifecycleOwnerViewProviding {
-    public func build() -> Viewable {
+public extension LifecycleOwnerViewProviding {
+    func build() -> Viewable {
         return LifecycleOwnerViewProvider(view: self.view, childLifecycle: self.lifecycleOwner)
     }
 }
@@ -40,8 +40,8 @@ public protocol ViewLifecycleOwnerViewProviding: ViewableBuildable {
     var viewLifecycleOwner: ViewLifecycleOwner { get }
 }
 
-extension ViewLifecycleOwnerViewProviding {
-    public func build() -> Viewable {
+public extension ViewLifecycleOwnerViewProviding {
+    func build() -> Viewable {
         return LifecycleOwnerViewProvider(view: self.view.tracked(by: self.viewLifecycleOwner),
                                           childLifecycle: self.lifecycleOwner)
     }

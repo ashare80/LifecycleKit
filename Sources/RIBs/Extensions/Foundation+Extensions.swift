@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017. Uber Technologies
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import Foundation
 
 ///// Array extensions.
-//public extension Array {
+// public extension Array {
 //
 //    /// Remove the given element from this array, by comparing pointer references.
 //    ///
@@ -28,12 +28,12 @@ import Foundation
 //        }
 //        remove(at: objIndex)
 //    }
-//}
+// }
 //
-//#if targetEnvironment(simulator)
-//func assertionFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
+// #if targetEnvironment(simulator)
+// func assertionFailure(_ message: @autoclosure () -> String = "", file: StaticString = #file, line: UInt = #line) {
 //    assertionFailureClosure(message(), file, line)
-//}
-//var assertionFailureClosure: (String, StaticString, UInt) -> () = defaultAssertionFailureClosure
-//let defaultAssertionFailureClosure = { Swift.assertionFailure($0, file: $1, line: $2) }
-//#endif
+// }
+// var assertionFailureClosure: (String, StaticString, UInt) -> () = defaultAssertionFailureClosure
+// let defaultAssertionFailureClosure = { Swift.assertionFailure($0, file: $1, line: $2) }
+// #endif

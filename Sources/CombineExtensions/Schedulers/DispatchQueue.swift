@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -227,7 +227,7 @@ public struct DispatchQueue: DispatchQueueContext, Scheduler {
     }
 
     #if DEBUG
-        public struct TestingOverrides {
+        public enum TestingOverrides {
             public static var asyncHandler: ((_ closure: @escaping () -> Void) -> Void)?
             public static var asyncWorkItemHandler: ((_ workItem: DispatchWorkItem) -> Void)?
             public static var immediateScheduler: Bool = false
@@ -235,8 +235,8 @@ public struct DispatchQueue: DispatchQueueContext, Scheduler {
     #endif
 }
 
-extension TimeInterval {
-    fileprivate var dispatchTimeSinceNow: DispatchTime {
+fileprivate extension TimeInterval {
+    var dispatchTimeSinceNow: DispatchTime {
         DispatchTime.now() + DispatchTimeInterval.milliseconds(Int(self * 1000))
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017. Uber Technologies
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ public protocol RandomWinRouting: ViewableRouting {
 
 protocol RandomWinPresentable: Presentable {
     var listener: RandomWinPresentableListener? { get set }
-    func announce(winner: PlayerType, withCompletionHandler handler: @escaping () -> ())
+    func announce(winner: PlayerType, withCompletionHandler handler: @escaping () -> Void)
 }
 
 public protocol RandomWinListener: AnyObject {

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import Combine
 import Foundation
 
-public struct Schedulers {
+public enum Schedulers {
     /// In case `schedule` methods are called from `DispatchQueue.main`, it will perform action immediately without scheduling.
     public static var main: DispatchQueue.Scheduler { .main }
 
@@ -40,10 +40,10 @@ public struct Schedulers {
     public static var background: DispatchQueue.Scheduler { .background }
 }
 
-extension DispatchQueue {
+public extension DispatchQueue {
     /// A scheduler that will perfom the action immediately if the current execution context matches the dispatch queue.
     /// Otherwise the default schedule async to queue is performed.
-    public struct Scheduler: Combine.Scheduler {
+    struct Scheduler: Combine.Scheduler {
         /// In case `schedule` methods are called from `DispatchQueue.main`, it will perform action immediately without scheduling.
         public static let main: Scheduler = .init(.main)
 

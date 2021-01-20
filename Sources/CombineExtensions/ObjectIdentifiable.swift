@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ import Foundation
 /// Class type that use reference for equality and hash value.
 public protocol ObjectIdentifiable: AnyObject, Hashable {}
 
-extension ObjectIdentifiable {
-    public func hash(into hasher: inout Hasher) {
+public extension ObjectIdentifiable {
+    func hash(into hasher: inout Hasher) {
         hasher.combine(ObjectIdentifier(self))
     }
 
-    public static func == (lhs: Self, rhs: Self) -> Bool {
+    static func == (lhs: Self, rhs: Self) -> Bool {
         lhs === rhs
     }
 }

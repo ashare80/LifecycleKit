@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ public protocol LifecycleOwnerRouting: AnyObject {
     func detachChild(_ child: LifecycleOwner)
 }
 
-extension LifecycleOwnerRouting where Self: LifecycleOwner {
-    public var children: [LifecycleOwner] {
+public extension LifecycleOwnerRouting where Self: LifecycleOwner {
+    var children: [LifecycleOwner] {
         return scopeLifecycle.children
     }
 
@@ -51,20 +51,20 @@ extension LifecycleOwnerRouting where Self: LifecycleOwner {
     /// - parameter child: The child `LifecycleOwner` to attach.
     /// - returns: Is `true` if child was successfully attached.
     @discardableResult
-    public func attachChild(_ child: LifecycleOwner) -> Bool {
+    func attachChild(_ child: LifecycleOwner) -> Bool {
         return scopeLifecycle.attachChild(child)
     }
 
     /// Detaches the given `LifecycleOwner` from the tree.
     ///
     /// - parameter child: The child `LifecycleOwner` to detach.
-    public func detachChild(_ child: LifecycleOwner) {
+    func detachChild(_ child: LifecycleOwner) {
         scopeLifecycle.detachChild(child)
     }
 }
 
-extension LifecycleOwnerRouting where Self: LifecycleDependent {
-    public var children: [LifecycleOwner] {
+public extension LifecycleOwnerRouting where Self: LifecycleDependent {
+    var children: [LifecycleOwner] {
         return scopeLifecycle?.children ?? []
     }
 
@@ -77,14 +77,14 @@ extension LifecycleOwnerRouting where Self: LifecycleDependent {
     /// - parameter child: The child `LifecycleOwner` to attach.
     /// - returns: Is `true` if child was successfully attached.
     @discardableResult
-    public func attachChild(_ child: LifecycleOwner) -> Bool {
+    func attachChild(_ child: LifecycleOwner) -> Bool {
         return scopeLifecycle?.attachChild(child) ?? false
     }
 
     /// Detaches the given `LifecycleOwner` from the tree.
     ///
     /// - parameter child: The child `LifecycleOwner` to detach.
-    public func detachChild(_ child: LifecycleOwner) {
+    func detachChild(_ child: LifecycleOwner) {
         scopeLifecycle?.detachChild(child)
     }
 }

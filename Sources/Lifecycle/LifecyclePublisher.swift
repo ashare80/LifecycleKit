@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -60,15 +60,15 @@ public protocol LifecyclePublisher: AnyObject {
     var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> { get }
 }
 
-extension LifecyclePublisher {
-    public var isActivePublisher: Publishers.RemoveDuplicates<RelayPublisher<Bool>> {
+public extension LifecyclePublisher {
+    var isActivePublisher: Publishers.RemoveDuplicates<RelayPublisher<Bool>> {
         return lifecycleState
             .map { state in state == .active }
             .eraseToAnyPublisher()
             .removeDuplicates()
     }
 
-    public var firstActive: Publishers.First<RelayPublisher<Void>> {
+    var firstActive: Publishers.First<RelayPublisher<Void>> {
         return isActivePublisher
             .filter { $0 }
             .map { _ in () }

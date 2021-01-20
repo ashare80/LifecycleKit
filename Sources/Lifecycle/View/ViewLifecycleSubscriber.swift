@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ public protocol ViewLifecycleSubscriber: AnyObject {
     func viewDidDisappear()
 }
 
-extension ViewLifecycle {
+public extension ViewLifecycle {
     /// Binds to lifecycle states receiving on main thread.
-    public func subscribe(_ subscriber: ViewLifecycleSubscriber) {
+    func subscribe(_ subscriber: ViewLifecycleSubscriber) {
         if subscribers.contains(subscriber) {
             assertionFailure("Binding to \(self) that has already been subscribes to. \(subscribers)")
         }

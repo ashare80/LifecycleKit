@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017. Uber Technologies
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ final class OffGameViewController: UIViewController, OffGamePresentable, OffGame
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("Method is not supported")
     }
@@ -84,20 +85,21 @@ final class OffGameViewController: UIViewController, OffGamePresentable, OffGame
 
     final class DelegatingButton: UIButton {
         weak var viewController: OffGameViewController?
-        
+
         private let game: Game
-        
+
         init(game: Game, viewController: OffGameViewController) {
             self.game = game
             self.viewController = viewController
             super.init(frame: .zero)
             addTarget(self, action: #selector(startButtonDidTouchUpInside), for: .touchUpInside)
         }
-        
+
+        @available(*, unavailable)
         required init?(coder: NSCoder) {
             fatalError("init(coder:) has not been implemented")
         }
-        
+
         @objc
         func startButtonDidTouchUpInside() {
             viewController?.listener?.start(game)

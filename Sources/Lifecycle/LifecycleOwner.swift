@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -23,17 +23,17 @@ public protocol LifecycleOwner: LifecyclePublisher {
     var scopeLifecycle: ScopeLifecycle { get }
 }
 
-extension LifecycleOwner {
+public extension LifecycleOwner {
 
-    public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
+    var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return scopeLifecycle.lifecycleState
     }
 
-    public var isActive: Bool {
+    var isActive: Bool {
         return scopeLifecycle.isActive
     }
 
-    public func expectDeallocateIfOwns(_ ownedObject: AnyObject, inTime time: TimeInterval = .deallocationExpectation) {
+    func expectDeallocateIfOwns(_ ownedObject: AnyObject, inTime time: TimeInterval = .deallocationExpectation) {
         var objectScopeLifecycle: ScopeLifecycle?
 
         if let lifecycleOwner = ownedObject as? LifecycleOwner {
@@ -49,11 +49,11 @@ extension LifecycleOwner {
         }
     }
 
-    func activate() {
+    internal func activate() {
         scopeLifecycle.activate(with: self)
     }
 
-    func deactivate() {
+    internal func deactivate() {
         scopeLifecycle.deactivate()
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -23,17 +23,17 @@ public protocol RootLifecycle {
     var rootLifecycleOwner: LifecycleOwner { get }
 }
 
-extension RootLifecycle {
-    public func activateRoot() {
+public extension RootLifecycle {
+    func activateRoot() {
         rootLifecycleOwner.activate()
     }
-    
-    public func deactivateRoot() {
+
+    func deactivateRoot() {
         rootLifecycleOwner.deactivate()
     }
-    
+
     /// Monitoring publisher to view `LifecycleOwner` hierarchy for tests and debugging tools.
-    public var childrenChangedPublisher: RelayPublisher<Void> {
+    var childrenChangedPublisher: RelayPublisher<Void> {
         return rootLifecycleOwner.scopeLifecycle.childrenChangedPublisher
     }
 }

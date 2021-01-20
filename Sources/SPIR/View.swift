@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -27,14 +27,14 @@ public protocol PresenterView: View {
     init(presenter: PresenterType)
 }
 
-extension LifecycleOwnerViewProviding where Self: InteractablePresententerProviding, Presenter: ViewPresentable {
-    public var view: ModifiedContent<Presenter.ContentView, TrackingViewModifier> {
+public extension LifecycleOwnerViewProviding where Self: InteractablePresententerProviding, Presenter: ViewPresentable {
+    var view: ModifiedContent<Presenter.ContentView, TrackingViewModifier> {
         return presenter.view
     }
 }
 
-extension InteractablePresententerProviding where Self: LifecycleOwnerViewProviding {
-    public var lifecycleOwner: LifecycleOwner {
+public extension InteractablePresententerProviding where Self: LifecycleOwnerViewProviding {
+    var lifecycleOwner: LifecycleOwner {
         return presentableInteractable
     }
 }

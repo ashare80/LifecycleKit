@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,24 +17,24 @@
 import Foundation
 import Lifecycle
 #if !os(macOS)
-import UIKit
+    import UIKit
 #endif
 
 /// Basic interface between a `Router` and the UIKit `UIViewController`.
 public protocol ViewControllable {
 
     #if !os(macOS)
-    var uiviewController: UIViewController { get }
+        var uiviewController: UIViewController { get }
     #endif
 }
 
 #if !os(macOS)
-/// Default implementation on `UIViewController` to conform to `ViewControllable` protocol
-extension UIViewController: ViewControllable {
-    
-    public var uiviewController: UIViewController {
-        return self
+    /// Default implementation on `UIViewController` to conform to `ViewControllable` protocol
+    extension UIViewController: ViewControllable {
+
+        public var uiviewController: UIViewController {
+            return self
+        }
     }
-}
 
 #endif

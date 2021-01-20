@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ public protocol LifecycleDependent: LifecyclePublisher {
     var scopeLifecycle: ScopeLifecycle? { get set }
 }
 
-extension LifecycleDependent {
-    public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
+public extension LifecycleDependent {
+    var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return scopeLifecycle?.lifecycleState ?? Just<LifecycleState>(.deinitialized).eraseToAnyPublisher().removeDuplicates()
     }
 }
@@ -34,12 +34,12 @@ open class ScopeLifecycleDependent: ObjectIdentifiable, LifecycleDependent, Life
     public weak var scopeLifecycle: ScopeLifecycle? {
         didSet {
             guard scopeLifecycle !== oldValue else { return }
-            
+
             scopeLifecycle?.subscribe(self)
         }
     }
-    
-    public init() { }
+
+    public init() {}
 
     public init(scopeLifecycle: ScopeLifecycle) {
         self.scopeLifecycle = scopeLifecycle

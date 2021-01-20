@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -29,26 +29,26 @@ public protocol ViewModelProviding {
     var viewModel: ViewModel { get }
 }
 
-extension ViewLifecycleOwnerViewProviding where Self: ViewModelProviding, ContentView: ViewModelView, ContentView.Model == ViewModel {
-    public var view: ContentView {
+public extension ViewLifecycleOwnerViewProviding where Self: ViewModelProviding, ContentView: ViewModelView, ContentView.Model == ViewModel {
+    var view: ContentView {
         return ContentView(model: viewModel)
     }
 }
 
 public protocol MVVMComponent: ViewLifecycleOwnerViewProviding, ControllerProviding, ViewModelProviding {}
 
-extension MVVMComponent where Controller == ViewModel {
-    public var viewModel: ViewModel {
+public extension MVVMComponent where Controller == ViewModel {
+    var viewModel: ViewModel {
         return controller
     }
 }
 
-extension MVVMComponent {
-    public var lifecycleOwner: LifecycleOwner {
+public extension MVVMComponent {
+    var lifecycleOwner: LifecycleOwner {
         return controller
     }
 
-    public var viewLifecycleOwner: ViewLifecycleOwner {
+    var viewLifecycleOwner: ViewLifecycleOwner {
         return viewModel
     }
 }

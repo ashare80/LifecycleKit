@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 import Combine
 import Foundation
 
-extension Publisher {
+public extension Publisher {
     /// Performs the specified closures when publisher events occur.
     ///
     /// - Parameters:
@@ -27,13 +27,13 @@ extension Publisher {
     ///   - receiveCancel: A closure that executes when the downstream receiver cancels publishing. Defaults to `nil`.
     ///   - receiveRequest: A closure that executes when the publisher receives a request for more elements. Defaults to `nil`.
     /// - Returns: A publisher that performs the specified closures when publisher events occur.
-    public func handleEvents(receiveSubscription: ((Subscription) -> Void)? = nil,
-                             receiveOutput: ((Output) -> Void)? = nil,
-                             receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
-                             receiveFailure: ((Failure) -> Void)? = nil,
-                             receiveFinished: (() -> Void)? = nil,
-                             receiveCancel: (() -> Void)? = nil,
-                             receiveRequest: ((Subscribers.Demand) -> Void)? = nil) -> Publishers.HandleEvents<Self>
+    func handleEvents(receiveSubscription: ((Subscription) -> Void)? = nil,
+                      receiveOutput: ((Output) -> Void)? = nil,
+                      receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
+                      receiveFailure: ((Failure) -> Void)? = nil,
+                      receiveFinished: (() -> Void)? = nil,
+                      receiveCancel: (() -> Void)? = nil,
+                      receiveRequest: ((Subscribers.Demand) -> Void)? = nil) -> Publishers.HandleEvents<Self>
     {
         handleEvents(receiveSubscription: receiveSubscription,
                      receiveOutput: receiveOutput,
@@ -49,7 +49,7 @@ extension Publisher {
                      receiveCancel: receiveCancel,
                      receiveRequest: receiveRequest)
     }
-    
+
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
@@ -59,11 +59,11 @@ extension Publisher {
     ///   - receiveFinished: The closure to execute on receipt of a finished.
     ///   - receiveValue: The closure to execute on receipt of a value.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
-                     receiveFailure: @escaping (Failure) -> Void = { _ in },
-                     receiveFinished: @escaping () -> Void = { },
-                     receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
+    func sink(receiveCancel: @escaping () -> Void,
+              receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
+              receiveFailure: @escaping (Failure) -> Void = { _ in },
+              receiveFinished: @escaping () -> Void = {},
+              receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
     {
         var isCompleted: Bool = false
         let cancellable: AnyCancellable = sink(receiveCompletion: { completion in
@@ -86,7 +86,7 @@ extension Publisher {
             }
         }
     }
-    
+
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
@@ -95,10 +95,10 @@ extension Publisher {
     ///   - receiveFinished: The closure to execute on receipt of a finished.
     ///   - receiveValue: The closure to execute on receipt of a value.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
-                     receiveFailure: @escaping (Failure) -> Void,
-                     receiveFinished: @escaping () -> Void = { },
-                     receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
+    func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
+              receiveFailure: @escaping (Failure) -> Void,
+              receiveFinished: @escaping () -> Void = {},
+              receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
     {
         return sink(receiveCompletion: { completion in
             receiveCompletion(completion)
@@ -112,7 +112,7 @@ extension Publisher {
             receiveValue(value)
         })
     }
-    
+
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
@@ -121,43 +121,41 @@ extension Publisher {
     ///   - receiveFinished: The closure to execute on receipt of a finished.
     ///   - receiveValue: The closure to execute on receipt of a value.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
-                     receiveFinished: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
+    func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
+              receiveFinished: @escaping () -> Void,
+              receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
     {
         return sink(receiveCompletion: receiveCompletion,
                     receiveFailure: { _ in },
                     receiveFinished: receiveFinished,
                     receiveValue: receiveValue)
     }
-    
+
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
     ///   - receiveCompletion: The closure to execute on completion.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void) -> AnyCancellable
+    func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void) -> AnyCancellable
     {
         return sink(receiveCompletion: receiveCompletion, receiveValue: { _ in })
     }
-    
+
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
     ///   - receiveCompletion: The closure to execute on completion.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveValue: @escaping (Output) -> Void) -> AnyCancellable
-    {
+    func sink(receiveValue: @escaping (Output) -> Void) -> AnyCancellable {
         return sink(receiveCompletion: { _ in }, receiveValue: { _ in })
     }
-    
+
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
     ///   - receiveCompletion: The closure to execute on completion.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink() -> AnyCancellable
-    {
+    func sink() -> AnyCancellable {
         return sink(receiveCompletion: { _ in }, receiveValue: { _ in })
     }
 }

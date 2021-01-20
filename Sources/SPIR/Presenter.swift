@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -62,15 +62,15 @@ public protocol ViewPresentable: Presentable, ObservableObject {
     var view: ModifiedContent<ContentView, TrackingViewModifier> { get }
 }
 
-extension ViewPresentable where ContentView: PresenterView, ContentView.PresenterType == Self {
-    public var view: ModifiedContent<Self.ContentView, TrackingViewModifier> {
+public extension ViewPresentable where ContentView: PresenterView, ContentView.PresenterType == Self {
+    var view: ModifiedContent<Self.ContentView, TrackingViewModifier> {
         return ContentView(presenter: self).tracked(by: self)
     }
 }
 
-extension ViewPresentable {
+public extension ViewPresentable {
     /// The corresponding `View` owned by this `Presenter`.
-    public var viewable: Viewable {
+    var viewable: Viewable {
         return ViewProvider(view: view)
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017. Uber Technologies
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ final class RandomWinViewController: UIViewController, RandomWinPresentable, Ran
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("Method is not supported")
     }
@@ -46,7 +47,7 @@ final class RandomWinViewController: UIViewController, RandomWinPresentable, Ran
 
     // MARK: - RandomWinPresentable
 
-    func announce(winner: PlayerType, withCompletionHandler handler: @escaping () -> ()) {
+    func announce(winner: PlayerType, withCompletionHandler handler: @escaping () -> Void) {
         let winnerString: String = {
             switch winner {
             case .player1:
@@ -81,7 +82,7 @@ final class RandomWinViewController: UIViewController, RandomWinPresentable, Ran
         }
         button.addTarget(self, action: #selector(goButtonDidTouchUpInside), for: .touchUpInside)
     }
-    
+
     @objc
     func goButtonDidTouchUpInside() {
         listener?.determineWinner()

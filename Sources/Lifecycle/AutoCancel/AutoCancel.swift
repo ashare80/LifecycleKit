@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,21 +18,21 @@ import Combine
 import CombineExtensions
 import Foundation
 
-extension Publisher {
+public extension Publisher {
     /// Completes when any provided lifecycle states are output, or lifecycle publisher completes.
-    public func autoCancel(_ lifecyclePublisher: LifecyclePublisher, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> {
+    func autoCancel(_ lifecyclePublisher: LifecyclePublisher, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> {
         return autoCancel(lifecyclePublisher.lifecycleState, when: states)
     }
 
     /// Completes when any provided lifecycle states are output, or lifecycle publisher completes.
-    public func autoCancel<P: Publisher>(_ lifecycleState: P, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> where P.Output == LifecycleState {
+    func autoCancel<P: Publisher>(_ lifecycleState: P, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> where P.Output == LifecycleState {
         return RetainedCancellablePublisher(source: self, cancelPublisher: lifecycleState.filter(states.contains(state:)).map { _ in () }.replaceError(with: ()).mapError().eraseToAnyPublisher())
     }
 }
 
-extension Publisher {
+public extension Publisher {
     /// Cancellable will be retained be the sink and must me explicitly cancelled or completed.
-    public var retained: RetainedCancellablePublisher<Self> {
+    var retained: RetainedCancellablePublisher<Self> {
         return RetainedCancellablePublisher(source: self, cancelPublisher: nil)
     }
 }

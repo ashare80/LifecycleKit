@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017. Uber Technologies
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ final class TicTacToeViewController: UIViewController, TicTacToePresentable, Tic
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("Method is not supported")
     }
@@ -52,7 +53,7 @@ final class TicTacToeViewController: UIViewController, TicTacToePresentable, Tic
         cell?.backgroundColor = playerType.color
     }
 
-    func announce(winner: PlayerType?, withCompletionHandler handler: @escaping () -> ()) {
+    func announce(winner: PlayerType?, withCompletionHandler handler: @escaping () -> Void) {
         let winnerString: String = {
             if let winner = winner {
                 switch winner {
@@ -98,7 +99,7 @@ final class TicTacToeViewController: UIViewController, TicTacToePresentable, Tic
     }
 }
 
-fileprivate struct Constants {
+fileprivate enum Constants {
     static let sectionCount = 1
     static let cellSize: CGFloat = UIScreen.main.bounds.width / CGFloat(GameConstants.colCount)
     static let cellIdentifier = "TicTacToeCell"

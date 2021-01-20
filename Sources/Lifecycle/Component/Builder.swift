@@ -58,12 +58,12 @@ public protocol DynamicBuildable: AnyObject {
     func build(_ dynamicDependency: DynamicDependency) -> R
 }
 
-extension DynamicBuildable {
+public extension DynamicBuildable {
     /// Wraps with dynamic dependancy to`AnyBuilder<R>` for deferred building.
     ///
     /// - parameter dynamicDependency: The dynamic dependency that could not be injected.
     /// - returns: Wrapped builder of type `AnyBuilder<R>`.
-    public func asAnyBuilder(_ dynamicDependency: DynamicDependency) -> AnyBuilder<R> {
+    func asAnyBuilder(_ dynamicDependency: DynamicDependency) -> AnyBuilder<R> {
         return AnyBuilder { self.build(dynamicDependency) }
     }
 }
@@ -105,8 +105,8 @@ public protocol LazyValue: CachedBuildable {
     var value: R { get }
 }
 
-extension LazyValue {
-    public var value: R {
+public extension LazyValue {
+    var value: R {
         return getOrCreate()
     }
 }

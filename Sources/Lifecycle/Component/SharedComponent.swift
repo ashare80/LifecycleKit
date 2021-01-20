@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ public protocol SharedComponent {
     func shared<T>(__function: String, _ factory: () -> T) -> T
 }
 
-extension SharedComponent {
+public extension SharedComponent {
     /// Allows a shared parent instance to be passed by DI to a child scope and avoid a circular reference from parentScope->shared->childScope->parentScope.
     /// If the instance is released the factory will be used to build a new object.
     /// - parameter __function:
     /// - parameter singleBuild: Set false if object is expected to be released and created again. Defaults to `true`.
     /// - parameter factory:
-    public func weakShared<T: AnyObject>(__function: String = #function, singleBuild: Bool = true, _ factory: () -> T) -> T {
+    func weakShared<T: AnyObject>(__function: String = #function, singleBuild: Bool = true, _ factory: () -> T) -> T {
         let builder: WeakShared<T> = shared(__function: __function) { WeakShared() }
         if singleBuild {
             assert(builder.buildCount <= 1, "weakShared builder called \(builder.buildCount) times. Set `singleBuild` false if this is expected. " + __function)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 import Combine
 import Foundation
 import Lifecycle
-
 
 /// Protocol defining the activeness of an interactor's scope.
 public protocol InteractorScope: AnyObject {
@@ -43,16 +42,16 @@ public protocol InteractableConvertible {
 /// The base protocol for all interactors.
 public protocol Interactable: LifecycleDependent, InteractorScope, InteractableConvertible {}
 
-extension Interactable {
-    public var interactable: Interactable { self }
-    
+public extension Interactable {
+    var interactable: Interactable { self }
+
     /// Indicates if the interactor is active.
-    public var isActive: Bool {
+    var isActive: Bool {
         return scopeLifecycle?.isActive ?? false
     }
 
     /// A stream notifying on the lifecycle of this interactor.
-    public var isActiveStream: AnyPublisher<Bool, Never> {
+    var isActiveStream: AnyPublisher<Bool, Never> {
         return isActivePublisher.eraseToAnyPublisher()
     }
 }
@@ -74,25 +73,25 @@ open class Interactor: ScopeLifecycleDependent, Interactable {
     public final var isActiveStream: AnyPublisher<Bool, Never> {
         return isActivePublisher.eraseToAnyPublisher()
     }
-    
+
     fileprivate var activenessCancellable: [Cancellable]?
-    
-    open override func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {
+
+    override open func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {
         super.didBecomeActive(lifecyclePublisher)
-        
+
         activenessCancellable = []
-        
+
         didBecomeActive()
     }
-    
-    open override func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {
+
+    override open func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher) {
         super.didBecomeInactive(lifecyclePublisher)
-        
+
         willResignActive()
-        
+
         activenessCancellable = nil
     }
-    
+
     /// The interactor did become active.
     ///
     /// - note: This method is driven by the attachment of this interactor's owner router. Subclasses should override
@@ -100,6 +99,7 @@ open class Interactor: ScopeLifecycleDependent, Interactable {
     open func didBecomeActive() {
         // No-op
     }
+
     /// Callend when the `Interactor` will resign the active state.
     ///
     /// This method is driven by the detachment of this interactor's owner router. Subclasses should override this
@@ -166,4 +166,3 @@ public extension Cancellable {
         return self
     }
 }
-

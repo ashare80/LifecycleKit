@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -27,46 +27,46 @@ final class InteractorTests: XCTestCase {
         let interactor = TestInteractor()
         let router =  Router(interactor: interactor)
         XCTAssertEqual(interactor.scopeLifecycle, router.scopeLifecycle)
-        
+
         var isActiveValue: Bool = true
         interactor
             .isActiveStream
             .prefix(1)
             .retained
-            .sink(receiveValue:  { (value) in
+            .sink(receiveValue:  { value in
                 isActiveValue = value
             })
-        
+
         XCTAssertFalse(isActiveValue)
         XCTAssertFalse(interactor.isActive)
         XCTAssertEqual(interactor.didBecomeActiveCount, 0)
         XCTAssertEqual(interactor.willResignActiveCount, 0)
-        
+
         router.activate()
-        
+
         interactor
             .isActiveStream
             .prefix(1)
             .retained
-            .sink(receiveValue:  { (value) in
+            .sink(receiveValue:  { value in
                 isActiveValue = value
             })
-        
+
         XCTAssertTrue(isActiveValue)
         XCTAssertTrue(interactor.isActive)
         XCTAssertEqual(interactor.didBecomeActiveCount, 1)
         XCTAssertEqual(interactor.willResignActiveCount, 0)
-        
+
         router.deactivate()
-        
+
         interactor
             .isActiveStream
             .prefix(1)
             .retained
-            .sink(receiveValue:  { (value) in
+            .sink(receiveValue:  { value in
                 isActiveValue = value
             })
-        
+
         XCTAssertFalse(isActiveValue)
         XCTAssertFalse(interactor.isActive)
         XCTAssertEqual(interactor.didBecomeActiveCount, 1)
@@ -79,25 +79,25 @@ final class InteractorTests: XCTestCase {
         XCTAssertNil(presenter.viewLifecycle.scopeLifecycle)
         XCTAssertEqual(interactor.presenter, presenter)
         XCTAssertTrue(presenter.viewLifecycle.subscribers.contains(interactor))
-        
+
         XCTAssertEqual(interactor.viewDidLoadCount, 0)
         XCTAssertEqual(interactor.viewDidAppearCount, 0)
         XCTAssertEqual(interactor.viewDidDisappearCount, 0)
-        
+
         presenter.viewLifecycle.viewDidLoad(with: presenter)
-        
+
         XCTAssertEqual(interactor.viewDidLoadCount, 1)
         XCTAssertEqual(interactor.viewDidAppearCount, 0)
         XCTAssertEqual(interactor.viewDidDisappearCount, 0)
-        
+
         presenter.viewLifecycle.isDisplayed = true
-        
+
         XCTAssertEqual(interactor.viewDidLoadCount, 1)
         XCTAssertEqual(interactor.viewDidAppearCount, 1)
         XCTAssertEqual(interactor.viewDidDisappearCount, 0)
-        
+
         presenter.viewLifecycle.isDisplayed = false
-        
+
         XCTAssertEqual(interactor.viewDidLoadCount, 1)
         XCTAssertEqual(interactor.viewDidAppearCount, 1)
         XCTAssertEqual(interactor.viewDidDisappearCount, 1)
@@ -110,24 +110,25 @@ final class TestInteractor: Interactor {
         super.didBecomeActive()
         didBecomeActiveCount += 1
     }
-    
+
     var willResignActiveCount: Int = 0
     override func willResignActive() {
         super.willResignActive()
         willResignActiveCount += 1
     }
 }
+
 final class TestPresentableInteractor: PresentableInteractor<LifecycleViewController>, ViewLifecycleSubscriber {
     var viewDidLoadCount: Int = 0
     func viewDidLoad() {
         viewDidLoadCount += 1
     }
-    
+
     var viewDidAppearCount: Int = 0
     func viewDidAppear() {
         viewDidAppearCount += 1
     }
-    
+
     var viewDidDisappearCount: Int = 0
     func viewDidDisappear() {
         viewDidDisappearCount += 1

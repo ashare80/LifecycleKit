@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ import Foundation
 @testable import Lifecycle
 import XCTest
 
-extension XCTestCase {
-    public func expectAssertionFailure(timeout: TimeInterval = 0.0, _ execute: () -> Void) {
+public extension XCTestCase {
+    func expectAssertionFailure(timeout: TimeInterval = 0.0, _ execute: () -> Void) {
         let expect = expectation(description: "Assertion failure not called.")
 
         assertionFailureClosures.append { _, _, _ in
@@ -31,7 +31,7 @@ extension XCTestCase {
         wait(for: [expect], timeout: timeout)
     }
 
-    public func expectAssert(passes: Bool = false, timeout: TimeInterval = 0.0, _ execute: () -> Void) {
+    func expectAssert(passes: Bool = false, timeout: TimeInterval = 0.0, _ execute: () -> Void) {
         let expect = expectation(description: "Assert was not called.")
 
         assertClosures.append { condition, _, _, _ in

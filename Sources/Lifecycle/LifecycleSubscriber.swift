@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -38,9 +38,9 @@ public protocol LifecycleSubscriber: AnyObject {
     func didBecomeInactive(_ lifecyclePublisher: LifecyclePublisher)
 }
 
-extension ScopeLifecycle {
+public extension ScopeLifecycle {
     /// Binds to lifecycle states receiving on main thread.
-    public func subscribe(_ subscriber: LifecycleSubscriber) {
+    func subscribe(_ subscriber: LifecycleSubscriber) {
         if subscribers.contains(subscriber) {
             assertionFailure("Binding to \(subscriber) that has already been subscribes to. \(subscribers)")
         }

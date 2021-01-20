@@ -1,8 +1,17 @@
 //
-//  File.swift
-//  
+//  Copyright (c) 2021. Adam Share
 //
-//  Created by Adam Share on 1/19/21.
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
 import Foundation
@@ -93,7 +102,7 @@ open class ComponentizedBuilder<Component, Router, DynamicBuildDependency, Dynam
 /// requires dynamic dependency, please refer to `DynamicComponentizedBuilder`.
 /// If both require dynamic dependencies, please use `ComponentizedBuilder`.
 /// - SeeAlso: ComponentizedBuilder
-open class SimpleComponentizedBuilder<Component, Router>: ComponentizedBuilder<Component, Router, (), ()> {
+open class SimpleComponentizedBuilder<Component, Router>: ComponentizedBuilder<Component, Router, Void, Void> {
 
     /// Initializer.
     ///
@@ -104,13 +113,13 @@ open class SimpleComponentizedBuilder<Component, Router>: ComponentizedBuilder<C
             super.init(componentBuilder: componentBuilder)
         }
     #else
-        public override init(componentBuilder: @escaping () -> Component) {
+        override public init(componentBuilder: @escaping () -> Component) {
             super.init(componentBuilder: componentBuilder)
         }
     #endif
 
     /// This method should not be directly invoked.
-    public final override func build(with component: Component, _ dynamicDependency: ()) -> Router {
+    override public final func build(with component: Component, _ dynamicDependency: ()) -> Router {
         return build(with: component)
     }
 

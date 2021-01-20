@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ public struct TrackingViewModifier: ViewModifier {
     }
 }
 
-extension View {
-    public func tracked(by viewLifecycleOwner: ViewLifecycleOwner) -> ModifiedContent<Self, TrackingViewModifier> {
+public extension View {
+    func tracked(by viewLifecycleOwner: ViewLifecycleOwner) -> ModifiedContent<Self, TrackingViewModifier> {
         ModifiedContent(content: self, modifier: TrackingViewModifier(viewLifecycleOwner))
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017. Uber Technologies
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -30,23 +30,24 @@ final class LoggedOutViewController: UIViewController, LoggedOutPresentable, Log
         super.init(nibName: nil, bundle: nil)
     }
 
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
         fatalError("Method is not supported")
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.backgroundColor = UIColor.white
         buildPlayerFields()
         buildLoginButton()
     }
-    
+
     // MARK: - Private
-    
+
     private lazy var player1Field = UITextField()
     private lazy var player2Field = UITextField()
-    
+
     private func buildPlayerFields() {
         player1Field.borderStyle = UITextField.BorderStyle.line
         view.addSubview(player1Field)
@@ -56,7 +57,7 @@ final class LoggedOutViewController: UIViewController, LoggedOutPresentable, Log
             maker.leading.trailing.equalTo(view).inset(40)
             maker.height.equalTo(40)
         }
-        
+
         player2Field.borderStyle = UITextField.BorderStyle.line
         view.addSubview(player2Field)
         player2Field.placeholder = "Player 2 name"
@@ -65,7 +66,7 @@ final class LoggedOutViewController: UIViewController, LoggedOutPresentable, Log
             maker.left.right.height.equalTo(player1Field)
         }
     }
-    
+
     private func buildLoginButton() {
         let loginButton = UIButton()
         view.addSubview(loginButton)
@@ -78,7 +79,7 @@ final class LoggedOutViewController: UIViewController, LoggedOutPresentable, Log
         loginButton.backgroundColor = UIColor.black
         loginButton.addTarget(self, action: #selector(loginButtonTouchUpInside), for: .touchUpInside)
     }
-    
+
     @objc
     private func loginButtonTouchUpInside() {
         listener?.login(withPlayer1Name: player1Field.text, player2Name: player2Field.text)

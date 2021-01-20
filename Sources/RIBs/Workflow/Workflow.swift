@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017. Uber Technologies
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -98,9 +98,9 @@ open class Workflow<ActionableItemType> {
     }
 }
 
-extension Workflow where ActionableItemType == Void {
-    
-    public final func sink() -> AnyCancellable {
+public extension Workflow where ActionableItemType == Void {
+
+    final func sink() -> AnyCancellable {
         return sink(())
     }
 }
@@ -128,37 +128,37 @@ open class Step<WorkflowActionableItemType, ActionableItemType, ValueType, Failu
     public final func onStep<NextActionableItemType, NextValueType, NextFailure: Error>(_ onStep: @escaping (ActionableItemType, ValueType) -> AnyPublisher<(NextActionableItemType, NextValueType), NextFailure>, mapError: @escaping (Failure) -> NextFailure) -> Step<WorkflowActionableItemType, NextActionableItemType, NextValueType, NextFailure> {
         let confinedNextStep =
             publisher
-            .map { (actionableItem, value) -> AnyPublisher<(Bool, ActionableItemType, ValueType), Failure> in
-                // We cannot use generic constraint here since Swift requires constraints be
-                // satisfied by concrete types, preventing using protocol as actionable type.
-                if let interactor = actionableItem as? Interactable {
-                    return interactor
-                        .isActiveStream
-                        .map({ (isActive: Bool) -> (Bool, ActionableItemType, ValueType) in
-                            (isActive, actionableItem, value)
-                        })
-                    .mapError()
-                        .eraseToAnyPublisher()
-                } else {
-                    return Just((true, actionableItem, value)).mapError().eraseToAnyPublisher()
+                .map { (actionableItem, value) -> AnyPublisher<(Bool, ActionableItemType, ValueType), Failure> in
+                    // We cannot use generic constraint here since Swift requires constraints be
+                    // satisfied by concrete types, preventing using protocol as actionable type.
+                    if let interactor = actionableItem as? Interactable {
+                        return interactor
+                            .isActiveStream
+                            .map { (isActive: Bool) -> (Bool, ActionableItemType, ValueType) in
+                                (isActive, actionableItem, value)
+                            }
+                            .mapError()
+                            .eraseToAnyPublisher()
+                    } else {
+                        return Just((true, actionableItem, value)).mapError().eraseToAnyPublisher()
+                    }
                 }
-            }
-            .switchToLatest()
-            .filter { (isActive: Bool, _, _) -> Bool in
-                isActive
-            }
-            .first()
-            .map { (_, actionableItem: ActionableItemType, value: ValueType) -> AnyPublisher<(NextActionableItemType, NextValueType), NextFailure> in
-                onStep(actionableItem, value)
-            }
-            .mapError(mapError)
-            .switchToLatest()
-            .first()
-            .share()
+                .switchToLatest()
+                .filter { (isActive: Bool, _, _) -> Bool in
+                    isActive
+                }
+                .first()
+                .map { (_, actionableItem: ActionableItemType, value: ValueType) -> AnyPublisher<(NextActionableItemType, NextValueType), NextFailure> in
+                    onStep(actionableItem, value)
+                }
+                .mapError(mapError)
+                .switchToLatest()
+                .first()
+                .share()
 
         return Step<WorkflowActionableItemType, NextActionableItemType, NextValueType, NextFailure>(workflow: workflow, publisher: confinedNextStep)
     }
-    
+
     public final func onStep<NextActionableItemType, NextValueType>(_ transform: @escaping (ActionableItemType, ValueType) -> AnyPublisher<(NextActionableItemType, NextValueType), Failure>) -> Step<WorkflowActionableItemType, NextActionableItemType, NextValueType, Failure> {
         return onStep(transform) { error -> Failure in error }
     }
@@ -167,7 +167,7 @@ open class Step<WorkflowActionableItemType, ActionableItemType, ValueType, Failu
     ///
     /// - parameter onError: The closure to execute when an error occurs.
     /// - returns: This step.
-    public final func onError(_ onError: @escaping ((Failure) -> ())) -> Step<WorkflowActionableItemType, ActionableItemType, ValueType, Failure> {
+    public final func onError(_ onError: @escaping ((Failure) -> Void)) -> Step<WorkflowActionableItemType, ActionableItemType, ValueType, Failure> {
         publisher = publisher
             .handleEvents(receiveFailure: onError)
             .eraseToAnyPublisher()
@@ -195,12 +195,12 @@ open class Step<WorkflowActionableItemType, ActionableItemType, ValueType, Failu
     }
 }
 
-extension Step where Failure == Never {
-    public final func onStep<NextActionableItemType, NextValueType, NextFailure>(_ transform: @escaping (ActionableItemType, ValueType) -> AnyPublisher<(NextActionableItemType, NextValueType), NextFailure>) -> Step<WorkflowActionableItemType, NextActionableItemType, NextValueType, NextFailure> {
+public extension Step where Failure == Never {
+    final func onStep<NextActionableItemType, NextValueType, NextFailure>(_ transform: @escaping (ActionableItemType, ValueType) -> AnyPublisher<(NextActionableItemType, NextValueType), NextFailure>) -> Step<WorkflowActionableItemType, NextActionableItemType, NextValueType, NextFailure> {
         return onStep(transform) { error -> NextFailure in }
     }
-    
-    public final func onStep<NextActionableItemType, NextValueType>(_ transform: @escaping (ActionableItemType, ValueType) -> AnyPublisher<(NextActionableItemType, NextValueType), Never>) -> Step<WorkflowActionableItemType, NextActionableItemType, NextValueType, Never> {
+
+    final func onStep<NextActionableItemType, NextValueType>(_ transform: @escaping (ActionableItemType, ValueType) -> AnyPublisher<(NextActionableItemType, NextValueType), Never>) -> Step<WorkflowActionableItemType, NextActionableItemType, NextValueType, Never> {
         return onStep(transform) { error -> Never in }
     }
 }

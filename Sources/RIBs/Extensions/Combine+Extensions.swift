@@ -1,19 +1,28 @@
 //
-//  File.swift
-//  
+//  Copyright (c) 2021. Adam Share
 //
-//  Created by Adam Share on 9/8/20.
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  http://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
 //
 
-import Foundation
 import Combine
+import Foundation
 
-//public final class CompositeCancellable: Cancellable {
+// public final class CompositeCancellable: Cancellable {
 //    public var count: Int {
 //        lock.lock(); defer { lock.unlock() }
 //        return values.count
 //    }
-//    
+//
 //    private(set) var cancelled: Bool = false
 //
 //    private let lock: NSRecursiveLock = NSRecursiveLock()
@@ -34,23 +43,23 @@ import Combine
 //        cancelled = true
 //        values.cancel()
 //    }
-//}
+// }
 //
-//extension Sequence where Element == Cancellable {
+// extension Sequence where Element == Cancellable {
 //    func cancel() {
 //        for element in self {
 //            element.cancel()
 //        }
 //    }
-//}
+// }
 //
-//extension Publisher where Failure == Never {
+// extension Publisher where Failure == Never {
 //    public func mapError<F>() -> Publishers.MapError<Self, F> {
 //        mapError { _ -> F in }
 //    }
-//}
+// }
 //
-//extension Publisher {
+// extension Publisher {
 //
 //    /// Performs the specified closures when publisher events occur.
 //    ///
@@ -114,4 +123,4 @@ import Combine
 //            receiveCancel?()
 //        }
 //    }
-//}
+// }

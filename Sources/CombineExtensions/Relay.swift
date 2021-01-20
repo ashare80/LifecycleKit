@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ public typealias PassthroughRelay<Output> = PassthroughSubject<Output, Never>
 public typealias RelayPublisher<Output> = AnyPublisher<Output, Never>
 public typealias ReplayRelay<Output> = ReplaySubject<Output, Never>
 
-extension Publisher where Failure == Never {
+public extension Publisher where Failure == Never {
     /// Maps a `Never` to the new `F` failure type.
-    public func mapError<F>() -> Publishers.MapError<Self, F> {
+    func mapError<F>() -> Publishers.MapError<Self, F> {
         mapError { _ -> F in }
     }
 }

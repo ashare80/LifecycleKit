@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import CombineExtensions
 import Dispatch
 import Foundation
 
-extension Timer {
+public extension Timer {
     /// Execute the given logic after the given delay assuming the given maximum frame duration.
     ///
     /// This allows excluding the time elapsed due to breakpoint pauses.
@@ -31,7 +31,7 @@ extension Timer {
     ///   pauses.
     /// - parameter maxFrameDuration: The maximum duration a single frame should take. Defaults to 33ms.
     /// - returns: `Publishers.First` that outputs after delay.
-    public static func execute(withDelay delay: TimeInterval, maxFrameDuration: Int = 33, runloop: RunLoop = RunLoop.main) -> Publishers.First<RelayPublisher<Void>> {
+    static func execute(withDelay delay: TimeInterval, maxFrameDuration: Int = 33, runloop: RunLoop = RunLoop.main) -> Publishers.First<RelayPublisher<Void>> {
         let period: TimeInterval = .milliseconds(maxFrameDuration / 3)
         var lastRunLoopTime = Date().timeIntervalSinceReferenceDate
         var properFrameTime = 0.0

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ public protocol InteractableConvertible {
     var interactable: Interactable { get }
 }
 
-extension Interactable {
-    public var interactable: Interactable { self }
+public extension Interactable {
+    var interactable: Interactable { self }
 }
 
 /// An `Interactor` defines a unit of business logic that corresponds to a interactable unit.
@@ -72,8 +72,8 @@ public protocol PresentableInteractableConvertible {
     var presentableInteractable: PresentableInteractable { get }
 }
 
-extension PresentableInteractable {
-    public var presentableInteractable: PresentableInteractable { self }
+public extension PresentableInteractable {
+    var presentableInteractable: PresentableInteractable { self }
 }
 
 /// Base class of an `Interactor` that has a separate associated `Presenter` and `View`.
@@ -122,8 +122,8 @@ open class PresentableInteractor<PresenterType>: Interactor, PresentableInteract
     }
 }
 
-extension PresentableInteractable where Self: Presentable {
-    public var presentable: Presentable {
+public extension PresentableInteractable where Self: Presentable {
+    var presentable: Presentable {
         return self
     }
 }

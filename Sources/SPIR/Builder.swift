@@ -100,12 +100,12 @@ public protocol PresenterProviding {
 
 public protocol InteractablePresententerProviding: PresenterProviding, PresentableInteractableConvertible, PresentableInteractableBuildable where Presenter: PresentableInteractable {}
 
-extension InteractablePresententerProviding {
-    public var presentableInteractable: PresentableInteractable {
+public extension InteractablePresententerProviding {
+    var presentableInteractable: PresentableInteractable {
         return presenter
     }
 
-    public func build() -> PresentableInteractable {
+    func build() -> PresentableInteractable {
         return presentableInteractable
     }
 }
@@ -116,32 +116,32 @@ public protocol InteractorProviding: InteractableConvertible {
     var interactor: Interactor { get }
 }
 
-extension InteractorProviding {
-    public var interactable: Interactable {
+public extension InteractorProviding {
+    var interactable: Interactable {
         return interactor
     }
 }
 
 public protocol PresentableInteractorProviding: InteractorProviding, PresentableInteractableConvertible, PresentableInteractableBuildable where Interactor: PresentableInteractable {}
 
-extension PresentableInteractorProviding {
-    public var presentableInteractable: PresentableInteractable {
+public extension PresentableInteractorProviding {
+    var presentableInteractable: PresentableInteractable {
         return interactor
     }
 
-    public func build() -> PresentableInteractable {
+    func build() -> PresentableInteractable {
         return presentableInteractable
     }
 }
 
-extension AnyBuilder where R == PresentableInteractable {
-    public convenience init(presentableInteractable: @escaping @autoclosure () -> PresentableInteractable) {
+public extension AnyBuilder where R == PresentableInteractable {
+    convenience init(presentableInteractable: @escaping @autoclosure () -> PresentableInteractable) {
         self.init { () -> PresentableInteractable in
             return presentableInteractable()
         }
     }
 
-    public convenience init(component: @escaping @autoclosure () -> PresentableInteractableConvertible) {
+    convenience init(component: @escaping @autoclosure () -> PresentableInteractableConvertible) {
         self.init { () -> PresentableInteractable in
             return component().presentableInteractable
         }

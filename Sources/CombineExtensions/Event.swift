@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2021. Adam Share
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 import Combine
 import Foundation
 
-extension Subscribers {
+public extension Subscribers {
     /// Represents a sequence event.
-    public enum Event<Input, Failure: Error>: CustomDebugStringConvertible {
+    enum Event<Input, Failure: Error>: CustomDebugStringConvertible {
         /// Subscriber receives input.
         case value(Input)
 
@@ -87,7 +87,7 @@ extension Subscribers {
         }
     }
 
-    public final class RecordSink<Input, Failure: Error> {
+    final class RecordSink<Input, Failure: Error> {
         public var cancellable: AnyCancellable?
         public var events: [Event<Input, Failure>] = []
 
@@ -101,14 +101,14 @@ extension Subscribers {
 
 extension Subscribers.Event: Equatable where Input: Equatable, Failure: Equatable {}
 
-extension Publisher {
+public extension Publisher {
 
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
     ///   - receiveEvent: The closure to execute on receipt of an event.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveEvent: @escaping (Subscribers.Event<Output, Failure>) -> Void) -> AnyCancellable {
+    func sink(receiveEvent: @escaping (Subscribers.Event<Output, Failure>) -> Void) -> AnyCancellable {
         return sink(receiveCompletion: { completion in
             receiveEvent(Subscribers.Event(completion))
         }, receiveValue: { value in
@@ -116,7 +116,7 @@ extension Publisher {
         })
     }
 
-    public func record() -> Subscribers.RecordSink<Output, Failure> {
+    func record() -> Subscribers.RecordSink<Output, Failure> {
         return Subscribers.RecordSink(publisher: self)
     }
 }
