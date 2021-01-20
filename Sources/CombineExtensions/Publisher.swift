@@ -60,10 +60,10 @@ extension Publisher {
     ///   - receiveValue: The closure to execute on receipt of a value.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
     public func sink(receiveCancel: @escaping () -> Void,
-                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFailure: @escaping (Failure) -> Void,
-                     receiveFinished: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
+                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
+                     receiveFailure: @escaping (Failure) -> Void = { _ in },
+                     receiveFinished: @escaping () -> Void = { },
+                     receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
     {
         var isCompleted: Bool = false
         let cancellable: AnyCancellable = sink(receiveCompletion: { completion in
@@ -90,390 +90,74 @@ extension Publisher {
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void) -> AnyCancellable
-    {
-        return sink(receiveCancel: receiveCancel,
-                    receiveCompletion: {_ in},
-                    receiveFailure: {_ in},
-                    receiveFinished: {},
-                    receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
     ///   - receiveCompletion: The closure to execute on completion.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: {_ in},
-                        receiveFinished: {},
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFailure: @escaping (Failure) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: receiveFailure,
-                        receiveFinished: {},
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFailure: @escaping (Failure) -> Void,
-                     receiveFinished: @escaping () -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: receiveFailure,
-                        receiveFinished: receiveFinished,
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveFailure: @escaping (Failure) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: {_ in},
-                        receiveFailure: receiveFailure,
-                        receiveFinished: {},
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveFailure: @escaping (Failure) -> Void,
-                     receiveFinished: @escaping () -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: {_ in},
-                        receiveFailure: receiveFailure,
-                        receiveFinished: receiveFinished,
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
     ///   - receiveFailure: The closure to execute on receipt of a failure.
     ///   - receiveFinished: The closure to execute on receipt of a finished.
     ///   - receiveValue: The closure to execute on receipt of a value.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
+    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
                      receiveFailure: @escaping (Failure) -> Void,
+                     receiveFinished: @escaping () -> Void = { },
+                     receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
+    {
+        return sink(receiveCompletion: { completion in
+            receiveCompletion(completion)
+            switch completion {
+            case let .failure(error):
+                receiveFailure(error)
+            case .finished:
+                receiveFinished()
+            }
+        }, receiveValue: { value in
+            receiveValue(value)
+        })
+    }
+    
+    /// Attaches a subscriber with closure-based behavior.
+    ///
+    /// - Parameters:
+    ///   - receiveCompletion: The closure to execute on completion.
+    ///   - receiveFailure: The closure to execute on receipt of a failure.
+    ///   - receiveFinished: The closure to execute on receipt of a finished.
+    ///   - receiveValue: The closure to execute on receipt of a value.
+    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
+    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void = { _ in },
                      receiveFinished: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
+                     receiveValue: @escaping (Output) -> Void = { _ in }) -> AnyCancellable
     {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: {_ in},
-                        receiveFailure: receiveFailure,
-                        receiveFinished: receiveFinished,
-                        receiveValue: receiveValue)
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveFinished: @escaping () -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: {_ in},
-                        receiveFailure: {_ in},
-                        receiveFinished: receiveFinished,
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    ///   - receiveValue: The closure to execute on receipt of a value.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveFinished: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: {_ in},
-                        receiveFailure: {_ in},
-                        receiveFinished: receiveFinished,
-                        receiveValue: receiveValue)
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveValue: The closure to execute on receipt of a value.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: {_ in},
-                        receiveFailure: {_ in},
-                        receiveFinished: {},
-                        receiveValue: receiveValue)
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveValue: The closure to execute on receipt of a value.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: {_ in},
-                        receiveFinished: {},
-                        receiveValue: receiveValue)
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveValue: The closure to execute on receipt of a value.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFailure: @escaping (Failure) -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: receiveFailure,
-                        receiveFinished: {},
-                        receiveValue: receiveValue)
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCancel: The closure to execute on receipt of a cancel.
-    ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveValue: The closure to execute on receipt of a value.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCancel: @escaping () -> Void,
-                     receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFinished: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: receiveCancel,
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: { _ in },
-                        receiveFinished: receiveFinished,
-                        receiveValue: receiveValue)
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveFailure: @escaping (Failure) -> Void) -> AnyCancellable
-    {
-        return sink(receiveCancel: {},
-                    receiveCompletion: {_ in},
-                    receiveFailure: receiveFailure,
-                    receiveFinished: {},
-                    receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFailure: @escaping (Failure) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: { },
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: receiveFailure,
-                        receiveFinished: {},
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFailure: @escaping (Failure) -> Void,
-                     receiveFinished: @escaping () -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: { },
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: receiveFailure,
-                        receiveFinished: receiveFinished,
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFailure: @escaping (Failure) -> Void,
-                     receiveFinished: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: { },
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: receiveFailure,
-                        receiveFinished: receiveFinished,
-                        receiveValue: receiveValue)
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveFailure: @escaping (Failure) -> Void,
-                     receiveFinished: @escaping () -> Void) -> AnyCancellable
-    {
-        return sink(receiveCancel: { },
-                        receiveCompletion: {_ in},
-                        receiveFailure: receiveFailure,
-                        receiveFinished: receiveFinished,
-                        receiveValue: {_ in})
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveFailure: The closure to execute on receipt of a failure.
-    ///   - receiveValue: The closure to execute on receipt of a value.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveFailure: @escaping (Failure) -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
-    {
-            return sink(receiveCancel: {},
-                        receiveCompletion: {_ in},
-                        receiveFailure: receiveFailure,
-                        receiveFinished: {},
-                        receiveValue: receiveValue)
-    }
-    
-    /// Attaches a subscriber with closure-based behavior.
-    ///
-    /// - Parameters:
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveFinished: @escaping () -> Void) -> AnyCancellable
-    {
-        return sink(receiveCancel: {},
-                    receiveCompletion: {_ in},
+        return sink(receiveCompletion: receiveCompletion,
                     receiveFailure: { _ in },
                     receiveFinished: receiveFinished,
-                    receiveValue: {_ in})
+                    receiveValue: receiveValue)
     }
     
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
     ///   - receiveCompletion: The closure to execute on completion.
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void,
-                     receiveFinished: @escaping () -> Void) -> AnyCancellable
+    public func sink(receiveCompletion: @escaping (Subscribers.Completion<Failure>) -> Void) -> AnyCancellable
     {
-            return sink(receiveCancel: { },
-                        receiveCompletion: receiveCompletion,
-                        receiveFailure: { _ in },
-                        receiveFinished: receiveFinished,
-                        receiveValue: {_ in})
+        return sink(receiveCompletion: receiveCompletion, receiveValue: { _ in })
     }
     
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    ///   - receiveValue: The closure to execute on receipt of a value.
+    ///   - receiveCompletion: The closure to execute on completion.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveFinished: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
+    public func sink(receiveValue: @escaping (Output) -> Void) -> AnyCancellable
     {
-            return sink(receiveCancel: {},
-                        receiveCompletion: {_ in},
-                        receiveFailure: { _ in },
-                        receiveFinished: receiveFinished,
-                        receiveValue: receiveValue)
+        return sink(receiveCompletion: { _ in }, receiveValue: { _ in })
     }
     
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
-    ///   - receiveFinished: The closure to execute on receipt of a finished.
-    ///   - receiveValue: The closure to execute on receipt of a value.
+    ///   - receiveCompletion: The closure to execute on completion.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    public func sink(receiveFailure: @escaping (Failure) -> Void,
-                     receiveFinished: @escaping () -> Void,
-                     receiveValue: @escaping (Output) -> Void) -> AnyCancellable
+    public func sink() -> AnyCancellable
     {
-            return sink(receiveCancel: {},
-                        receiveCompletion: {_ in},
-                        receiveFailure: receiveFailure,
-                        receiveFinished: receiveFinished,
-                        receiveValue: receiveValue)
+        return sink(receiveCompletion: { _ in }, receiveValue: { _ in })
     }
 }
