@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:RIBs/RIBs-Example.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:SPIR/SPIR-Example.xcodeproj">
    </FileRef>
    <FileRef

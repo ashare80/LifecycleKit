@@ -50,10 +50,11 @@ final class InteractorTests: XCTestCase {
 
     func testPresentableRoutingInteractor() {
         let presenter = TestPresenter()
-        let router = Router(scopeLifecycle: scopeLifecycle)
-        let interactor = TestPresentableRoutingInteractor(presenter: presenter,
+        let router = Router(scopeLifecycle: ScopeLifecycle())
+        let interactor = TestPresentableRoutingInteractor(scopeLifecycle: scopeLifecycle,
+                                                          presenter: presenter,
                                                           router: router)
-        XCTAssertEqual(interactor.scopeLifecycle, scopeLifecycle)
+        XCTAssertEqual(interactor.scopeLifecycle, router.scopeLifecycle)
         XCTAssertEqual(interactor.presenter, presenter)
         XCTAssertEqual(interactor.router, router)
         XCTAssertTrue(scopeLifecycle.subscribers.contains(interactor))

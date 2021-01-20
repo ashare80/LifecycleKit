@@ -20,7 +20,7 @@ import Foundation
 
 public protocol LifecycleDependent: LifecyclePublisher {
     /// Internal manager of lifecycle events.
-    var scopeLifecycle: ScopeLifecycle? { get }
+    var scopeLifecycle: ScopeLifecycle? { get set }
 }
 
 extension LifecycleDependent {
@@ -31,9 +31,16 @@ extension LifecycleDependent {
 
 /// Base class to conform to `LifecycleDependent` observing with a weak reference to a `ScopeLifecycle`.
 open class ScopeLifecycleDependent: ObjectIdentifiable, LifecycleDependent, LifecycleOwnerRouting, LifecycleSubscriber {
-    public weak var scopeLifecycle: ScopeLifecycle?
+    public weak var scopeLifecycle: ScopeLifecycle? {
+        didSet {
+            guard scopeLifecycle !== oldValue else { return }
+            
+            scopeLifecycle?.subscribe(self)
+        }
+    }
+    
+    public init() { }
 
-    /// Initializer.
     public init(scopeLifecycle: ScopeLifecycle) {
         self.scopeLifecycle = scopeLifecycle
         scopeLifecycle.subscribe(self)

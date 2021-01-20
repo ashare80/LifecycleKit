@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2020. Adam Share
+//  Copyright (c) 2017. Uber Technologies
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -14,20 +14,8 @@
 //  limitations under the License.
 //
 
-import Foundation
-@testable import Lifecycle
-@testable import SPIR
-import XCTest
+import Combine
 
-final class BuilderTests: XCTestCase {
-    func testAnyBuilderAutoClosure() {
-        var string = ""
-        let builder = AnyBuilder { string }
-        string = "test"
-        XCTAssertEqual(builder.build(), "test")
-    }
-
-    func testAnyDynamicBuilder() {
-        XCTAssertEqual(AnyDynamicBuilder { test in test }.build("test"), "test")
-    }
+public protocol RootActionableItem: AnyObject {
+    func waitForLogin() -> AnyPublisher<(LoggedInActionableItem, ()), Never>
 }

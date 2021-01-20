@@ -131,28 +131,15 @@ extension PresentableInteractable where Self: Presentable {
 open class PresentableRoutingInteractor<PresenterType, RouterType>: PresentableInteractor<PresenterType> {
     public let router: RouterType
 
-    public init(scopeLifecycle: ScopeLifecycle,
+    public init(scopeLifecycle: ScopeLifecycle = ScopeLifecycle(),
                 presenter: PresenterType,
-                router: RouterType)
-    {
-        self.router = router
-        super.init(scopeLifecycle: scopeLifecycle,
-                   presenter: presenter)
-    }
-
-    /// Convenience init for a `RouterType` that is provided at the local scope with a shared `ScopeLifecycle`.
-    /// - warning: Initalizing with a `Router` that is not at the local scope risks error of trying to attach a parent scope as a child.
-    public init(presenter: PresenterType,
                 router: RouterType)
     {
         guard let routing = router as? Routing else {
             fatalError("\(router) does not conform to \(Routing.self)")
         }
 
-        guard let scopeLifecycle = routing.scopeLifecycle else {
-            fatalError("\(router).scopeLifecycle is nil")
-        }
-
+        routing.scopeLifecycle = scopeLifecycle
         self.router = router
         super.init(scopeLifecycle: scopeLifecycle,
                    presenter: presenter)

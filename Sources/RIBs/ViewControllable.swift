@@ -14,26 +14,27 @@
 //  limitations under the License.
 //
 
-import CombineExtensions
 import Foundation
-import SwiftUI
+import Lifecycle
+#if !os(macOS)
+import UIKit
+#endif
 
-/// The root `Lifecycle` of an application.
-public protocol RootLifecycle {
-    var rootLifecycleOwner: LifecycleOwner { get }
+/// Basic interface between a `Router` and the UIKit `UIViewController`.
+public protocol ViewControllable {
+
+    #if !os(macOS)
+    var uiviewController: UIViewController { get }
+    #endif
 }
 
-extension RootLifecycle {
-    public func activateRoot() {
-        rootLifecycleOwner.activate()
-    }
+#if !os(macOS)
+/// Default implementation on `UIViewController` to conform to `ViewControllable` protocol
+extension UIViewController: ViewControllable {
     
-    public func deactivateRoot() {
-        rootLifecycleOwner.deactivate()
-    }
-    
-    /// Monitoring publisher to view `LifecycleOwner` hierarchy for tests and debugging tools.
-    public var childrenChangedPublisher: RelayPublisher<Void> {
-        return rootLifecycleOwner.scopeLifecycle.childrenChangedPublisher
+    public var uiviewController: UIViewController {
+        return self
     }
 }
+
+#endif

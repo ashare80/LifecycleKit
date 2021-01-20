@@ -28,6 +28,10 @@ let package = Package(
             name: "MVVM",
             targets: ["MVVM"]
         ),
+        .library(
+            name: "RIBs",
+            targets: ["RIBs"]
+        ),
     ],
     dependencies: [
         .package(name: "NeedleFoundation", url: "https://github.com/uber/needle.git", .branch("master")),
@@ -50,6 +54,11 @@ let package = Package(
                 dependencies: ["Lifecycle"]),
         .testTarget(name: "MVVMTests",
                     dependencies: ["MVVM",
+                                   "NeedleFoundation"]),
+        .target(name: "RIBs",
+                dependencies: ["Lifecycle"]),
+        .testTarget(name: "RIBsTests",
+                    dependencies: ["RIBs",
                                    "NeedleFoundation"]),
     ]
 )

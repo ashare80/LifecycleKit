@@ -14,26 +14,19 @@
 //  limitations under the License.
 //
 
-import CombineExtensions
 import Foundation
-import SwiftUI
+@testable import Lifecycle
+import XCTest
 
-/// The root `Lifecycle` of an application.
-public protocol RootLifecycle {
-    var rootLifecycleOwner: LifecycleOwner { get }
-}
+final class BuilderTests: XCTestCase {
+    func testAnyBuilderAutoClosure() {
+        var string = ""
+        let builder = AnyBuilder { string }
+        string = "test"
+        XCTAssertEqual(builder.build(), "test")
+    }
 
-extension RootLifecycle {
-    public func activateRoot() {
-        rootLifecycleOwner.activate()
-    }
-    
-    public func deactivateRoot() {
-        rootLifecycleOwner.deactivate()
-    }
-    
-    /// Monitoring publisher to view `LifecycleOwner` hierarchy for tests and debugging tools.
-    public var childrenChangedPublisher: RelayPublisher<Void> {
-        return rootLifecycleOwner.scopeLifecycle.childrenChangedPublisher
+    func testAnyDynamicBuilder() {
+        XCTAssertEqual(AnyDynamicBuilder { test in test }.build("test"), "test")
     }
 }
