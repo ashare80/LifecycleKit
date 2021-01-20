@@ -44,18 +44,18 @@ public struct RetainedCancellablePublisher<P: Publisher> {
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
-    ///   - receiveValue: The closure to execute on receipt of a value. Defaults to `nil`.
+    ///   - receiveCancel: The closure to execute on receipt of a cancel. Defaults to `nil`.
     ///   - receiveCompletion: The closure to execute on completion. Defaults to `nil`.
     ///   - receiveFailure: The closure to execute on receipt of a failure. Defaults to `nil`.
     ///   - receiveFinished: The closure to execute on receipt of a finished. Defaults to `nil`.
-    ///   - receiveCancel: The closure to execute on receipt of a cancel. Defaults to `nil`.
+    ///   - receiveValue: The closure to execute on receipt of a value. Defaults to `nil`.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
     @discardableResult
-    public func sink(receiveValue: ((P.Output) -> Void)? = nil,
+    public func sink(receiveCancel: (() -> Void)? = nil,
                      receiveCompletion: ((Subscribers.Completion<P.Failure>) -> Void)? = nil,
                      receiveFailure: ((P.Failure) -> Void)? = nil,
                      receiveFinished: (() -> Void)? = nil,
-                     receiveCancel: (() -> Void)? = nil) -> Cancellable
+                     receiveValue: ((P.Output) -> Void)? = nil) -> Cancellable
     {
         let retainedSink = RetainedCancellableSink(receiveValue: receiveValue,
                                                    receiveCompletion: receiveCompletion,

@@ -39,13 +39,13 @@ final class AutoCancelTests: XCTestCase {
 
             weakCancellable = publisher
                 .autoCancel(lifecycle)
-                .sink(receiveValue: {
-                    receiveValueCount += 1
-                    XCTAssertNotNil(object)
+                .sink(receiveCancel: {
+                    receiveCancelCount += 1
                 }, receiveCompletion: { _ in
                     receiveCompletionCount += 1
-                }, receiveCancel: {
-                    receiveCancelCount += 1
+                }, receiveValue: {
+                    receiveValueCount += 1
+                    XCTAssertNotNil(object)
                 }) as AnyObject
 
             publisher.send()
@@ -82,13 +82,13 @@ final class AutoCancelTests: XCTestCase {
 
             publisher
                 .autoCancel(lifecycle)
-                .sink(receiveValue: {
-                    receiveValueCount += 1
-                    XCTAssertNotNil(object)
+                .sink(receiveCancel: {
+                    receiveCancelCount += 1
                 }, receiveCompletion: { _ in
                     receiveCompletionCount += 1
-                }, receiveCancel: {
-                    receiveCancelCount += 1
+                }, receiveValue: {
+                    receiveValueCount += 1
+                    XCTAssertNotNil(object)
                 })
             publisher.send(completion: .finished)
         }
@@ -115,13 +115,13 @@ final class AutoCancelTests: XCTestCase {
 
             let cancellable = publisher
                 .autoCancel(lifecycle)
-                .sink(receiveValue: {
-                    receiveValueCount += 1
-                    XCTAssertNotNil(object)
+                .sink(receiveCancel: {
+                    receiveCancelCount += 1
                 }, receiveCompletion: { _ in
                     receiveCompletionCount += 1
-                }, receiveCancel: {
-                    receiveCancelCount += 1
+                }, receiveValue: {
+                    receiveValueCount += 1
+                    XCTAssertNotNil(object)
                 })
             cancellable.cancel()
         }
@@ -149,21 +149,21 @@ final class AutoCancelTests: XCTestCase {
             let scopeLifecycle = ScopeLifecycle()
             lifecycleState = scopeLifecycle.lifecycleState
 
-            lifecycleState.retained.sink(receiveValue: { state in
+            lifecycleState.retained.sink(receiveFinished: {
                 XCTAssertNotNil(object)
-            }, receiveFinished: {
+            }, receiveValue: { state in
                 XCTAssertNotNil(object)
             })
         }
 
         let cancellable = publisher
             .autoCancel(lifecycleState)
-            .sink(receiveValue: {
-                receiveValueCount += 1
+            .sink(receiveCancel: {
+                receiveCancelCount += 1
             }, receiveCompletion: { _ in
                 receiveCompletionCount += 1
-            }, receiveCancel: {
-                receiveCancelCount += 1
+            }, receiveValue: {
+                receiveValueCount += 1
             })
         cancellable.cancel()
 

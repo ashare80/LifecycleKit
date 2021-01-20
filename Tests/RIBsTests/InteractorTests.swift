@@ -33,9 +33,9 @@ final class InteractorTests: XCTestCase {
             .isActiveStream
             .prefix(1)
             .retained
-            .sink { (value) in
+            .sink(receiveValue:  { (value) in
                 isActiveValue = value
-            }
+            })
         
         XCTAssertFalse(isActiveValue)
         XCTAssertFalse(interactor.isActive)
@@ -48,9 +48,9 @@ final class InteractorTests: XCTestCase {
             .isActiveStream
             .prefix(1)
             .retained
-            .sink { (value) in
+            .sink(receiveValue:  { (value) in
                 isActiveValue = value
-            }
+            })
         
         XCTAssertTrue(isActiveValue)
         XCTAssertTrue(interactor.isActive)
@@ -63,9 +63,9 @@ final class InteractorTests: XCTestCase {
             .isActiveStream
             .prefix(1)
             .retained
-            .sink { (value) in
+            .sink(receiveValue:  { (value) in
                 isActiveValue = value
-            }
+            })
         
         XCTAssertFalse(isActiveValue)
         XCTAssertFalse(interactor.isActive)
