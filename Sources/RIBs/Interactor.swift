@@ -74,7 +74,7 @@ open class Interactor: ScopeLifecycleDependent, Interactable {
         return isActivePublisher.eraseToAnyPublisher()
     }
 
-    fileprivate var activenessCancellable: [Cancellable]?
+    fileprivate var activenessCancellable: [AnyCancellable]?
 
     override open func didBecomeActive(_ lifecyclePublisher: LifecyclePublisher) {
         super.didBecomeActive(lifecyclePublisher)
@@ -138,8 +138,8 @@ public extension Publisher {
     }
 }
 
-/// Interactor related `Cancellable` extensions.
-public extension Cancellable {
+/// Interactor related `AnyCancellable` extensions.
+public extension AnyCancellable {
 
     /// Cancels the subscription based on the lifecycle of the given `Interactor`. The subscription is cancelled
     /// when the interactor is deactivated.
@@ -156,7 +156,7 @@ public extension Cancellable {
     ///
     /// - parameter interactor: The interactor to cancel the subscription based on.
     @discardableResult
-    func cancelOnDeactivate(interactor: Interactor) -> Cancellable {
+    func cancelOnDeactivate(interactor: Interactor) -> AnyCancellable {
         if let _ = interactor.activenessCancellable {
             interactor.activenessCancellable?.append(self)
         } else {
