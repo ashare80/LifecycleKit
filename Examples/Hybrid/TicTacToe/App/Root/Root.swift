@@ -36,7 +36,7 @@ final class Root: BootstrapComponent, MVVMComponent {
     }
 }
 
-extension Root: ControllerProviding {
+extension Root: ControllerProviding, LifecycleOwner {
     var controller: Controller {
         weakShared {
             Controller(scopeLifecycle: scopeLifecycle,

@@ -40,6 +40,16 @@ public protocol ViewLifecycleOwnerViewProviding: ViewableBuildable {
     var viewLifecycleOwner: ViewLifecycleOwner { get }
 }
 
+public protocol EmptyInit {
+    init()
+}
+
+public extension ViewLifecycleOwnerViewProviding where ContentView: EmptyInit {
+    var view: ContentView {
+        return ContentView()
+    }
+}
+
 public extension ViewLifecycleOwnerViewProviding {
     func build() -> Viewable {
         return LifecycleOwnerViewProvider(view: self.view.tracked(by: self.viewLifecycleOwner),

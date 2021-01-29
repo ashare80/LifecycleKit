@@ -57,5 +57,5 @@ public typealias WeakLazy = Lifecycle.WeakLazy
     public typealias Component = NeedleFoundation.Component
     public typealias Scope = NeedleFoundation.Scope
 
-    extension NeedleFoundation.Component: SharedScopeLifecycleComponent {}
+    extension NeedleFoundation.Component: SharedComponent {}
 #endif

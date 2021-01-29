@@ -16,16 +16,20 @@
 
 import Foundation
 
-public protocol SharedScopeLifecycleComponent: SharedComponent {
-    /// Provided shared `ScopeLifecycle` for the component's scope.
-    var scopeLifecycle: ScopeLifecycle { get }
-}
-
-public extension SharedScopeLifecycleComponent {
+public extension SharedComponent where Self: LifecycleOwner {
     /// Provided shared `ScopeLifecycle` for the component's scope.
     var scopeLifecycle: ScopeLifecycle {
         return shared(__function: #function) {
             return ScopeLifecycle()
+        }
+    }
+}
+
+public extension SharedComponent where Self: ViewLifecycleOwner {
+    /// Provided shared `ScopeLifecycle` for the component's scope.
+    var viewLifecycle: ViewLifecycle {
+        return shared(__function: #function) {
+            return ViewLifecycle()
         }
     }
 }

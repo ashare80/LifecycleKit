@@ -16,6 +16,7 @@
 
 import Foundation
 import Lifecycle
+import SwiftUI
 
 public protocol ControllerProviding {
     associatedtype Controller: LifecycleOwner
@@ -35,7 +36,13 @@ public extension ViewLifecycleOwnerViewProviding where Self: ViewModelProviding,
     }
 }
 
-public protocol MVVMComponent: ViewLifecycleOwnerViewProviding, ControllerProviding, ViewModelProviding {}
+public protocol MVVMComponent: ViewLifecycleOwnerViewProviding, ControllerProviding, ViewModelProviding, ObservableObject {}
+
+public extension MVVMComponent where Controller == Self  {
+    var controller: Controller {
+        return self
+    }
+}
 
 public extension MVVMComponent where Controller == ViewModel {
     var viewModel: ViewModel {
