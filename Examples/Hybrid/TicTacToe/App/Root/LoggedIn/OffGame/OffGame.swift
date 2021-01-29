@@ -103,7 +103,7 @@ final class OffGame: Component<OffGameDependency>, MVVMComponent {
                     func startGame(with gameBuilder: GameBuildable) {}
                 }
 
-                struct ViewableBuildableMock: ViewableBuildable {
+                final class ViewableBuildableMock: ViewableBuildable {
                     func build() -> Viewable {
                         return EmptyView().asViewProvider
                     }

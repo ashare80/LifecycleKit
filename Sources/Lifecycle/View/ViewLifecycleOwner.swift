@@ -24,8 +24,16 @@ public protocol ViewLifecycleOwner: AnyObject {
     var viewLifecycle: ViewLifecycle { get }
 }
 
+extension ViewLifecycleOwner {
+    public func dismissView() {
+        viewLifecycle.dismissView()
+    }
+}
+
 public struct TrackingViewModifier: ViewModifier {
     var viewLifecycleOwner: ViewLifecycleOwner
+    
+    @Environment(\.presentationMode) private var presentation: Binding<PresentationMode>
 
     init(_ viewLifecycleOwner: ViewLifecycleOwner) {
         viewLifecycleOwner.viewLifecycle.viewDidLoad(with: viewLifecycleOwner)
@@ -39,6 +47,11 @@ public struct TrackingViewModifier: ViewModifier {
             }
             .onDisappear {
                 self.viewLifecycleOwner.viewLifecycle.isDisplayed = false
+            }
+            .onReceive(self.viewLifecycleOwner.viewLifecycle.dismissPublisher) {
+                if self.presentation.wrappedValue.isPresented {
+                    self.presentation.wrappedValue.dismiss()
+                }
             }
     }
 }

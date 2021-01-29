@@ -47,6 +47,13 @@ public extension ViewLifecycleOwnerViewProviding {
     }
 }
 
+public extension ViewLifecycleOwnerViewProviding where Self: ObservableObject {
+    func build() -> Viewable {
+        return LifecycleOwnerViewProvider(view: self.view.tracked(by: self.viewLifecycleOwner).environmentObject(self),
+                                          childLifecycle: self.lifecycleOwner)
+    }
+}
+
 extension AnyBuilder: ViewableBuildable where R == Viewable {}
 
 public protocol LazyViewable {

@@ -21,7 +21,6 @@ import Foundation
 import XCTest
 
 final class InteractorTests: XCTestCase {
-    private let presenter = LifecycleViewController()
 
     func testInteractor() {
         let interactor = TestInteractor()
@@ -72,7 +71,10 @@ final class InteractorTests: XCTestCase {
         XCTAssertEqual(interactor.didBecomeActiveCount, 1)
         XCTAssertEqual(interactor.willResignActiveCount, 1)
     }
-
+    
+    #if !os(macOS)
+    private let presenter = LifecycleViewController()
+    
     func testPresentableInteractor() {
         let interactor = TestPresentableInteractor(presenter: presenter)
         XCTAssertNil(interactor.scopeLifecycle)
@@ -102,6 +104,7 @@ final class InteractorTests: XCTestCase {
         XCTAssertEqual(interactor.viewDidAppearCount, 1)
         XCTAssertEqual(interactor.viewDidDisappearCount, 1)
     }
+    #endif
 }
 
 final class TestInteractor: Interactor {
@@ -118,6 +121,7 @@ final class TestInteractor: Interactor {
     }
 }
 
+#if !os(macOS)
 final class TestPresentableInteractor: PresentableInteractor<LifecycleViewController>, ViewLifecycleSubscriber {
     var viewDidLoadCount: Int = 0
     func viewDidLoad() {
@@ -134,3 +138,4 @@ final class TestPresentableInteractor: PresentableInteractor<LifecycleViewContro
         viewDidDisappearCount += 1
     }
 }
+#endif

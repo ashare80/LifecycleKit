@@ -26,6 +26,12 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
     public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return $state.removeDuplicates()
     }
+    
+    public func dismissView() {
+        dismissPublisher.send()
+    }
+    
+    let dismissPublisher: PassthroughRelay<()> = PassthroughRelay()
 
     /// Set to `true` `onAppear`, and `false` `onDisappear`.
     var isDisplayed: Bool = false {
@@ -43,18 +49,27 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
             }
         }
     }
+    
+    private var cancellables: [AnyCancellable] = []
 
     weak var scopeLifecycle: ScopeLifecycle? {
         didSet {
-            if let scopeLifecycle = scopeLifecycle, let oldValue = oldValue, scopeLifecycle !== oldValue {
+            cancellables = []
+            
+            guard let scopeLifecycle = scopeLifecycle else { return }
+            
+            if let oldValue = oldValue, scopeLifecycle !== oldValue {
                 assertionFailure("Already a scope lifecycle for this view lifecycle: \(oldValue). New value: \(scopeLifecycle)")
             }
 
-            scopeLifecycle?
+            let lifecyclePublisher = scopeLifecycle
                 .lifecycleState
                 .drop(while: { state in state != .inactive })
                 .map { state in state == .active }
                 .removeDuplicates()
+                .share(replay: 1)
+                
+            lifecyclePublisher
                 .map { [weak self] isActive -> RelayPublisher<Void> in
                     guard let self = self, !isActive else {
                         return Empty<Void, Never>().eraseToAnyPublisher()
@@ -62,8 +77,16 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
                     return LeakDetector.instance.expectViewDisappear(tracker: self)
                 }
                 .switchToLatest()
-                .retained
                 .sink()
+                .store(in: &cancellables)
+            
+            lifecyclePublisher
+                .sink(receiveValue: { [weak self] isActive in
+                    if !isActive {
+                        self?.dismissView()
+                    }
+                })
+                .store(in: &cancellables)
         }
     }
 

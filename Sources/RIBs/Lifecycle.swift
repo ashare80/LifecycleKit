@@ -34,7 +34,6 @@ public typealias LifecyclePublisher = Lifecycle.LifecyclePublisher
 public typealias LifecycleState = Lifecycle.LifecycleState
 public typealias LifecycleStateOptions = Lifecycle.LifecycleStateOptions
 public typealias LifecycleSubscriber = Lifecycle.LifecycleSubscriber
-public typealias LifecycleViewController = Lifecycle.LifecycleViewController
 public typealias RootLifecycle = Lifecycle.RootLifecycle
 public typealias ScopeLifecycle = Lifecycle.ScopeLifecycle
 public typealias ViewLifecycleSubscriber = Lifecycle.ViewLifecycleSubscriber
@@ -44,6 +43,10 @@ public typealias ViewLifecycleOwnerViewProviding = Lifecycle.ViewLifecycleOwnerV
 public typealias Viewable = Lifecycle.Viewable
 public typealias ViewableBuildable = Lifecycle.ViewableBuildable
 public typealias WeakLazy = Lifecycle.WeakLazy
+
+#if !os(macOS)
+    public typealias LifecycleViewController = Lifecycle.LifecycleViewController
+#endif
 
 #if canImport(NeedleFoundation)
     import NeedleFoundation

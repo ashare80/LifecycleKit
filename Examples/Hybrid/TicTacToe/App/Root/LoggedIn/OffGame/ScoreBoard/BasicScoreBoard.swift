@@ -74,7 +74,7 @@ final class BasicScoreBoard: Component<BasicScoreBoardDependency>, MVVMComponent
                 scorePublisher
                     .map { score in (score.player1Score, score.player2Score) }
                     .autoCancel(lifecyclePublisher)
-                    .sink(setText)
+                    .sink(receiveValue: setText)
             }
 
             private func setText(player1Score: Int, player2Score: Int) {

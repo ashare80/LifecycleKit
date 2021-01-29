@@ -20,24 +20,24 @@ import Foundation
 
 public extension Publisher {
     /// Completes when any provided lifecycle states are output, or lifecycle publisher completes.
-    func autoCancel(_ lifecyclePublisher: LifecyclePublisher, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> {
+    func autoCancel(_ lifecyclePublisher: LifecyclePublisher, when states: LifecycleStateOptions = .notActive) -> AutoCancel<Self> {
         return autoCancel(lifecyclePublisher.lifecycleState, when: states)
     }
 
     /// Completes when any provided lifecycle states are output, or lifecycle publisher completes.
-    func autoCancel<P: Publisher>(_ lifecycleState: P, when states: LifecycleStateOptions = .notActive) -> RetainedCancellablePublisher<Self> where P.Output == LifecycleState {
-        return RetainedCancellablePublisher(source: self, cancelPublisher: lifecycleState.filter(states.contains(state:)).map { _ in () }.replaceError(with: ()).mapError().eraseToAnyPublisher())
+    func autoCancel<P: Publisher>(_ lifecycleState: P, when states: LifecycleStateOptions = .notActive) -> AutoCancel<Self> where P.Output == LifecycleState {
+        return AutoCancel(source: self, cancelPublisher: lifecycleState.filter(states.contains(state:)).map { _ in () }.replaceError(with: ()).mapError().eraseToAnyPublisher())
     }
 }
 
 public extension Publisher {
     /// Cancellable will be retained be the sink and must me explicitly cancelled or completed.
-    var retained: RetainedCancellablePublisher<Self> {
-        return RetainedCancellablePublisher(source: self, cancelPublisher: nil)
+    var retained: AutoCancel<Self> {
+        return AutoCancel(source: self, cancelPublisher: nil)
     }
 }
 
-public struct RetainedCancellablePublisher<P: Publisher> {
+public struct AutoCancel<P: Publisher> {
     let source: P
     let cancelPublisher: RelayPublisher<Void>?
 
@@ -57,7 +57,7 @@ public struct RetainedCancellablePublisher<P: Publisher> {
                      receiveFinished: (() -> Void)? = nil,
                      receiveValue: ((P.Output) -> Void)? = nil) -> Cancellable
     {
-        let retainedSink = RetainedCancellableSink(receiveValue: receiveValue,
+        let retainedSink = Subscribers.RetainedSink(receiveValue: receiveValue,
                                                    receiveCompletion: receiveCompletion,
                                                    receiveFailure: receiveFailure,
                                                    receiveFinished: receiveFinished,
@@ -66,83 +66,95 @@ public struct RetainedCancellablePublisher<P: Publisher> {
         source.subscribe(retainedSink)
         return retainedSink
     }
+    
+    @discardableResult
+    public func assign<Root>(to keyPath: ReferenceWritableKeyPath<Root, P.Output>, on object: Root) -> Cancellable {
+        return sink(receiveValue: { (value) in
+            object[keyPath: keyPath] = value
+        })
+    }
 }
 
-final class RetainedCancellableSink<Input, Failure: Error>: Subscriber, Cancellable {
-    public let combineIdentifier: CombineIdentifier = CombineIdentifier()
 
-    private var subscription: Subscription?
+extension Subscribers {
+    final class RetainedSink<Input, Failure: Error>: Subscriber, Cancellable {
+        public let combineIdentifier: CombineIdentifier = CombineIdentifier()
 
-    /// Make sure everything is cleared to avoid retain cycles.
-    func clear() {
-        subscription?.cancel()
-        subscription = nil
-        cancelPublisherCancellable?.cancel()
-        cancelPublisherCancellable = nil
-        receiveValue = nil
-        receiveCompletion = nil
-        receiveFailure = nil
-        receiveFinished = nil
-        receiveCancel = nil
-        cancelPublisher = nil
-    }
+        private var subscription: Subscription?
 
-    private var cancelPublisherCancellable: Cancellable?
-
-    private var receiveValue: ((Input) -> Void)?
-    private var receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?
-    private var receiveFailure: ((Failure) -> Void)?
-    private var receiveFinished: (() -> Void)?
-    private var receiveCancel: (() -> Void)?
-    private var cancelPublisher: RelayPublisher<Void>?
-
-    init(receiveValue: ((Input) -> Void)? = nil,
-         receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
-         receiveFailure: ((Failure) -> Void)? = nil,
-         receiveFinished: (() -> Void)? = nil,
-         receiveCancel: (() -> Void)? = nil,
-         cancelPublisher: RelayPublisher<Void>? = nil) {
-        self.receiveValue = receiveValue
-        self.receiveCompletion = receiveCompletion
-        self.receiveFailure = receiveFailure
-        self.receiveFinished = receiveFinished
-        self.receiveCancel = receiveCancel
-        self.cancelPublisher = cancelPublisher
-    }
-
-    func receive(subscription: Subscription) {
-        self.subscription = subscription
-
-        cancelPublisherCancellable = cancelPublisher?.sink(receiveFinished: cancel,
-                                                           receiveValue: cancel)
-
-        self.subscription?.request(.unlimited)
-    }
-
-    func receive(_ input: Input) -> Subscribers.Demand {
-        receiveValue?(input)
-        return .unlimited
-    }
-
-    func receive(completion: Subscribers.Completion<Failure>) {
-        receiveCompletion?(completion)
-
-        switch completion {
-        case let .failure(error):
-            receiveFailure?(error)
-        case .finished:
-            receiveFinished?()
+        /// Make sure everything is cleared to avoid retain cycles.
+        func clear() {
+            subscription?.cancel()
+            subscription = nil
+            cancelPublisherCancellable?.cancel()
+            cancelPublisherCancellable = nil
+            receiveValue = nil
+            receiveCompletion = nil
+            receiveFailure = nil
+            receiveFinished = nil
+            receiveCancel = nil
+            cancelPublisher = nil
         }
 
-        clear()
-    }
+        private var cancelPublisherCancellable: Cancellable?
 
-    func cancel() {
-        guard subscription != nil else {
+        private var receiveValue: ((Input) -> Void)?
+        private var receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)?
+        private var receiveFailure: ((Failure) -> Void)?
+        private var receiveFinished: (() -> Void)?
+        private var receiveCancel: (() -> Void)?
+        private var cancelPublisher: RelayPublisher<Void>?
+
+        init(receiveValue: ((Input) -> Void)? = nil,
+             receiveCompletion: ((Subscribers.Completion<Failure>) -> Void)? = nil,
+             receiveFailure: ((Failure) -> Void)? = nil,
+             receiveFinished: (() -> Void)? = nil,
+             receiveCancel: (() -> Void)? = nil,
+             cancelPublisher: RelayPublisher<Void>? = nil) {
+            self.receiveValue = receiveValue
+            self.receiveCompletion = receiveCompletion
+            self.receiveFailure = receiveFailure
+            self.receiveFinished = receiveFinished
+            self.receiveCancel = receiveCancel
+            self.cancelPublisher = cancelPublisher
+        }
+
+        func receive(subscription: Subscription) {
+            self.subscription = subscription
+
+            cancelPublisherCancellable = cancelPublisher?.sink(receiveFinished: cancel,
+                                                               receiveValue: cancel)
+
+            self.subscription?.request(.unlimited)
+        }
+
+        func receive(_ input: Input) -> Subscribers.Demand {
+            receiveValue?(input)
+            return .unlimited
+        }
+
+        func receive(completion: Subscribers.Completion<Failure>) {
+            receiveCompletion?(completion)
+
+            switch completion {
+            case let .failure(error):
+                receiveFailure?(error)
+            case .finished:
+                receiveFinished?()
+            }
+
             clear()
-            return
         }
-        receiveCancel?()
-        clear()
+
+        func cancel() {
+            guard subscription != nil else {
+                clear()
+                return
+            }
+            receiveCancel?()
+            clear()
+        }
     }
 }
+
+

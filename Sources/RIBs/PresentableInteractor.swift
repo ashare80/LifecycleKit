@@ -31,7 +31,7 @@ open class PresentableInteractor<PresenterType>: Interactor {
         super.init()
 
         if let viewLifecycleOwner = presenter as? ViewLifecycleOwner,
-           let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber {
+            let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber {
             viewLifecycleOwner.viewLifecycle.subscribe(viewLifecycleSubscriber)
         }
     }
