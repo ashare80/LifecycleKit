@@ -23,6 +23,7 @@ public typealias AnyBuilder = Lifecycle.AnyBuilder
 public typealias AnyDynamicBuilder = Lifecycle.AnyDynamicBuilder
 public typealias AtomicLazy = Lifecycle.AtomicLazy
 public typealias AtomicWeakLazy = Lifecycle.AtomicWeakLazy
+public typealias Initializable = Lifecycle.Initializable
 public typealias Lazy = Lifecycle.Lazy
 public typealias LazyViewable = Lifecycle.LazyViewable
 public typealias LazyView = Lifecycle.LazyView

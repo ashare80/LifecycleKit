@@ -21,7 +21,7 @@ protocol LoggedInDependency: Dependency {
     var loggedInPresenter: LoggedInPresentable { get }
 }
 
-final class LoggedInComponent: Component<LoggedInDependency>, InteractorProviding {
+final class LoggedInComponent: Component<LoggedInDependency>, InteractorProviding, LifecycleOwner {
 
     private let dynamicDependency: DynamicDependency
 

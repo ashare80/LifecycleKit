@@ -58,6 +58,7 @@ let package = Package(
         .target(name: "RIBs",
                 dependencies: ["Lifecycle"]),
         .testTarget(name: "RIBsTests",
-                    dependencies: ["RIBs"]),
+                    dependencies: ["RIBs",
+                                   "NeedleFoundation"]),
     ]
 )

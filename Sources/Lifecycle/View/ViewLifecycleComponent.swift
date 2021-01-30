@@ -40,11 +40,11 @@ public protocol ViewLifecycleOwnerViewProviding: ViewableBuildable {
     var viewLifecycleOwner: ViewLifecycleOwner { get }
 }
 
-public protocol EmptyInit {
+public protocol Initializable {
     init()
 }
 
-public extension ViewLifecycleOwnerViewProviding where ContentView: EmptyInit {
+public extension ViewLifecycleOwnerViewProviding where ContentView: Initializable {
     var view: ContentView {
         return ContentView()
     }

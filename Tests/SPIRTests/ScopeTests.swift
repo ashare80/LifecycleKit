@@ -28,5 +28,8 @@ final class ScopeTests: XCTestCase {
 
         let component = BootstrapComponent()
         XCTAssertEqual(component.scopeLifecycle, component.scopeLifecycle)
+        XCTAssertEqual(component.viewLifecycle, component.viewLifecycle)
     }
 }
+
+extension BootstrapComponent: LifecycleOwner, ViewLifecycleOwner {}

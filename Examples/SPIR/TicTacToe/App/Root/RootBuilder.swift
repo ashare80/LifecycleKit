@@ -18,7 +18,7 @@ import Lifecycle
 import SPIR
 import SwiftUI
 
-final class RootComponent: BootstrapComponent, PresentableInteractorProviding {
+final class RootComponent: BootstrapComponent, PresentableInteractorProviding, LifecycleOwner {
 
     var loggedOutListener: LoggedOutListener {
         return interactor

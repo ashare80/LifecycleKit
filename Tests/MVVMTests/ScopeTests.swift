@@ -26,7 +26,7 @@ final class ScopeTests: XCTestCase {
         __DependencyProviderRegistry.instance.registerDependencyProviderFactory(for: "^->TestComponent") { component in
             return EmptyDependencyProvider(component: component)
         }
-        XCTAssertTrue(TestComponent().build() is LifecycleOwnerViewProvider<ModifiedContent<TestComponent.ContentView, TrackingViewModifier>>)
+        XCTAssertTrue(TestComponent().build() is LifecycleOwnerViewProvider<ModifiedContent<ModifiedContent<TestComponent.ContentView, TrackingViewModifier>, _EnvironmentKeyWritingModifier<Optional<TestComponent>>>>)
     }
 }
 

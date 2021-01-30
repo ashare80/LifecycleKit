@@ -76,4 +76,6 @@ import Foundation
         /// Initializer.
         public init() {}
     }
+
+    extension Component: SharedComponent {}
 #endif
