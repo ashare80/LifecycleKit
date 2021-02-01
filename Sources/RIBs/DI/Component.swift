@@ -15,6 +15,7 @@
 //
 
 import Foundation
+import Lifecycle
 
 #if !canImport(NeedleFoundation)
     /// The base class for all components.
