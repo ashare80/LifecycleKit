@@ -57,5 +57,3 @@ final class TestComponent: BootstrapComponent, MVVMComponent {
 
     final class Controller: ViewModelController<ContentView.Model> {}
 }
-
-extension NeedleFoundation.Component: SharedComponent {}

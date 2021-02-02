@@ -147,7 +147,7 @@ public extension Publisher {
     ///   - receiveCompletion: The closure to execute on completion.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
     func sink(receiveValue: @escaping (Output) -> Void) -> AnyCancellable {
-        return sink(receiveCompletion: { _ in }, receiveValue: { _ in })
+        return sink(receiveCompletion: { _ in }, receiveValue: receiveValue)
     }
 
     /// Attaches a subscriber with closure-based behavior.
