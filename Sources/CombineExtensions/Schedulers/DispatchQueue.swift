@@ -22,20 +22,25 @@ public struct DispatchQueue: DispatchQueueContext, Scheduler {
     /// `DispatchQueue.main` underlying queue.
     public static let main = DispatchQueue(backingQueue: Foundation.DispatchQueue.main)
 
-    /// `DispatchQueue.global(qos: .userInteractive)` underlying queue.
-    public static let userInteractive = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .userInteractive))
+    /// `DispatchQueue.init(qos: .userInteractive)` underlying queue.
+    public static let userInteractive = DispatchQueue(backingQueue: Foundation.DispatchQueue.init(label: "com.lifecyclekit.userinteractive",
+                                                                                                  qos: .userInteractive))
 
-    /// `DispatchQueue.global(qos: .userInitiated)` underlying queue.
-    public static let userInitiated = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .userInitiated))
+    /// `DispatchQueue.init(qos: .userInitiated)` underlying queue.
+    public static let userInitiated = DispatchQueue(backingQueue: Foundation.DispatchQueue.init(label: "com.lifecyclekit.userInitiated",
+                                                                                                qos: .userInitiated))
 
-    /// `DispatchQueue.global(qos: .default)` underlying queue.
-    public static let `default` = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .default))
+    /// `DispatchQueue.init(qos: .default)` underlying queue.
+    public static let `default` = DispatchQueue(backingQueue: Foundation.DispatchQueue.init(label: "com.lifecyclekit.default",
+                                                                                            qos: .default))
 
-    /// `DispatchQueue.global(qos: .utility)` underlying queue.
-    public static let utility = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .utility))
+    /// `DispatchQueue.init(qos: .utility)` underlying queue.
+    public static let utility = DispatchQueue(backingQueue: Foundation.DispatchQueue.init(label: "com.lifecyclekit.utility",
+                                                                                          qos: .utility))
 
-    /// `DispatchQueue.global(qos: .background)` underlying queue.
-    public static let background = DispatchQueue(backingQueue: Foundation.DispatchQueue.global(qos: .background))
+    /// `DispatchQueue.init(qos: .background)` underlying queue.
+    public static let background = DispatchQueue(backingQueue: Foundation.DispatchQueue.init(label: "com.lifecyclekit.background",
+                                                                                             qos: .background))
 
     /// The quality of service, or the execution priority, to apply to tasks. From highest (`userInteractive`) to lowest (`background`).
     public enum QualityOfService {
