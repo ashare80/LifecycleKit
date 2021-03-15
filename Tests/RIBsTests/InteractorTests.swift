@@ -71,39 +71,39 @@ final class InteractorTests: XCTestCase {
         XCTAssertEqual(interactor.didBecomeActiveCount, 1)
         XCTAssertEqual(interactor.willResignActiveCount, 1)
     }
-    
+
     #if !os(macOS)
-    private let presenter = LifecycleViewController()
-    
-    func testPresentableInteractor() {
-        let interactor = TestPresentableInteractor(presenter: presenter)
-        XCTAssertNil(interactor.scopeLifecycle)
-        XCTAssertNil(presenter.viewLifecycle.scopeLifecycle)
-        XCTAssertEqual(interactor.presenter, presenter)
-        XCTAssertTrue(presenter.viewLifecycle.subscribers.contains(interactor))
+        private let presenter = LifecycleViewController()
 
-        XCTAssertEqual(interactor.viewDidLoadCount, 0)
-        XCTAssertEqual(interactor.viewDidAppearCount, 0)
-        XCTAssertEqual(interactor.viewDidDisappearCount, 0)
+        func testPresentableInteractor() {
+            let interactor = TestPresentableInteractor(presenter: presenter)
+            XCTAssertNil(interactor.scopeLifecycle)
+            XCTAssertNil(presenter.viewLifecycle.scopeLifecycle)
+            XCTAssertEqual(interactor.presenter, presenter)
+            XCTAssertTrue(presenter.viewLifecycle.subscribers.contains(interactor))
 
-        presenter.viewLifecycle.viewDidLoad(with: presenter)
+            XCTAssertEqual(interactor.viewDidLoadCount, 0)
+            XCTAssertEqual(interactor.viewDidAppearCount, 0)
+            XCTAssertEqual(interactor.viewDidDisappearCount, 0)
 
-        XCTAssertEqual(interactor.viewDidLoadCount, 1)
-        XCTAssertEqual(interactor.viewDidAppearCount, 0)
-        XCTAssertEqual(interactor.viewDidDisappearCount, 0)
+            presenter.viewLifecycle.viewDidLoad(with: presenter)
 
-        presenter.viewLifecycle.isDisplayed = true
+            XCTAssertEqual(interactor.viewDidLoadCount, 1)
+            XCTAssertEqual(interactor.viewDidAppearCount, 0)
+            XCTAssertEqual(interactor.viewDidDisappearCount, 0)
 
-        XCTAssertEqual(interactor.viewDidLoadCount, 1)
-        XCTAssertEqual(interactor.viewDidAppearCount, 1)
-        XCTAssertEqual(interactor.viewDidDisappearCount, 0)
+            presenter.viewLifecycle.isDisplayed = true
 
-        presenter.viewLifecycle.isDisplayed = false
+            XCTAssertEqual(interactor.viewDidLoadCount, 1)
+            XCTAssertEqual(interactor.viewDidAppearCount, 1)
+            XCTAssertEqual(interactor.viewDidDisappearCount, 0)
 
-        XCTAssertEqual(interactor.viewDidLoadCount, 1)
-        XCTAssertEqual(interactor.viewDidAppearCount, 1)
-        XCTAssertEqual(interactor.viewDidDisappearCount, 1)
-    }
+            presenter.viewLifecycle.isDisplayed = false
+
+            XCTAssertEqual(interactor.viewDidLoadCount, 1)
+            XCTAssertEqual(interactor.viewDidAppearCount, 1)
+            XCTAssertEqual(interactor.viewDidDisappearCount, 1)
+        }
     #endif
 }
 
@@ -122,20 +122,20 @@ final class TestInteractor: Interactor {
 }
 
 #if !os(macOS)
-final class TestPresentableInteractor: PresentableInteractor<LifecycleViewController>, ViewLifecycleSubscriber {
-    var viewDidLoadCount: Int = 0
-    func viewDidLoad() {
-        viewDidLoadCount += 1
-    }
+    final class TestPresentableInteractor: PresentableInteractor<LifecycleViewController>, ViewLifecycleSubscriber {
+        var viewDidLoadCount: Int = 0
+        func viewDidLoad() {
+            viewDidLoadCount += 1
+        }
 
-    var viewDidAppearCount: Int = 0
-    func viewDidAppear() {
-        viewDidAppearCount += 1
-    }
+        var viewDidAppearCount: Int = 0
+        func viewDidAppear() {
+            viewDidAppearCount += 1
+        }
 
-    var viewDidDisappearCount: Int = 0
-    func viewDidDisappear() {
-        viewDidDisappearCount += 1
+        var viewDidDisappearCount: Int = 0
+        func viewDidDisappear() {
+            viewDidDisappearCount += 1
+        }
     }
-}
 #endif

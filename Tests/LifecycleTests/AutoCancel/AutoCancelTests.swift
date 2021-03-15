@@ -15,7 +15,7 @@
 //
 
 import Combine
-import CombineExtensions
+@testable import CombineExtensions
 import Foundation
 @testable import Lifecycle
 import XCTest

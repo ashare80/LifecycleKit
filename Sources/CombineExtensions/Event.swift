@@ -17,9 +17,9 @@
 import Combine
 import Foundation
 
-public extension Subscribers {
+extension Subscribers {
     /// Represents a sequence event.
-    enum Event<Input, Failure: Error>: CustomDebugStringConvertible {
+    public enum Event<Input, Failure: Error>: CustomDebugStringConvertible {
         /// Subscriber receives input.
         case value(Input)
 
@@ -101,14 +101,14 @@ public extension Subscribers {
 
 extension Subscribers.Event: Equatable where Input: Equatable, Failure: Equatable {}
 
-public extension Publisher {
+extension Publisher {
 
     /// Attaches a subscriber with closure-based behavior.
     ///
     /// - Parameters:
     ///   - receiveEvent: The closure to execute on receipt of an event.
     /// - Returns: A cancellable instance; used when you end assignment of the received value. Deallocation of the result will tear down the subscription stream.
-    func sink(receiveEvent: @escaping (Subscribers.Event<Output, Failure>) -> Void) -> AnyCancellable {
+    public func sink(receiveEvent: @escaping (Subscribers.Event<Output, Failure>) -> Void) -> AnyCancellable {
         return sink(receiveCompletion: { completion in
             receiveEvent(Subscribers.Event(completion))
         }, receiveValue: { value in

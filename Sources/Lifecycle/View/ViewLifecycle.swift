@@ -26,12 +26,12 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
     public var lifecycleState: Publishers.RemoveDuplicates<RelayPublisher<LifecycleState>> {
         return $state.removeDuplicates()
     }
-    
+
     public func dismissView() {
         dismissPublisher.send()
     }
-    
-    let dismissPublisher: PassthroughRelay<()> = PassthroughRelay()
+
+    let dismissPublisher: PassthroughRelay<Void> = PassthroughRelay()
 
     /// Set to `true` `onAppear`, and `false` `onDisappear`.
     var isDisplayed: Bool = false {
@@ -49,15 +49,15 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
             }
         }
     }
-    
+
     private var cancellables: [AnyCancellable] = []
 
     weak var scopeLifecycle: ScopeLifecycle? {
         didSet {
             cancellables = []
-            
+
             guard let scopeLifecycle = scopeLifecycle else { return }
-            
+
             if let oldValue = oldValue, scopeLifecycle !== oldValue {
                 assertionFailure("Already a scope lifecycle for this view lifecycle: \(oldValue). New value: \(scopeLifecycle)")
             }
@@ -68,7 +68,7 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
                 .map { state in state == .active }
                 .removeDuplicates()
                 .share(replay: 1)
-                
+
             lifecyclePublisher
                 .map { [weak self] isActive -> RelayPublisher<Void> in
                     guard let self = self, !isActive else {
@@ -79,7 +79,7 @@ public final class ViewLifecycle: LifecyclePublisher, ObjectIdentifiable {
                 .switchToLatest()
                 .sink()
                 .store(in: &cancellables)
-            
+
             lifecyclePublisher
                 .sink(receiveValue: { [weak self] isActive in
                     if !isActive {

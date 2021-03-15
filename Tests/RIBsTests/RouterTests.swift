@@ -27,24 +27,24 @@ final class RouterTests: XCTestCase {
         let router = Router(interactor: interactor)
         XCTAssertTrue(router.scopeLifecycle.subscribers.contains(router))
     }
-    
+
     #if !os(macOS)
-    let presenter = LifecycleViewController()
-    
-    func testPresentableRouterBinding() {
-        let router = TestPresentableRouter(interactor: interactor,
-                                           viewController: presenter)
-        XCTAssertTrue(router.scopeLifecycle.subscribers.contains(router))
-        XCTAssertTrue(presenter.viewLifecycle.subscribers.contains(router))
-    }
+        let presenter = LifecycleViewController()
+
+        func testPresentableRouterBinding() {
+            let router = TestPresentableRouter(interactor: interactor,
+                                               viewController: presenter)
+            XCTAssertTrue(router.scopeLifecycle.subscribers.contains(router))
+            XCTAssertTrue(presenter.viewLifecycle.subscribers.contains(router))
+        }
     #endif
 
 }
 
 #if !os(macOS)
-final class TestPresentableRouter: ViewableRouter<TestInteractor, LifecycleViewController>, ViewLifecycleSubscriber {
-    func viewDidLoad() {}
-    func viewDidAppear() {}
-    func viewDidDisappear() {}
-}
+    final class TestPresentableRouter: ViewableRouter<TestInteractor, LifecycleViewController>, ViewLifecycleSubscriber {
+        func viewDidLoad() {}
+        func viewDidAppear() {}
+        func viewDidDisappear() {}
+    }
 #endif

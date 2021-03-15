@@ -19,11 +19,12 @@ import Foundation
 
 /// Replays sent values for a given buffer size.
 public final class ReplaySubject<Output, Failure: Error>: Subject {
+
+    var subscriptions: Set<Subscription> = []
+
     private var isNotCompleted: Bool {
         return completion == nil
     }
-
-    var subscriptions: Set<Subscription> = []
 
     private var buffer: [Output] = []
     private let bufferSize: Int
@@ -88,7 +89,9 @@ public final class ReplaySubject<Output, Failure: Error>: Subject {
     public func receive<S>(subscriber: S) where S: Subscriber, Failure == S.Failure,  Output == S.Input {
         lock.lock(); defer { lock.unlock() }
 
-        let subscription = Subscription(subscriber: subscriber) { [weak self] subscription in
+        let subscription = Subscription(subscriber: subscriber,
+                                        buffer: buffer,
+                                        bufferSize: bufferSize) { [weak self] subscription in
             self?.lock.lock(); defer { self?.lock.unlock() }
             self?.subscriptions.remove(subscription)
         }
@@ -98,23 +101,37 @@ public final class ReplaySubject<Output, Failure: Error>: Subject {
         }
 
         subscriber.receive(subscription: subscription)
-        subscription.replay(buffer, completion: completion)
+
+        if let completion = completion {
+            subscription.receive(completion: completion)
+        }
     }
 
     final class Subscription: Combine.Subscription, ObjectIdentifiable {
+        private var buffer: [Output]
+        private let bufferSize: Int
         private var demand: Subscribers.Demand = .none
 
-        private let subscriber: AnySubscriber<Output, Failure>
+        private let lock: NSRecursiveLock = NSRecursiveLock()
         private let onCancel: (Subscription) -> Void
+        private let subscriber: AnySubscriber<Output, Failure>
 
-        init<S>(subscriber: S, onCancel: @escaping (Subscription) -> Void) where S: Subscriber, Failure == S.Failure,  Output == S.Input {
+        init<S>(subscriber: S, buffer: [Output], bufferSize: Int, onCancel: @escaping (Subscription) -> Void) where S: Subscriber, Failure == S.Failure,  Output == S.Input {
             self.subscriber = AnySubscriber(subscriber)
+            self.buffer = buffer
+            self.bufferSize = bufferSize
             self.onCancel = onCancel
         }
 
         // Tells a publisher that it may send more values to the subscriber.
         func request(_ newDemand: Subscribers.Demand) {
+            lock.lock(); defer { lock.unlock() }
             demand += newDemand
+
+            while self.demand > .none && !buffer.isEmpty {
+                // can be optimized
+                send(buffer.removeFirst())
+            }
         }
 
         func cancel() {
@@ -122,24 +139,26 @@ public final class ReplaySubject<Output, Failure: Error>: Subject {
         }
 
         func receive(_ value: Output) {
-            guard demand > 0 else { return }
+            lock.lock(); defer { lock.unlock() }
+            if demand == .none {
+                if bufferSize > 1 {
+                    buffer.append(value)
+                    buffer = buffer.suffix(bufferSize)
+                } else if bufferSize == 1 {
+                    buffer = [value]
+                }
+            } else {
+                send(value)
+            }
+        }
 
-            demand += subscriber.receive(value)
+        private func send(_ value: Output) {
             demand -= 1
+            demand += subscriber.receive(value)
         }
 
         func receive(completion: Subscribers.Completion<Failure>) {
             subscriber.receive(completion: completion)
-        }
-
-        func replay(_ values: [Output], completion: Subscribers.Completion<Failure>?) {
-            for value in values {
-                receive(value)
-            }
-
-            if let completion = completion {
-                receive(completion: completion)
-            }
         }
     }
 }
@@ -148,87 +167,21 @@ public extension Publisher {
     /**
      Returns an publisher sequence that **shares a single subscription to the underlying sequence**, and immediately upon subscription replays  elements in buffer.
 
-     This operator is equivalent to:
-     * `.whileConnected`
-     ```
-     // Each connection will have it's own subject instance to store replay events.
-     // Connections will be isolated from each another.
-     source.multicast(makeSubject: { ReplaySubject(bufferSize: replay) }).autoconnect()
-     ```
-     * `.forever`
-     ```
-     // One subject will store replay events for all connections to source.
-     // Connections won't be isolated from each another.
-     source.multicast(ReplaySubject(bufferSize: replay)).autoconnect()
-     ```
-
      It uses optimized versions of the operators for most common operations.
      - parameter replay: Maximum element count of the replay buffer.
-     - parameter scope: Lifetime scope of sharing subject. For more information see `SubjectLifetimeScope` enum.
      - returns: A publisher sequence that contains the elements of a sequence produced by multicasting the source sequence.
      */
 
     /// Provides a subject that shares a single subscription to the upstream publisher and replays at most `bufferSize` items emitted by that publisher
     /// - Parameter bufferSize: limits the number of items that can be replayed
-    func share(replay: Int, scope: Publishers.SubjectLifetimeScope = .whileConnected) -> AnyPublisher<Output, Failure> {
-
-        switch scope {
-        case .whileConnected:
-            return multicast {
-                ReplaySubject(bufferSize: replay)
-            }
-            .autoconnect()
-            .eraseToAnyPublisher()
-        case .forever:
-            if replay <= 0  {
-                return share()
-                    .eraseToAnyPublisher()
-            }
-
-            return multicast(subject: ReplaySubject(bufferSize: replay))
-                .autoconnect()
+    func share(replay: Int) -> AnyPublisher<Output, Failure> {
+        if replay <= 0  {
+            return share()
                 .eraseToAnyPublisher()
         }
-    }
-}
 
-public extension Publishers {
-    /// Subject lifetime scope
-    enum SubjectLifetimeScope {
-        /**
-         **Each connection will have it's own subject instance to store replay events.**
-         **Connections will be isolated from each another.**
-         Configures the underlying implementation to behave equivalent to.
-
-         ```
-         source.multicast(subject: { MySubject() }).autoconnect()
-         ```
-         **This is the recommended default.**
-         This has the following consequences:
-         * `retry` or `concat` operators will function as expected because terminating the sequence will clear internal state.
-         * Each connection to source publisher sequence will use it's own subject.
-         * When the number of subscribers drops from 1 to 0 and connection to source sequence is disposed, subject will be cleared.
-         */
-        case whileConnected
-
-        /**
-          **One subject will store replay events for all connections to source.**
-          **Connections won't be isolated from each another.**
-          Configures the underlying implementation behave equivalent to.
-          ```
-          source.multicast(MySubject()).refCount()
-          ```
-
-          This has the following consequences:
-          * Using `retry` or `concat` operators after this operator usually isn't advised.
-          * Each connection to source publisher sequence will share the same subject.
-          * After number of subscribers drops from 1 to 0 and connection to source publisher sequence is dispose, this operator will
-            continue holding a reference to the same subject.
-            If at some later moment a new observer initiates a new connection to source it can potentially receive
-            some of the stale events received during previous connection.
-          * After source sequence terminates any new observer will always immediately receive replayed elements and terminal event.
-            No new subscriptions to source publisher sequence will be attempted.
-         */
-        case forever
+        return multicast(subject: ReplaySubject(bufferSize: replay))
+            .autoconnect()
+            .eraseToAnyPublisher()
     }
 }

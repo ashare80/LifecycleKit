@@ -58,23 +58,48 @@ public struct AutoCancel<P: Publisher> {
                      receiveValue: ((P.Output) -> Void)? = nil) -> Cancellable
     {
         let retainedSink = Subscribers.RetainedSink(receiveValue: receiveValue,
-                                                   receiveCompletion: receiveCompletion,
-                                                   receiveFailure: receiveFailure,
-                                                   receiveFinished: receiveFinished,
-                                                   receiveCancel: receiveCancel,
-                                                   cancelPublisher: cancelPublisher)
+                                                    receiveCompletion: receiveCompletion,
+                                                    receiveFailure: receiveFailure,
+                                                    receiveFinished: receiveFinished,
+                                                    receiveCancel: receiveCancel,
+                                                    cancelPublisher: cancelPublisher)
         source.subscribe(retainedSink)
         return retainedSink
     }
-    
+
     @discardableResult
     public func assign<Root>(to keyPath: ReferenceWritableKeyPath<Root, P.Output>, on object: Root) -> Cancellable {
-        return sink(receiveValue: { (value) in
+        return sink(receiveValue: { value in
             object[keyPath: keyPath] = value
         })
     }
-}
 
+    func sink(receiveEvent: @escaping (Subscribers.Event<P.Output, P.Failure>) -> Void) -> Cancellable {
+        return sink(receiveCompletion: { completion in
+            receiveEvent(Subscribers.Event(completion))
+        }, receiveValue: { value in
+            receiveEvent(Subscribers.Event(value))
+        })
+    }
+
+    func record() -> RecordSink<P.Output, P.Failure> {
+        return RecordSink(publisher: self)
+    }
+
+    final class RecordSink<Input, Failure: Error> {
+        public var cancellable: AnyCancellable?
+        public var events: [Subscribers.Event<Input, Failure>] = []
+
+        public init<P: Publisher>(publisher: AutoCancel<P>) where P.Output == Input, P.Failure == Failure {
+            let cancellable = publisher.sink(receiveEvent: { [weak self] event in
+                self?.events.append(event)
+            })
+            self.cancellable = AnyCancellable {
+                cancellable.cancel()
+            }
+        }
+    }
+}
 
 extension Subscribers {
     final class RetainedSink<Input, Failure: Error>: Subscriber, Cancellable {
@@ -156,5 +181,3 @@ extension Subscribers {
         }
     }
 }
-
-

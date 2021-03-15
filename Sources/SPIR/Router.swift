@@ -39,7 +39,7 @@ open class PresentableRouter<PresenterType>: Router {
         super.init(scopeLifecycle: scopeLifecycle)
 
         if let viewLifecycleSubscriber = self as? ViewLifecycleSubscriber,
-            let viewLifecycleOwner = presenter as? ViewLifecycleOwner {
+           let viewLifecycleOwner = presenter as? ViewLifecycleOwner {
             viewLifecycleOwner.viewLifecycle.subscribe(viewLifecycleSubscriber)
         }
     }

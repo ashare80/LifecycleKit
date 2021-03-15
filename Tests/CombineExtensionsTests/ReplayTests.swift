@@ -173,6 +173,57 @@ final class ReplayTests: XCTestCase {
         XCTAssertNil(weakSubject)
         XCTAssertNil(weakObject)
     }
+
+    func testShareScope1() {
+        let subject = PassthroughSubject<TestObject, MockError>()
+        subject.send(TestObject())
+
+        let sharedReplay = subject.share(replay: 1)
+
+        let record = sharedReplay
+            .record()
+
+        XCTAssertEqual(record.events.count, 0)
+
+        subject.send(TestObject())
+
+        XCTAssertEqual(record.events.count, 1)
+
+        record.cancellable?.cancel()
+
+        let record2 = sharedReplay
+            .record()
+
+        XCTAssertEqual(record2.events.count, 1)
+    }
+
+    func testShareScope5() {
+        let subject = PassthroughSubject<TestObject, MockError>()
+        subject.send(TestObject())
+
+        let sharedReplay = subject.share(replay: 5)
+
+        let record = sharedReplay
+            .record()
+
+        XCTAssertEqual(record.events.count, 0)
+
+        subject.send(TestObject())
+        subject.send(TestObject())
+        subject.send(TestObject())
+        subject.send(TestObject())
+        subject.send(TestObject())
+        subject.send(TestObject())
+
+        XCTAssertEqual(record.events.count, 6)
+
+        record.cancellable?.cancel()
+
+        let record2 = sharedReplay
+            .record()
+
+        XCTAssertEqual(record2.events.count, 5)
+    }
 }
 
 final class TestObject: ObjectIdentifiable {}

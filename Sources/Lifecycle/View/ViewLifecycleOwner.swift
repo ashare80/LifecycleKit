@@ -24,15 +24,15 @@ public protocol ViewLifecycleOwner: AnyObject {
     var viewLifecycle: ViewLifecycle { get }
 }
 
-extension ViewLifecycleOwner {
-    public func dismissView() {
+public extension ViewLifecycleOwner {
+    func dismissView() {
         viewLifecycle.dismissView()
     }
 }
 
 public struct TrackingViewModifier: ViewModifier {
     var viewLifecycleOwner: ViewLifecycleOwner
-    
+
     @Environment(\.presentationMode) private var presentation: Binding<PresentationMode>
 
     init(_ viewLifecycleOwner: ViewLifecycleOwner) {
