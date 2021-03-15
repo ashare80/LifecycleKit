@@ -92,8 +92,9 @@ public final class ReplaySubject<Output, Failure: Error>: Subject {
         let subscription = Subscription(subscriber: subscriber,
                                         buffer: buffer,
                                         bufferSize: bufferSize) { [weak self] subscription in
-            self?.lock.lock(); defer { self?.lock.unlock() }
-            self?.subscriptions.remove(subscription)
+            guard let self = self else { return }
+            self.lock.lock(); defer { self.lock.unlock() }
+            self.subscriptions.remove(subscription)
         }
 
         if isNotCompleted {
@@ -124,7 +125,7 @@ public final class ReplaySubject<Output, Failure: Error>: Subject {
         }
 
         // Tells a publisher that it may send more values to the subscriber.
-        func request(_ newDemand: Subscribers.Demand) {
+        public func request(_ newDemand: Subscribers.Demand) {
             lock.lock(); defer { lock.unlock() }
             demand += newDemand
 
@@ -134,11 +135,11 @@ public final class ReplaySubject<Output, Failure: Error>: Subject {
             }
         }
 
-        func cancel() {
+        public func cancel() {
             onCancel(self)
         }
 
-        func receive(_ value: Output) {
+        public func receive(_ value: Output) {
             lock.lock(); defer { lock.unlock() }
             if demand == .none {
                 if bufferSize > 1 {
@@ -152,28 +153,23 @@ public final class ReplaySubject<Output, Failure: Error>: Subject {
             }
         }
 
+        func receive(completion: Subscribers.Completion<Failure>) {
+            subscriber.receive(completion: completion)
+        }
+
         private func send(_ value: Output) {
             demand -= 1
             demand += subscriber.receive(value)
-        }
-
-        func receive(completion: Subscribers.Completion<Failure>) {
-            subscriber.receive(completion: completion)
         }
     }
 }
 
 public extension Publisher {
-    /**
-     Returns an publisher sequence that **shares a single subscription to the underlying sequence**, and immediately upon subscription replays  elements in buffer.
-
-     It uses optimized versions of the operators for most common operations.
-     - parameter replay: Maximum element count of the replay buffer.
-     - returns: A publisher sequence that contains the elements of a sequence produced by multicasting the source sequence.
-     */
-
-    /// Provides a subject that shares a single subscription to the upstream publisher and replays at most `bufferSize` items emitted by that publisher
-    /// - Parameter bufferSize: limits the number of items that can be replayed
+    ///    Returns an publisher sequence that **shares a single subscription to the underlying sequence**,
+    ///    and immediately upon request with demand replays elements in buffer.
+    ///
+    ///     - parameter replay: Maximum element count of the replay buffer.
+    ///     - returns: A publisher sequence that contains the elements of a sequence produced by multicasting the source sequence.
     func share(replay: Int) -> AnyPublisher<Output, Failure> {
         if replay <= 0  {
             return share()
