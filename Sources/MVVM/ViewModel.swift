@@ -27,4 +27,14 @@ public protocol ViewModelView: View {
     init(model: Model)
 }
 
-public protocol ViewLifecycleViewModel: ViewLifecycleOwner, ObservableObject {}
+/// Convenience protocol for a `View ` with only a `ViewModel` dependency.
+public protocol ViewModelControllerView: View {
+    /// `ViewLifecycleOwner` view controller.
+    associatedtype Controller: ObservableObject, ViewLifecycleOwner
+    
+    /// `ObservableObject` view model to bind to the `View` .
+    associatedtype Model: ObservableObject
+    
+    /// Initializes with an lifecycle owner controller and observable object.
+    init(controller: Controller, model: Model)
+}

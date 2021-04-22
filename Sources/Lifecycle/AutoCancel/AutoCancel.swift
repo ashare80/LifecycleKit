@@ -28,6 +28,12 @@ public extension Publisher {
     func autoCancel<P: Publisher>(_ lifecycleState: P, when states: LifecycleStateOptions = .notActive) -> AutoCancel<Self> where P.Output == LifecycleState {
         return AutoCancel(source: self, cancelPublisher: lifecycleState.filter(states.contains(state:)).map { _ in () }.replaceError(with: ()).mapError().eraseToAnyPublisher())
     }
+    
+    func published<T: LifecyclePublisher>(to keyPath: ReferenceWritableKeyPath<T, Output>, on: T) {
+        receive(on: Schedulers.main)
+            .autoCancel(on)
+            .assign(to: keyPath, on: on)
+    }
 }
 
 public extension Publisher {

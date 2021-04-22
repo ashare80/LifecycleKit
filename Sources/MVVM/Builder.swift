@@ -19,13 +19,13 @@ import Lifecycle
 import SwiftUI
 
 public protocol ControllerProviding {
-    associatedtype Controller: LifecycleOwner
+    associatedtype Controller: LifecycleOwner, ViewLifecycleOwner
 
     var controller: Controller { get }
 }
 
 public protocol ViewModelProviding {
-    associatedtype ViewModel: ObservableObject, ViewLifecycleOwner
+    associatedtype ViewModel: ObservableObject
 
     var viewModel: ViewModel { get }
 }
@@ -56,6 +56,12 @@ public extension MVVMComponent {
     }
 
     var viewLifecycleOwner: ViewLifecycleOwner {
-        return viewModel
+        return controller
+    }
+}
+
+public extension ViewLifecycleOwnerViewProviding where Self: ViewModelProviding & ControllerProviding, ContentView: ViewModelControllerView, ContentView.Model == ViewModel, ContentView.Controller == Controller {
+    var view: ContentView {
+        return ContentView(controller: controller, model: viewModel)
     }
 }
